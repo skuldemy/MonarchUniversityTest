@@ -25,6 +25,7 @@ public class User implements UserDetails {
 	private Long id;
 	private String username;
 	private String password;
+	private String position;
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<Role> roles = new HashSet<>();
 	   @Override
