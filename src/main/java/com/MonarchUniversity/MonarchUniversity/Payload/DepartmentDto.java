@@ -8,15 +8,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FacultyDto {
+public class DepartmentDto {
     private Long id;
-    @NotBlank(message = "Faculty name is required")
+    @NotBlank(message = "Department name is required")
+    private String departmentName;
+    @NotBlank(message = "Department code is required")
+    private String departmentCode;
+    private Long facultyId;
     private String facultyName;
-    @NotBlank(message = "Faculty code is required")
-    private String facultyCode;
-    private String facultyDescription;
-    private String facultyEmail;
-    private String facultyAddress;
+    private String departmentDescription;
+    private String officeLocation;
     private Integer establishedYear;
-    private String facultyMotto;
 }
