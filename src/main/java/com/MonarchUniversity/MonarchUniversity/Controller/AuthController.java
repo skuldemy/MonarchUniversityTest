@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
 
 import com.MonarchUniversity.MonarchUniversity.Entity.User;
+import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
 import com.MonarchUniversity.MonarchUniversity.Jwt.JwtService;
 import com.MonarchUniversity.MonarchUniversity.Payload.LoginRequest;
 import com.MonarchUniversity.MonarchUniversity.Payload.LoginResponse;
@@ -55,10 +56,11 @@ public class AuthController {
 
         } catch (BadCredentialsException e) {
             // Wrong password or username
-            return ResponseEntity.status(401).body("Invalid username or password");
+        	throw new ResponseNotFoundException("Invalid username or password");
         } catch (Exception e) {
             // Other errors
-            return ResponseEntity.status(500).body("An error occurred: " + e.getMessage());
+        	throw new ResponseNotFoundException("An error occurred: " + e.getMessage());
+            
         }
     }
 }
