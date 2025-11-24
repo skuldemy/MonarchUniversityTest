@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LevelDto {
 	private Long id;
-	private String program;
+	private Long programId;
 	private String levelNumber; 
 	private String semester;
 	private Integer capacity;
