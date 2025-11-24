@@ -1,8 +1,12 @@
 package com.MonarchUniversity.MonarchUniversity.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.MonarchUniversity.MonarchUniversity.Entity.Faculty;
+import com.MonarchUniversity.MonarchUniversity.Exception.ResponseForbiddenException;
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
 import com.MonarchUniversity.MonarchUniversity.Payload.FacultyDto;
 import com.MonarchUniversity.MonarchUniversity.Repositories.FacultyRepository;
@@ -25,14 +29,31 @@ public class FacultyService {
         faculty.setEstablishedYear(dto.getEstablishedYear());
         faculty.setFacultyMotto(dto.getFacultyMotto());
 
-        facultyRepo.save(faculty);
+        Faculty savedFaculty = facultyRepo.save(faculty);
 
-        return dto; 
+        return new FacultyDto(
+        	    savedFaculty.getId(),
+        	    savedFaculty.getFacultyName(),
+        	    savedFaculty.getFacultyCode(),            
+        	    savedFaculty.getFacultyDescription(),
+        	    savedFaculty.getFacultyEmail(),           
+        	    savedFaculty.getFacultyAddress(),
+        	    savedFaculty.getEstablishedYear(),
+        	    savedFaculty.getFacultyMotto()
+        	);
+ 
     }
 
     public FacultyDto editFaculty(Long id, FacultyDto dto) {
         Faculty faculty = facultyRepo.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("No such Faculty Id"));
+
+        if (dto.getFacultyName() == null || dto.getFacultyName().isBlank()) {
+            throw new ResponseForbiddenException("Faculty name is required");
+        }
+        if (dto.getFacultyCode() == null || dto.getFacultyCode().isBlank()) {
+            throw new ResponseForbiddenException("Faculty code is required");
+        }
 
         faculty.setFacultyName(dto.getFacultyName());
         faculty.setFacultyCode(dto.getFacultyCode());
@@ -63,6 +84,19 @@ public class FacultyService {
 
         facultyRepo.delete(faculty);
         return "Faculty successfully deleted";
+    }
+    
+    public List<FacultyDto> getAllFaculties(){
+    	return facultyRepo.findAll().stream().map(r-> new FacultyDto(
+                r.getId(),
+                r.getFacultyName(),
+                r.getFacultyCode(),
+                r.getFacultyDescription(),
+                r.getFacultyEmail(),
+                r.getFacultyAddress(),
+                r.getEstablishedYear(),
+                r.getFacultyMotto()
+        )).collect(Collectors.toList());
     }
 }
 

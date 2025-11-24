@@ -12,6 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.MonarchUniversity.MonarchUniversity.Jwt.JwtAuthenticationFilter;
+import com.MonarchUniversity.MonarchUniversity.Jwt.JwtService;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -20,6 +23,13 @@ public class WebSecurityConfig {
 
     private final UserDetailsService userDetailsService; // YOU FORGOT THIS
 
+    private final JwtService jwtService; // inject your JwtService
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtService, userDetailsService);
+    }
+    
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
             throws Exception {
@@ -34,16 +44,17 @@ public class WebSecurityConfig {
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
-
-    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .authenticationProvider(authProvider()) // Add provider here
+            .authenticationProvider(authProvider())
             .authorizeHttpRequests(auth -> auth
-                    .anyRequest().permitAll()
-            );
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/super-admin/**").hasAuthority("ROLE_SUPER_ADMIN")
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtAuthenticationFilter(), org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -60,7 +60,15 @@ public class ControllerAdviceClass extends ResponseEntityExceptionHandler{
 	    return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
 	}
 	
-	
-	
+//	   @ExceptionHandler(MethodArgumentNotValidException.class)
+//	    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+//	        String errorMsg = ex.getBindingResult().getFieldErrors()
+//	                            .stream()
+//	                            .map(error -> error.getField() + ": " + error.getDefaultMessage())
+//	                            .findFirst()
+//	                            .orElse("Invalid input");
+//	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMsg);
+//	    }
+//	
 }
 
