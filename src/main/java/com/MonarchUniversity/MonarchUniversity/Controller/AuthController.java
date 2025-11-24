@@ -2,6 +2,7 @@ package com.MonarchUniversity.MonarchUniversity.Controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,29 +29,36 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
 
-        // Authenticate user (Spring Security will check password using UserDetailsService)
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+            // Fetch the full user from DB
+            User user = userRepo.findByUsername(request.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Fetch the full user from DB
-        User user = userRepo.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+            // Extract single role
+            String role = user.getRoles()
+                    .stream()
+                    .map(r -> r.getName())
+                    .findFirst()
+                    .orElse("UNKNOWN");
 
-        // Extract single role (you can have multiple)
-        String role = user.getRoles()
-                .stream()
-                .map(r -> r.getName())
-                .findFirst()
-                .orElse("UNKNOWN");
+            // Generate JWT
+            String token = jwtService.generateToken(user);
 
-        // Generate JWT
-        String token = jwtService.generateToken(user);
+            return ResponseEntity.ok(new LoginResponse(token, role));
 
-        return ResponseEntity.ok(new LoginResponse(token, role));
+        } catch (BadCredentialsException e) {
+            // Wrong password or username
+            return ResponseEntity.status(401).body("Invalid username or password");
+        } catch (Exception e) {
+            // Other errors
+            return ResponseEntity.status(500).body("An error occurred: " + e.getMessage());
+        }
     }
 }
