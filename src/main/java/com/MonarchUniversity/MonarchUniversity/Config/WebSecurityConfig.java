@@ -50,6 +50,11 @@ public class WebSecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authenticationProvider(authProvider())
             .authorizeHttpRequests(auth -> auth
+            		  .requestMatchers(
+            	                "/v3/api-docs/**",
+            	                "/swagger-ui/**",
+            	                "/swagger-ui.html"
+            	            ).permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/super-admin/**").hasAuthority("ROLE_SUPER_ADMIN")
                 .anyRequest().authenticated()
