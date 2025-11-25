@@ -1,16 +1,28 @@
 package com.MonarchUniversity.MonarchUniversity.Payload;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LevelDto {
-	private Long id;
-	private Long programId;
-	private String levelNumber; 
-	private String semester;
-	private Integer capacity;
+
+    private Long id;
+
+    @NotNull(message = "Program is required")
+    private Long programId;
+
+    private String programName;
+    
+    @NotBlank(message = "Level number is required")
+    private String levelNumber;
+
+    @NotBlank(message = "Semester is required")
+    private String semester;
+
+    private Integer capacity;
 }
