@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.MonarchUniversity.MonarchUniversity.Payload.DepartmentDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.FacultyDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.LevelDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.ProgramDto;
 import com.MonarchUniversity.MonarchUniversity.Service.DepartmentService;
 import com.MonarchUniversity.MonarchUniversity.Service.FacultyService;
+import com.MonarchUniversity.MonarchUniversity.Service.LevelService;
 import com.MonarchUniversity.MonarchUniversity.Service.ProgramService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +37,7 @@ public class SuperAdminAccountController {
 	private final FacultyService facultyService;
 	private final DepartmentService departmentService;
 	private final ProgramService programService;
+	private final LevelService levelService;
 	
     @Operation(summary = "1 - Faculty: Create a new faculty", description = "Creates a faculty with all required details")
     @ApiResponses({
@@ -129,4 +132,26 @@ public class SuperAdminAccountController {
         return ResponseEntity.ok(programService.deleteProgram(id));
     }
 
+//    New apis
+    
+    @PostMapping("/level")
+    public ResponseEntity<LevelDto> createLevel(@RequestBody @Valid LevelDto dto){
+    	LevelDto created = levelService.createLevel(dto);
+    	return ResponseEntity.status(201).body(created);
+    }
+    
+    @GetMapping("/level")
+    public ResponseEntity<List<LevelDto>> getAllLevels(){
+    	return ResponseEntity.ok(levelService.getAllLevels());
+    }
+    
+    @PutMapping("/level/{id}")
+    public ResponseEntity<LevelDto> editLevel(@PathVariable Long id, @RequestBody @Valid LevelDto dto){
+    	return ResponseEntity.ok(levelService.editLevel(id, dto));
+    }
+    
+    @DeleteMapping("/level/{id}")
+    public ResponseEntity<String> deleteLevel(@PathVariable Long id){
+    	return ResponseEntity.ok(levelService.deleteLevel(id));
+    }
 }
