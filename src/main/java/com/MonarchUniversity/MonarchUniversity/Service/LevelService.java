@@ -75,7 +75,15 @@ public class LevelService {
         return "Level successfully deleted";
     }
 
-    @Cacheable("levels")
+//    @Cacheable("levels")
+//    public List<LevelDto> getAllLevels() {
+//        return levelRepo.findAll()
+//                .stream()
+//                .map(this::mapToDto)
+//                .collect(Collectors.toList());
+//    }
+//    
+//    @Cacheable("levels")
     public List<LevelDto> getAllLevels() {
         return levelRepo.findAll()
                 .stream()
