@@ -3,6 +3,7 @@ package com.MonarchUniversity.MonarchUniversity.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.MonarchUniversity.MonarchUniversity.Entity.Faculty;
@@ -85,7 +86,7 @@ public class FacultyService {
         facultyRepo.delete(faculty);
         return "Faculty successfully deleted";
     }
-    
+    @Cacheable("faculties")
     public List<FacultyDto> getAllFaculties(){
     	return facultyRepo.findAll().stream().map(r-> new FacultyDto(
                 r.getId(),
