@@ -3,6 +3,7 @@ package com.MonarchUniversity.MonarchUniversity.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.MonarchUniversity.MonarchUniversity.Entity.Department;
@@ -76,6 +77,7 @@ public class ProgramService {
         return "Program successfully deleted";
     }
 
+    @Cacheable("programs")
     public List<ProgramDto> getAllPrograms() {
         return programRepo.findAll().stream()
                 .map(this::mapToDto)

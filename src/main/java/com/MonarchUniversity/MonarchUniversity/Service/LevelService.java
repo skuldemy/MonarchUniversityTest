@@ -3,6 +3,7 @@ package com.MonarchUniversity.MonarchUniversity.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.MonarchUniversity.MonarchUniversity.Entity.Level;
@@ -74,7 +75,7 @@ public class LevelService {
         return "Level successfully deleted";
     }
 
-    
+    @Cacheable("levels")
     public List<LevelDto> getAllLevels() {
         return levelRepo.findAll()
                 .stream()
