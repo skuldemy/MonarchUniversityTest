@@ -1,12 +1,15 @@
 package com.MonarchUniversity.MonarchUniversity.Entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
@@ -36,6 +39,13 @@ public class LecturerProfile {
 	@ManyToOne
 	@JoinColumn(name="role_id")
 	private Role role;
+	@ManyToMany
+	@JoinTable(
+	    name = "lecturer_programs",
+	    joinColumns = @JoinColumn(name = "lecturer_id"),
+	    inverseJoinColumns = @JoinColumn(name = "program_id")
+	)
+	private List<Program> courses;
 	
 	
 }

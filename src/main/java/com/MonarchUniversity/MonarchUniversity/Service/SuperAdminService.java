@@ -96,6 +96,7 @@ public class SuperAdminService {
 		lecturerProfile.setUser(user);
 		lecturerProfile.setFullName(dto.getFullName());
 		lecturerProfile.setRole(role);
+		lecturerProfile.setCourses(courseList);
 		lecturerRepo.save(lecturerProfile);
 		
 		LecturerResponseDto response = new LecturerResponseDto();
@@ -127,8 +128,14 @@ public class SuperAdminService {
 	        dto.setEmailAddress(user.getUsername());
 	        dto.setOnBoard("offline");
 	        dto.setRoleName(lecturer.getRole().getName());
+	        dto.setCoursesOffering(
+	                lecturer.getCourses()
+	                        .stream()
+	                        .map(Program::getProgramName)
+	                        .toList()
+	            );
 	        dto.setStatus(user.isEnabled() ? "enabled" : "disabled");
-	      
+	        
 	        return dto;
 	    }).toList();
 	}
