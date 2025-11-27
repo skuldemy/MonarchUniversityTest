@@ -1,5 +1,7 @@
 package com.MonarchUniversity.MonarchUniversity.Entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,13 +25,17 @@ public class LecturerProfile {
 	@OneToOne
 	@JoinColumn(name="user_id")
 	private User user;
-	@ManyToOne
-	@JoinColumn(name="faculty_id")
-	private Faculty faculty;
-	@ManyToOne
-	@JoinColumn(name="department_id")
-	private Department department;
+
+	//	@ManyToOne
+//	@JoinColumn(name="faculty_id")
+//	private Faculty faculty;
+//	@ManyToOne
+//	@JoinColumn(name="department_id")
+//	private Department department;
+	
 	@ManyToOne
 	@JoinColumn(name="role_id")
 	private Role role;
+	
+	
 }
