@@ -161,6 +161,11 @@ public class SuperAdminAccountController {
     
 //  New apis
     
+    @GetMapping("/roles-management")
+    public ResponseEntity<?> getRolesExcludingStudent(){
+    	return ResponseEntity.ok(managementService.getAllRoles());
+    }
+    
     @GetMapping("/faculties-management")
     public ResponseEntity<List<FacultyDto>> getAllFacultiesViaManagement() {
         List<FacultyDto> faculties = managementService.findAllFaculties();
