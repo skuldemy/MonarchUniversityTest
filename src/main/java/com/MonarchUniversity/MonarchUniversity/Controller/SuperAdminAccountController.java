@@ -14,12 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.MonarchUniversity.MonarchUniversity.Payload.DepartmentDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.FacultyDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.LecturerRequestDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.LecturerResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.LevelDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.ProgramDto;
 import com.MonarchUniversity.MonarchUniversity.Service.DepartmentService;
 import com.MonarchUniversity.MonarchUniversity.Service.FacultyService;
 import com.MonarchUniversity.MonarchUniversity.Service.LevelService;
 import com.MonarchUniversity.MonarchUniversity.Service.ProgramService;
+import com.MonarchUniversity.MonarchUniversity.Service.SuperAdminService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,6 +41,7 @@ public class SuperAdminAccountController {
 	private final DepartmentService departmentService;
 	private final ProgramService programService;
 	private final LevelService levelService;
+	private final SuperAdminService managementService;
 	
     @Operation(summary = "1 - Faculty: Create a new faculty", description = "Creates a faculty with all required details")
     @ApiResponses({
@@ -132,7 +136,7 @@ public class SuperAdminAccountController {
         return ResponseEntity.ok(programService.deleteProgram(id));
     }
 
-//    New apis
+
     
     @PostMapping("/level")
     public ResponseEntity<LevelDto> createLevel(@RequestBody @Valid LevelDto dto){
@@ -154,4 +158,44 @@ public class SuperAdminAccountController {
     public ResponseEntity<String> deleteLevel(@PathVariable Long id){
     	return ResponseEntity.ok(levelService.deleteLevel(id));
     }
+    
+//  New apis
+    
+    @GetMapping("/faculties-management")
+    public ResponseEntity<List<FacultyDto>> getAllFacultiesViaManagement() {
+        List<FacultyDto> faculties = managementService.findAllFaculties();
+        return ResponseEntity.ok(faculties);
+    }
+    
+    @GetMapping("/faculties-management/{facultyId}/departments")
+    public ResponseEntity<List<DepartmentDto>> getDepartmentsByFaculty(@PathVariable Long facultyId) {
+        List<DepartmentDto> departments = managementService.findDepartments(facultyId);
+        return ResponseEntity.ok(departments);
+    }
+    
+    @PostMapping("/admin-management")
+    public ResponseEntity<LecturerResponseDto> createLecturer(@RequestBody @Valid LecturerRequestDto dto) {
+        LecturerResponseDto response = managementService.createNewUser(dto);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/admin-management")
+    public ResponseEntity<List<LecturerResponseDto>> getAllLecturers() {
+        List<LecturerResponseDto> lecturers = managementService.getAllLecturers();
+        return ResponseEntity.ok(lecturers);
+    }
+    @PutMapping("/admin-management/{id}")
+    public ResponseEntity<LecturerResponseDto> updateLecturer(
+            @PathVariable Long id,
+            @RequestBody @Valid LecturerRequestDto dto) {
+        LecturerResponseDto updated = managementService.updateLecturer(id, dto);
+        return ResponseEntity.ok(updated);
+    }
+    
+    @DeleteMapping("/admin-management/{id}")
+    public ResponseEntity<String> deleteLecturer(@PathVariable Long id) {
+    	managementService.deleteLecturer(id);
+        return ResponseEntity.ok("Lecturer deleted successfully");
+    }
+    
+    
 }

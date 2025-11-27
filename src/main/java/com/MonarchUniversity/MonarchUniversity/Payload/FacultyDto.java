@@ -19,4 +19,11 @@ public class FacultyDto {
     private String facultyAddress;
     private Integer establishedYear;
     private String facultyMotto;
+
+    public FacultyDto(Long id, @NotBlank(message = "Faculty name is required") String facultyName) {
+		this.id = id;
+		this.facultyName = facultyName;
+	}
+    
+    
 }

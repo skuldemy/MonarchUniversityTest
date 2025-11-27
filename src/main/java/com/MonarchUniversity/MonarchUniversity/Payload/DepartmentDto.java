@@ -19,4 +19,12 @@ public class DepartmentDto {
     private String departmentDescription;
     private String officeLocation;
     private Integer establishedYear;
+
+    public DepartmentDto(Long id, @NotBlank(message = "Department name is required") String departmentName) {
+		this.id = id;
+		this.departmentName = departmentName;
+	}
+	
+    
+    
 }
