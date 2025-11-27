@@ -19,6 +19,7 @@ import com.MonarchUniversity.MonarchUniversity.Payload.DepartmentDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.FacultyDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.LecturerRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.LecturerResponseDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.RoleDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.UserDto;
 import com.MonarchUniversity.MonarchUniversity.Repositories.DepartmentRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.FacultyRepository;
@@ -50,6 +51,10 @@ public class SuperAdminService {
 				.map(d -> new DepartmentDto(d.getId(), d.getDepartmentName())).collect(Collectors.toList());
 	}
 	
+	public List<RoleDto> getAllRoles(){
+		List<Role> roles = roleRepo.findByNameNot("STUDENT");
+		return roles.stream().map(r -> new RoleDto(r.getId(), r.getName())).collect(Collectors.toList());
+	}
 	
 	@Transactional
 	public LecturerResponseDto createNewUser(LecturerRequestDto dto) {
@@ -61,6 +66,16 @@ public class SuperAdminService {
 		user.setUsername(dto.getEmailAddress());
 		user.setPassword(enconder.encode( dto.getPassword()));
 		
+		Role role = roleRepo.findById(dto.getRoleId()).orElseThrow(()-> new ResponseNotFoundException("No such role id"));
+		
+		  if (role.getName().equalsIgnoreCase("STUDENT")) {
+		        throw new ResponseNotFoundException(
+		            "Student accounts cannot be created from this panel. Only technical users can be created."
+		        );
+		    }
+		  
+		  user.getRoles().add(role);
+		
 		userRepo.save(user);
 		
 		Faculty faculty = facultyRepo.findById(dto.getFacultyId()).orElseThrow(()-> new ResponseNotFoundException("No such faculty"));
@@ -70,13 +85,7 @@ public class SuperAdminService {
 			 throw new ResponseNotFoundException("Department does not belong to the selected Faculty");
 		}
 		
-		Role role = roleRepo.findById(dto.getRoleId()).orElseThrow(()-> new ResponseNotFoundException("No such role id"));
 		
-		  if (role.getName().equalsIgnoreCase("STUDENT")) {
-		        throw new ResponseNotFoundException(
-		            "Student accounts cannot be created from this panel. Only technical users can be created."
-		        );
-		    }
 		
 		List<Program> courseList = programRepo.findAllById(dto.getCourses());
 		
