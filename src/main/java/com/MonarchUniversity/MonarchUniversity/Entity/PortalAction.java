@@ -12,16 +12,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Faculty {
+public class PortalAction {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String facultyName;
-	private String facultyCode;
-	private String facultyDescription;
-	private String facultyEmail;
-	private String facultyAddress;
-	private Integer establishedYear;
-	private String facultyMotto;
-	
+	private String actionName;
+
 }
