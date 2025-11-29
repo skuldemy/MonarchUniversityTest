@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LecturerResponseDto {
+	private Long id;
 	private String fullName;
 	private String emailAddress;
 	private String onBoard; // online or offline
