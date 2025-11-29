@@ -109,11 +109,11 @@ public class SuperAdminService {
 	        }
 	    }
 
-	    if (dto.getCourses() != null && !dto.getCourses().isEmpty()) {
+	    if (dto.getCoursesOffering() != null && !dto.getCoursesOffering().isEmpty()) {
 
-	        courseList = programRepo.findAllById(dto.getCourses());
+	        courseList = programRepo.findAllById(dto.getCoursesOffering());
 
-	        if (courseList.size() != dto.getCourses().size()) {
+	        if (courseList.size() != dto.getCoursesOffering().size()) {
 	            throw new ResponseNotFoundException("One or more selected courses do not exist");
 	        }
 
@@ -210,9 +210,9 @@ public class SuperAdminService {
 	        lecturer.setFullName(dto.getFullName());
 	    }
 
-	    if (dto.getCourses() != null && !dto.getCourses().isEmpty()) {
-	        List<Program> courses = programRepo.findAllById(dto.getCourses());
-	        if (courses.size() != dto.getCourses().size()) {
+	    if (dto.getCoursesOffering() != null && !dto.getCoursesOffering().isEmpty()) {
+	        List<Program> courses = programRepo.findAllById(dto.getCoursesOffering());
+	        if (courses.size() != dto.getCoursesOffering().size()) {
 	            throw new ResponseNotFoundException("One or more selected courses do not exist");
 	        }
 	    }
