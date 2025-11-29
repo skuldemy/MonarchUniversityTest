@@ -178,6 +178,8 @@ public class SuperAdminAccountController {
         return ResponseEntity.ok(departments);
     }
     
+
+    
     @PostMapping("/admin-management")
     public ResponseEntity<LecturerResponseDto> createLecturer(@RequestBody @Valid LecturerRequestDto dto) {
         LecturerResponseDto response = managementService.createNewUser(dto);
@@ -202,5 +204,10 @@ public class SuperAdminAccountController {
         return ResponseEntity.ok("Lecturer deleted successfully");
     }
     
-    
+//  new
+  @GetMapping("/department-management/{programId}/programs")
+  public ResponseEntity<List<ProgramDto>> getProgramsByDepartment(@PathVariable Long programId){
+  	List<ProgramDto> programs = managementService.findPrograms(programId);
+  	return ResponseEntity.ok(programs);
+  }
 }

@@ -30,5 +30,13 @@ public class ProgramDto {
     @NotBlank(message = "Mode of study is required")
     private String modeOfStudy;
 
-    private String entryRequirements; 
+    private String entryRequirements;
+
+	public ProgramDto(Long id, @NotBlank(message = "Program name is required") String programName) {
+		super();
+		this.id = id;
+		this.programName = programName;
+	} 
+    
+    
 }
