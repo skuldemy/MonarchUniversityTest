@@ -95,16 +95,11 @@ public class SuperAdminService {
 	    Department department = null;
 	    List<Program> courseList = List.of();
 
-	    // -------------------------
-
-	    // 1️⃣ If facultyId provided → validate it
-	 // 1️⃣ If facultyId provided → validate it
 	    if (dto.getFacultyId() != null && dto.getFacultyId() > 0) {
 	        faculty = facultyRepo.findById(dto.getFacultyId())
 	                .orElseThrow(() -> new ResponseNotFoundException("No such faculty"));
 	    }
 
-	    // 2️⃣ If departmentId provided → validate it
 	    if (dto.getDepartmentId() != null && dto.getDepartmentId() > 0) {
 	        department = departmentRepo.findById(dto.getDepartmentId())
 	                .orElseThrow(() -> new ResponseNotFoundException("No such department"));
@@ -114,7 +109,6 @@ public class SuperAdminService {
 	        }
 	    }
 
-	    // 3️⃣ If courses provided → validate each one and check department consistency if dep is selected
 	    if (dto.getCourses() != null && !dto.getCourses().isEmpty()) {
 
 	        courseList = programRepo.findAllById(dto.getCourses());
@@ -123,7 +117,6 @@ public class SuperAdminService {
 	            throw new ResponseNotFoundException("One or more selected courses do not exist");
 	        }
 
-	        // If department is provided → ensure each course belongs to it
 	        if (department != null) {
 	            for (Program course : courseList) {
 	                if (!course.getDepartment().getId().equals(department.getId())) {
@@ -135,11 +128,9 @@ public class SuperAdminService {
 	        }
 	    }
 
-	    // Set courses (maybe empty)
 	    lecturerProfile.setCourses(courseList);
 	    lecturerRepo.save(lecturerProfile);
 
-	    // Response
 	    LecturerResponseDto response = new LecturerResponseDto();
 	    response.setFullName(lecturerProfile.getFullName());
 	    response.setEmailAddress(user.getUsername());
@@ -164,6 +155,7 @@ public class SuperAdminService {
 	    return lecturers.stream().map(lecturer -> {
 	        User user = lecturer.getUser();
 	        LecturerResponseDto dto = new LecturerResponseDto();
+	        dto.setId(lecturer.getId());
 	        dto.setFullName(lecturer.getFullName());
 	        dto.setEmailAddress(user.getUsername());
 	        dto.setOnBoard("offline");
@@ -186,7 +178,6 @@ public class SuperAdminService {
 
 	    User user = lecturer.getUser();
 
-	    // Update basic user info
 	    if (dto.getEmailAddress() != null && !dto.getEmailAddress().isBlank()) {
 	        user.setUsername(dto.getEmailAddress());
 	    }
@@ -195,7 +186,6 @@ public class SuperAdminService {
 	    }
 	    userRepo.save(user);
 
-	    // Update faculty/department
 	    if (dto.getFacultyId() != null && dto.getDepartmentId() != null) {
 	        Faculty faculty = facultyRepo.findById(dto.getFacultyId())
 	            .orElseThrow(() -> new ResponseNotFoundException("Faculty not found"));
@@ -205,10 +195,8 @@ public class SuperAdminService {
 	        if (!department.getFaculty().getId().equals(faculty.getId())) {
 	            throw new ResponseNotFoundException("Department does not belong to the selected faculty");
 	        }
-	        // Optionally: update department on lecturer profile if you store it
 	    }
 
-	    // Update role
 	    if (dto.getRoleId() != null) {
 	        Role role = roleRepo.findById(dto.getRoleId())
 	            .orElseThrow(() -> new ResponseNotFoundException("Role not found"));
@@ -218,30 +206,24 @@ public class SuperAdminService {
 	        lecturer.setRole(role);
 	    }
 
-	    // Update full name
 	    if (dto.getFullName() != null && !dto.getFullName().isBlank()) {
 	        lecturer.setFullName(dto.getFullName());
 	    }
 
-	    // Update courses
 	    if (dto.getCourses() != null && !dto.getCourses().isEmpty()) {
 	        List<Program> courses = programRepo.findAllById(dto.getCourses());
 	        if (courses.size() != dto.getCourses().size()) {
 	            throw new ResponseNotFoundException("One or more selected courses do not exist");
 	        }
-	        // Check department consistency
-	        // Optional: store courses somewhere
 	    }
 
 	    lecturerRepo.save(lecturer);
 
-	    // Return updated response
 	    LecturerResponseDto response = new LecturerResponseDto();
 	    response.setFullName(lecturer.getFullName());
 	    response.setEmailAddress(user.getUsername());
 	    response.setOnBoard("offline");
 	    response.setRoleName(lecturer.getRole().getName());
-	    // Optionally set departmentName and coursesOffering
 	    response.setStatus(user.isEnabled() ? "enabled" : "disabled");
 
 	    return response;
@@ -251,10 +233,8 @@ public class SuperAdminService {
 	    LecturerProfile lecturer = lecturerRepo.findById(lecturerId)
 	        .orElseThrow(() -> new ResponseNotFoundException("Lecturer not found"));
 
-	    // First delete associated user (optional)
 	    userRepo.delete(lecturer.getUser());
 
-	    // Then delete lecturer profile
 	    lecturerRepo.delete(lecturer);
 	}
 

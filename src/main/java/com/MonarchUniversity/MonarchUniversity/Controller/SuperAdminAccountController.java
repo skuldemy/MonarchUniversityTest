@@ -159,7 +159,6 @@ public class SuperAdminAccountController {
     	return ResponseEntity.ok(levelService.deleteLevel(id));
     }
     
-//  New apis
     
     @GetMapping("/roles-management")
     public ResponseEntity<?> getRolesExcludingStudent(){
@@ -204,10 +203,12 @@ public class SuperAdminAccountController {
         return ResponseEntity.ok("Lecturer deleted successfully");
     }
     
-//  new
+//  new apis
   @GetMapping("/department-management/{programId}/programs")
   public ResponseEntity<List<ProgramDto>> getProgramsByDepartment(@PathVariable Long programId){
   	List<ProgramDto> programs = managementService.findPrograms(programId);
   	return ResponseEntity.ok(programs);
   }
+  
+  
 }
