@@ -27,5 +27,5 @@ public class LecturerRequestDto {
 	private Long facultyId;
 	private Long departmentId;
 	private Long roleId;
-	private List<Long> courses = new ArrayList<>();
+	private List<Long> coursesOffering = new ArrayList<>();
 }
