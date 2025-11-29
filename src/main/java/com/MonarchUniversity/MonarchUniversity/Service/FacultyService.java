@@ -20,6 +20,10 @@ public class FacultyService {
 
     private final FacultyRepository facultyRepo;
 
+    public long numberOfFaculties() {
+    	return facultyRepo.count();
+    }
+    
     public FacultyDto createFaculty(FacultyDto dto) {
         Faculty faculty = new Faculty();
         faculty.setFacultyName(dto.getFacultyName());

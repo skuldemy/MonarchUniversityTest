@@ -23,6 +23,10 @@ public class ProgramService {
     private final ProgramRepository programRepo;
     private final DepartmentRepository departmentRepo;
 
+    public long numberOfPrograms() {
+    	return programRepo.count();
+    }
+    
     public ProgramDto createProgram(ProgramDto dto) {
         Department department = departmentRepo.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new ResponseNotFoundException("Department not found"));

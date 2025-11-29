@@ -28,6 +28,7 @@ import com.MonarchUniversity.MonarchUniversity.Service.LevelService;
 import com.MonarchUniversity.MonarchUniversity.Service.PortalManagementService;
 import com.MonarchUniversity.MonarchUniversity.Service.ProgramService;
 import com.MonarchUniversity.MonarchUniversity.Service.SuperAdminService;
+import com.MonarchUniversity.MonarchUniversity.Service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,6 +49,7 @@ public class SuperAdminAccountController {
 	private final LevelService levelService;
 	private final SuperAdminService managementService;
 	private final PortalManagementService portalManagementService;
+	private final UserService userService;
 	
     @Operation(summary = "1 - Faculty: Create a new faculty", description = "Creates a faculty with all required details")
     @ApiResponses({
@@ -209,7 +211,7 @@ public class SuperAdminAccountController {
         return ResponseEntity.ok("Lecturer deleted successfully");
     }
     
-//  new apis
+
   @GetMapping("/department-management/{programId}/programs")
   public ResponseEntity<List<ProgramDto>> getProgramsByDepartment(@PathVariable Long programId){
   	List<ProgramDto> programs = managementService.findPrograms(programId);
@@ -228,15 +230,11 @@ public class SuperAdminAccountController {
       return ResponseEntity.ok(portalManagementService.createPortalManagement(dto));
   }
 
-  
-  
-  // GET ALL
   @GetMapping("/portal-management")
   public ResponseEntity<List<PortalManagementResponseDto>> getAllPortals() {
       return ResponseEntity.ok(portalManagementService.getAllPortals());
   }
 
-  // UPDATE
   @PutMapping("/portal-management/{id}")
   public ResponseEntity<PortalManagementResponseDto> updatePortal(
           @PathVariable Long id,
@@ -245,15 +243,39 @@ public class SuperAdminAccountController {
       return ResponseEntity.ok(portalManagementService.updatePortal(id, dto));
   }
 
-  // DELETE
   @DeleteMapping("/portal-management/{id}")
   public ResponseEntity<String> deletePortal(@PathVariable Long id) {
       return ResponseEntity.ok(portalManagementService.deletePortal(id));
   }
 
-  // TOGGLE ENABLE / DISABLE
   @PatchMapping("/portal-management/{id}/toggle")
   public ResponseEntity<PortalManagementResponseDto> togglePortalStatus(@PathVariable Long id) {
       return ResponseEntity.ok(portalManagementService.togglePortalStatus(id));
+  }
+  
+//new apis
+  @GetMapping("/number-of-faculties")
+  public ResponseEntity<Long> getNumberOfFaculties(){
+	  return ResponseEntity.ok(facultyService.numberOfFaculties());
+  }
+  
+  @GetMapping("/number-of-departments")
+  public ResponseEntity<Long> getNumberOfDepartments(){
+	  return ResponseEntity.ok(departmentService.numberOfDepartments());
+  }
+  
+  @GetMapping("/number-of-programs")
+  public ResponseEntity<Long> numberOfPrograms(){
+	  return ResponseEntity.ok(programService.numberOfPrograms());
+  }
+  
+  @GetMapping("/number-of-admins")
+  public ResponseEntity<Long> numberofadmins(){
+	  return ResponseEntity.ok(userService.getNumberOfAdmins());
+  }
+  
+  @GetMapping("/number-of-Hods")
+  public ResponseEntity<Long> numberofHods(){
+	  return ResponseEntity.ok(userService.getNumberOfHods());
   }
 }

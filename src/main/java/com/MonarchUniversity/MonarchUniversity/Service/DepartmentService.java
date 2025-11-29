@@ -23,6 +23,11 @@ public class DepartmentService {
     private final DepartmentRepository departmentRepo;
     private final FacultyRepository facultyRepo;
 
+
+    public long numberOfDepartments() {
+    	return departmentRepo.count();
+    }
+    
     public DepartmentDto createDepartment(DepartmentDto dto) {
         if (dto.getDepartmentName() == null || dto.getDepartmentName().isBlank()) {
             throw new ResponseForbiddenException("Department name is required");

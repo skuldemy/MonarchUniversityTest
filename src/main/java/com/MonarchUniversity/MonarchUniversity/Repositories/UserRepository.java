@@ -8,4 +8,6 @@ import com.MonarchUniversity.MonarchUniversity.Entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long>{
 	Optional<User> findByUsername(String username);
+	long countByRoles_Name(String roleName);
+
 }
