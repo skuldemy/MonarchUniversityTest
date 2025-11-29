@@ -9,6 +9,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,7 +31,12 @@ public class PortalManagement {
 	private String semester;
 	private LocalDateTime openingDate;
 	private LocalDateTime closingDate;
-	@OneToMany(cascade = CascadeType.ALL)
+	@ManyToMany
+	@JoinTable(
+	        name = "portal_allowed_actions",
+	        joinColumns = @JoinColumn(name="portal_id"),
+	        inverseJoinColumns = @JoinColumn(name = "action_id")
+	)
 	private List<PortalAction> allowedActions = new ArrayList<>();
 	private boolean enabled;
 }

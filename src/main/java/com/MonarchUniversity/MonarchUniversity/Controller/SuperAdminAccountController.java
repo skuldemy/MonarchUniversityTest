@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,10 +18,14 @@ import com.MonarchUniversity.MonarchUniversity.Payload.FacultyDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.LecturerRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.LecturerResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.LevelDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.PortalActionDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.PortalManagementRequestDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.PortalManagementResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.ProgramDto;
 import com.MonarchUniversity.MonarchUniversity.Service.DepartmentService;
 import com.MonarchUniversity.MonarchUniversity.Service.FacultyService;
 import com.MonarchUniversity.MonarchUniversity.Service.LevelService;
+import com.MonarchUniversity.MonarchUniversity.Service.PortalManagementService;
 import com.MonarchUniversity.MonarchUniversity.Service.ProgramService;
 import com.MonarchUniversity.MonarchUniversity.Service.SuperAdminService;
 
@@ -42,6 +47,7 @@ public class SuperAdminAccountController {
 	private final ProgramService programService;
 	private final LevelService levelService;
 	private final SuperAdminService managementService;
+	private final PortalManagementService portalManagementService;
 	
     @Operation(summary = "1 - Faculty: Create a new faculty", description = "Creates a faculty with all required details")
     @ApiResponses({
@@ -210,5 +216,44 @@ public class SuperAdminAccountController {
   	return ResponseEntity.ok(programs);
   }
   
+  @GetMapping("/portal-actions")
+  public ResponseEntity<List<PortalActionDto>> getAllPortalActions(){
+	  return ResponseEntity.ok( portalManagementService.findAllPortalActions());
+  }
   
+  @PostMapping("/portal-management")
+  public ResponseEntity<PortalManagementResponseDto> createPortal(
+          @RequestBody @Valid PortalManagementRequestDto dto
+  ) {
+      return ResponseEntity.ok(portalManagementService.createPortalManagement(dto));
+  }
+
+  
+  
+  // GET ALL
+  @GetMapping("/portal-management")
+  public ResponseEntity<List<PortalManagementResponseDto>> getAllPortals() {
+      return ResponseEntity.ok(portalManagementService.getAllPortals());
+  }
+
+  // UPDATE
+  @PutMapping("/portal-management/{id}")
+  public ResponseEntity<PortalManagementResponseDto> updatePortal(
+          @PathVariable Long id,
+          @RequestBody @Valid PortalManagementRequestDto dto
+  ) {
+      return ResponseEntity.ok(portalManagementService.updatePortal(id, dto));
+  }
+
+  // DELETE
+  @DeleteMapping("/portal-management/{id}")
+  public ResponseEntity<String> deletePortal(@PathVariable Long id) {
+      return ResponseEntity.ok(portalManagementService.deletePortal(id));
+  }
+
+  // TOGGLE ENABLE / DISABLE
+  @PatchMapping("/portal-management/{id}/toggle")
+  public ResponseEntity<PortalManagementResponseDto> togglePortalStatus(@PathVariable Long id) {
+      return ResponseEntity.ok(portalManagementService.togglePortalStatus(id));
+  }
 }
