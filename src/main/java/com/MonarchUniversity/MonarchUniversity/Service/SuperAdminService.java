@@ -19,6 +19,7 @@ import com.MonarchUniversity.MonarchUniversity.Payload.DepartmentDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.FacultyDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.LecturerRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.LecturerResponseDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.ProgramDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.RoleDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.UserDto;
 import com.MonarchUniversity.MonarchUniversity.Repositories.DepartmentRepository;
@@ -51,6 +52,11 @@ public class SuperAdminService {
 				.map(d -> new DepartmentDto(d.getId(), d.getDepartmentName())).collect(Collectors.toList());
 	}
 	
+	public List<ProgramDto> findPrograms(Long id){
+		return programRepo.findByDepartmentId(id).stream()
+				.map(p-> new ProgramDto(p.getId(), p.getProgramName())).collect(Collectors.toList());
+	}
+	
 	public List<RoleDto> getAllRoles(){
 		List<Role> roles = roleRepo.findByNameNot("STUDENT");
 		return roles.stream().map(r -> new RoleDto(r.getId(), r.getName())).collect(Collectors.toList());
@@ -58,75 +64,99 @@ public class SuperAdminService {
 	
 	@Transactional
 	public LecturerResponseDto createNewUser(LecturerRequestDto dto) {
-		 userRepo.findByUsername(dto.getEmailAddress())
-		        .ifPresent(user -> {
-		            throw new ResponseNotFoundException("User already exists");
-		        });
-		User user = new User();
-		user.setUsername(dto.getEmailAddress());
-		user.setPassword(enconder.encode( dto.getPassword()));
-		
-		Role role = roleRepo.findById(dto.getRoleId()).orElseThrow(()-> new ResponseNotFoundException("No such role id"));
-		
-		  if (role.getName().equalsIgnoreCase("STUDENT")) {
-		        throw new ResponseNotFoundException(
-		            "Student accounts cannot be created from this panel. Only technical users can be created."
-		        );
-		    }
-		  
-		  user.getRoles().add(role);
-		
-		userRepo.save(user);
-		
-		Faculty faculty = facultyRepo.findById(dto.getFacultyId()).orElseThrow(()-> new ResponseNotFoundException("No such faculty"));
-		Department department = departmentRepo.findById(dto.getDepartmentId()).orElseThrow(()-> new ResponseNotFoundException("No such department available"));
-		
-		if(!department.getFaculty().getId().equals(faculty.getId())) {
-			 throw new ResponseNotFoundException("Department does not belong to the selected Faculty");
-		}
-		
-		
-		
-		List<Program> courseList = programRepo.findAllById(dto.getCourses());
-		
-		if(courseList.size() != dto.getCourses().size()) {
-			throw new ResponseNotFoundException("One or more selected courses do not exist");
-		}
-		
-		for(Program course : courseList) {
-			if(!course.getDepartment().getId().equals(department.getId())) {
-				throw new ResponseNotFoundException(
-		                "Course " + course.getProgramName() + " does not belong to this department"
-		            );
-			}
-		}
-		
-		LecturerProfile lecturerProfile = new LecturerProfile();
-		lecturerProfile.setUser(user);
-		lecturerProfile.setFullName(dto.getFullName());
-		lecturerProfile.setRole(role);
-		lecturerProfile.setCourses(courseList);
-		lecturerRepo.save(lecturerProfile);
-		
-		LecturerResponseDto response = new LecturerResponseDto();
+
+	    userRepo.findByUsername(dto.getEmailAddress())
+	        .ifPresent(user -> {
+	            throw new ResponseNotFoundException("User already exists");
+	        });
+
+	    User user = new User();
+	    user.setUsername(dto.getEmailAddress());
+	    user.setPassword(enconder.encode(dto.getPassword()));
+
+	    Role role = roleRepo.findById(dto.getRoleId())
+	            .orElseThrow(() -> new ResponseNotFoundException("No such role id"));
+
+	    // Block student creation
+	    if (role.getName().equalsIgnoreCase("STUDENT")) {
+	        throw new ResponseNotFoundException("Student accounts cannot be created from this panel");
+	    }
+
+	    user.getRoles().add(role);
+	    userRepo.save(user);
+
+	    // Create profile
+	    LecturerProfile lecturerProfile = new LecturerProfile();
+	    lecturerProfile.setUser(user);
+	    lecturerProfile.setFullName(dto.getFullName());
+	    lecturerProfile.setRole(role);
+
+	    Faculty faculty = null;
+	    Department department = null;
+	    List<Program> courseList = List.of();
+
+	    // -------------------------
+
+	    // 1️⃣ If facultyId provided → validate it
+	    if (dto.getFacultyId() != null) {
+	        faculty = facultyRepo.findById(dto.getFacultyId())
+	                .orElseThrow(() -> new ResponseNotFoundException("No such faculty"));
+	    }
+
+	    // 2️⃣ If departmentId provided → validate it and check if it belongs to faculty (if both exist)
+	    if (dto.getDepartmentId() != null) {
+	        department = departmentRepo.findById(dto.getDepartmentId())
+	                .orElseThrow(() -> new ResponseNotFoundException("No such department"));
+
+	        if (faculty != null && !department.getFaculty().getId().equals(faculty.getId())) {
+	            throw new ResponseNotFoundException("Department does not belong to selected faculty");
+	        }
+	    }
+
+	    // 3️⃣ If courses provided → validate each one and check department consistency if dep is selected
+	    if (dto.getCourses() != null && !dto.getCourses().isEmpty()) {
+
+	        courseList = programRepo.findAllById(dto.getCourses());
+
+	        if (courseList.size() != dto.getCourses().size()) {
+	            throw new ResponseNotFoundException("One or more selected courses do not exist");
+	        }
+
+	        // If department is provided → ensure each course belongs to it
+	        if (department != null) {
+	            for (Program course : courseList) {
+	                if (!course.getDepartment().getId().equals(department.getId())) {
+	                    throw new ResponseNotFoundException(
+	                            "Course " + course.getProgramName() + " does not belong to this department"
+	                    );
+	                }
+	            }
+	        }
+	    }
+
+	    // Set courses (maybe empty)
+	    lecturerProfile.setCourses(courseList);
+	    lecturerRepo.save(lecturerProfile);
+
+	    // Response
+	    LecturerResponseDto response = new LecturerResponseDto();
 	    response.setFullName(lecturerProfile.getFullName());
 	    response.setEmailAddress(user.getUsername());
-	    response.setOnBoard("offline"); // or "online" depending on your logic
+	    response.setOnBoard("offline");
 	    response.setRoleName(role.getName());
-	    response.setDepartmentName(department.getDepartmentName());
+	    response.setStatus(user.isEnabled() ? "enabled" : "disabled");
+
+	    response.setDepartmentName(
+	            department != null ? department.getDepartmentName() : "N/A"
+	    );
+
 	    response.setCoursesOffering(
 	            courseList.stream().map(Program::getProgramName).toList()
 	    );
-	    
-	    if(user.isEnabled()) {
-	    response.setStatus("enabled");
-	    }
-	    else {
-	    	response.setStatus("disabled");
-	    }
+
 	    return response;
-		
 	}
+
 	
 	public List<LecturerResponseDto> getAllLecturers() {
 	    List<LecturerProfile> lecturers = lecturerRepo.findAll();
