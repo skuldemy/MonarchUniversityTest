@@ -98,13 +98,14 @@ public class SuperAdminService {
 	    // -------------------------
 
 	    // 1️⃣ If facultyId provided → validate it
-	    if (dto.getFacultyId() != null) {
+	 // 1️⃣ If facultyId provided → validate it
+	    if (dto.getFacultyId() != null && dto.getFacultyId() > 0) {
 	        faculty = facultyRepo.findById(dto.getFacultyId())
 	                .orElseThrow(() -> new ResponseNotFoundException("No such faculty"));
 	    }
 
-	    // 2️⃣ If departmentId provided → validate it and check if it belongs to faculty (if both exist)
-	    if (dto.getDepartmentId() != null) {
+	    // 2️⃣ If departmentId provided → validate it
+	    if (dto.getDepartmentId() != null && dto.getDepartmentId() > 0) {
 	        department = departmentRepo.findById(dto.getDepartmentId())
 	                .orElseThrow(() -> new ResponseNotFoundException("No such department"));
 
