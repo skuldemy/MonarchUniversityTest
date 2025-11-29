@@ -229,6 +229,7 @@ public class SuperAdminService {
 	    return response;
 	}
 
+	@Transactional
 	public void deleteLecturer(Long lecturerId) {
 	    LecturerProfile lecturer = lecturerRepo.findById(lecturerId)
 	        .orElseThrow(() -> new ResponseNotFoundException("Lecturer not found"));
