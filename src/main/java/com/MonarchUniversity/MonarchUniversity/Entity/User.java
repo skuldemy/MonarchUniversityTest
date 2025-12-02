@@ -26,6 +26,9 @@ public class User implements UserDetails {
 	private String username;
 	private String password;
 	private String position;
+	private boolean enabled = true;
+
+	
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<Role> roles = new HashSet<>();
 	   @Override
@@ -67,4 +70,5 @@ public class User implements UserDetails {
 	        return true;
 	    }
 
+	 
 }
