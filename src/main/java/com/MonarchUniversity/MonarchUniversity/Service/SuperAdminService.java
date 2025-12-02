@@ -228,6 +228,30 @@ public class SuperAdminService {
 
 	    return response;
 	}
+	
+	@Transactional
+	public LecturerResponseDto toggleUserStatus(Long id) {
+		User user = userRepo.findById(id).orElseThrow(()-> new ResponseNotFoundException("No such user exists"));
+		LecturerProfile lecturer = lecturerRepo.findByUser(user).orElseThrow(()-> new ResponseNotFoundException("No such user"));
+		
+		 user.setEnabled(!user.isEnabled());
+
+		    userRepo.save(user);
+		  LecturerResponseDto dto = new LecturerResponseDto();
+	        dto.setId(lecturer.getId());
+	        dto.setFullName(lecturer.getFullName());
+	        dto.setEmailAddress(user.getUsername());
+	        dto.setOnBoard("offline");
+	        dto.setRoleName(lecturer.getRole().getName());
+	        dto.setCoursesOffering(
+	                lecturer.getCourses()
+	                        .stream()
+	                        .map(Program::getProgramName)
+	                        .toList()
+	            );
+	        dto.setStatus(user.isEnabled() ? "enabled" : "disabled");
+	      return dto;  
+	}
 
 	@Transactional
 	public void deleteLecturer(Long lecturerId) {

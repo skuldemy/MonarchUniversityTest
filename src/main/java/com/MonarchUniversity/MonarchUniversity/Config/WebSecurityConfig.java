@@ -59,6 +59,7 @@ public class WebSecurityConfig {
             	            ).permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/super-admin/**").hasAuthority("ROLE_SUPER_ADMIN")
+                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter(), org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
