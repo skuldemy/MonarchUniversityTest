@@ -2,6 +2,7 @@ package com.MonarchUniversity.MonarchUniversity.Controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,6 +32,11 @@ public class AdminController {
 	@PutMapping("/create-student-profile/{id}")
 	public ResponseEntity<?> updateStudentsViaId(@PathVariable Long id, @RequestBody StudentProfileRequestDto dto){
 		return ResponseEntity.ok(studentProfileService.updateStudent(id, dto));
+	}
+//	new
+	@PatchMapping("/create-student-profile/{id}/toggle")
+	public ResponseEntity<?> toggleStudentProfile(@PathVariable Long id){
+		return ResponseEntity.ok(studentProfileService.toggleStudentStatus(id));
 	}
 }
 

@@ -286,4 +286,37 @@ public class StudentProfileService {
         return matric;
     }
 
+    @Transactional
+public StudentProfileResponseDto toggleStudentStatus(Long id) {
+    	StudentProfile student = studentProfileRepo.findById(id).orElseThrow(()-> 
+    	new ResponseNotFoundException("No such student"));
+    	User user = student.getUser();
+    	
+    	user.setEnabled(!user.isEnabled());
+    	
+    	  StudentProfileResponseDto response = new StudentProfileResponseDto();
+          response.setId(student.getId());
+          response.setFirstName(student.getFirstName());
+          response.setMiddleName(student.getMiddleName());
+          response.setLastName(student.getLastName());
+          response.setGender(student.getGender());
+          response.setDateOfBirth(student.getDateOfBirth());
+          response.setNationality(student.getNationality());
+          response.setStateOfOrigin(student.getStateOfOrigin());
+          response.setLga(student.getLga());
+          response.setProgramName(student.getProgram().getProgramName());
+          response.setFacultyName(student.getFaculty().getFacultyName());
+          response.setDepartmentName(student.getDepartment().getDepartmentName());
+          response.setLevelName(student.getLevel().getLevelNumber());
+          response.setAdmissionYear(student.getAdmissionYear());
+          response.setMatricNumber(student.getMatricNumber());
+          response.setModeOfEntry(student.getModeOfEntry());
+          response.setEmailAddress(student.getEmailAddress());
+          response.setPhoneNumber(student.getPhoneNumber());
+          response.setHomeAddress(student.getHomeAddress());
+
+          return response;
+
+    	
+}
 }
