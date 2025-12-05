@@ -19,12 +19,14 @@ import com.MonarchUniversity.MonarchUniversity.Payload.DepartmentDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.FacultyDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.LecturerRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.LecturerResponseDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.LevelDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.ProgramDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.RoleDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.UserDto;
 import com.MonarchUniversity.MonarchUniversity.Repositories.DepartmentRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.FacultyRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.LecturerProfileRepo;
+import com.MonarchUniversity.MonarchUniversity.Repositories.LevelRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.ProgramRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.RoleRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.UserRepository;
@@ -42,6 +44,7 @@ public class SuperAdminService {
 	private final RoleRepository roleRepo;
 	private final ProgramRepository programRepo;
 	private final PasswordEncoder enconder;
+	private final LevelRepository levelRepo;
 	
 	public List<FacultyDto> findAllFaculties(){
 		return facultyRepo.findAll().stream().map(f -> new FacultyDto(f.getId(), f.getFacultyName())).collect(Collectors.toList());
@@ -55,6 +58,11 @@ public class SuperAdminService {
 	public List<ProgramDto> findPrograms(Long id){
 		return programRepo.findByDepartmentId(id).stream()
 				.map(p-> new ProgramDto(p.getId(), p.getProgramName())).collect(Collectors.toList());
+	}
+	public List<LevelDto> findLevelsViaProgram(Long id){
+		return levelRepo.findByProgramId(id).stream().map(l -> new LevelDto(l.getId(), l.getProgram().getId(), l.getProgram().getProgramName(),
+				l.getLevelNumber(), l.getSemester(), l.getCapacity()
+				)).collect(Collectors.toList());
 	}
 	
 	public List<RoleDto> getAllRoles(){
