@@ -47,7 +47,7 @@ public class AdminController {
 	    	return ResponseEntity.ok(programs);
 	    }
 
-	    @GetMapping("/levels-management/{programId}/levels")
+	    @GetMapping("/levels-management/{programId}/level")
 	    public ResponseEntity<?> getAllLevelsViaProgram(@PathVariable Long programId){
 	    	return ResponseEntity.ok(supermanagementService.findLevelsViaProgram(programId));
 	    }
