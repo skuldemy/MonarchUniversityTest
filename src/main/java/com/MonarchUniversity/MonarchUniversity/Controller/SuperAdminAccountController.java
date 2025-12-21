@@ -275,6 +275,12 @@ public class SuperAdminAccountController {
   }
 
 //  new apis
+
+    @GetMapping("/get-all-users")
+    public ResponseEntity<?> getAllUsers(){
+        return ResponseEntity.ok(impersonateService.getAllUsers());
+    }
+
   @PostMapping("/impersonate-user/{userId}")
     public ResponseEntity<?> impersonateUser(@PathVariable Long userId){
         return ResponseEntity.ok(impersonateService.impersonateUser(userId));

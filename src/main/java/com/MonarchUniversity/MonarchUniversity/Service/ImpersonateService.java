@@ -5,6 +5,7 @@ import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundExcepti
 import com.MonarchUniversity.MonarchUniversity.Jwt.JwtService;
 import com.MonarchUniversity.MonarchUniversity.Payload.AuthenticationToken;
 import com.MonarchUniversity.MonarchUniversity.Payload.LoginResponse;
+import com.MonarchUniversity.MonarchUniversity.Payload.UserDto;
 import com.MonarchUniversity.MonarchUniversity.Repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,7 +13,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -20,6 +23,7 @@ public class ImpersonateService {
 
     private final UserRepository userRepo;
     private final JwtService jwtService;
+
 
     private User getLoggedInUser() {
         String username = SecurityContextHolder
@@ -29,6 +33,10 @@ public class ImpersonateService {
 
         return userRepo.findByUsername(username)
                 .orElseThrow(() -> new ResponseNotFoundException("Logged-in user not found"));
+    }
+
+    public List<UserDto> getAllUsers(){
+       return userRepo.findAllExceptStudents().stream().map(u-> new UserDto(u.getId(), u.getUsername(), u.getRoles().stream().map(r-> r.getName()).findFirst().orElse("UNKNOWN"))).toList();
     }
 
     public LoginResponse impersonateUser(Long userId) {
