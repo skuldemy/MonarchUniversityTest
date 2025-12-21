@@ -2,6 +2,7 @@ package com.MonarchUniversity.MonarchUniversity.Controller;
 
 import java.util.List;
 
+import com.MonarchUniversity.MonarchUniversity.Service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,13 +23,6 @@ import com.MonarchUniversity.MonarchUniversity.Payload.PortalActionDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.PortalManagementRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.PortalManagementResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.ProgramDto;
-import com.MonarchUniversity.MonarchUniversity.Service.DepartmentService;
-import com.MonarchUniversity.MonarchUniversity.Service.FacultyService;
-import com.MonarchUniversity.MonarchUniversity.Service.LevelService;
-import com.MonarchUniversity.MonarchUniversity.Service.PortalManagementService;
-import com.MonarchUniversity.MonarchUniversity.Service.ProgramService;
-import com.MonarchUniversity.MonarchUniversity.Service.SuperAdminService;
-import com.MonarchUniversity.MonarchUniversity.Service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -50,6 +44,7 @@ public class SuperAdminAccountController {
 	private final SuperAdminService managementService;
 	private final PortalManagementService portalManagementService;
 	private final UserService userService;
+    private final ImpersonateService impersonateService;
 	
     @Operation(summary = "1 - Faculty: Create a new faculty", description = "Creates a faculty with all required details")
     @ApiResponses({
@@ -278,4 +273,12 @@ public class SuperAdminAccountController {
   public ResponseEntity<Long> numberofHods(){
 	  return ResponseEntity.ok(userService.getNumberOfHods());
   }
+
+//  new apis
+  @PostMapping("/impersonate-user/{userId}")
+    public ResponseEntity<?> impersonateUser(@PathVariable Long userId){
+        return ResponseEntity.ok(impersonateService.impersonateUser(userId));
+  }
+
+
 }
