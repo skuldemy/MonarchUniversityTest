@@ -3,7 +3,7 @@ app:
   container_name: monarch_app
   restart: always
   environment:
-    SPRING_DATASOURCE_URL: jdbc:mysql://mysql.railway.internal:3306/railway?useSSL=false&allowPublicKeyRetrieval=true
+    SPRING_DATASOURCE_URL: jdbc:mysql://interchange.proxy.rlwy.net:31154/railway?useSSL=false&allowPublicKeyRetrieval=true
     SPRING_DATASOURCE_USERNAME: root
     SPRING_DATASOURCE_PASSWORD: YZDxiXfIhOxZtgqGMCofDyZvYnoZHypL
     SPRING_JPA_HIBERNATE_DDL_AUTO: update
