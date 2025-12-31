@@ -36,12 +36,12 @@ public class JwtService {
         
     }
     
-    public String generateImpersonationToken(UserDetails userDetails) {  
-    	Map<String, Object> claims = new HashMap<>();
-    	claims.put("isImpersonation", true);
-    	return generateToken(claims, userDetails);
-        
-    }
+//    public String generateImpersonationToken(UserDetails userDetails) {
+//    	Map<String, Object> claims = new HashMap<>();
+//    	claims.put("isImpersonation", true);
+//    	return generateToken(claims, userDetails);
+//
+//    }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return buildToken(extraClaims, userDetails, jwtExpiration);
@@ -88,7 +88,17 @@ public class JwtService {
                 
     }
 
-    
+    public String generateImpersonationToken(
+            UserDetails targetUser,
+            UserDetails superAdmin
+    ) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("impersonated", true);
+        claims.put("impersonatedBy", superAdmin.getUsername());
+
+        return generateToken(claims, targetUser);
+    }
+
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);

@@ -2,6 +2,9 @@ package com.MonarchUniversity.MonarchUniversity.Controller;
 
 import java.util.List;
 
+import com.MonarchUniversity.MonarchUniversity.Payload.*;
+import com.MonarchUniversity.MonarchUniversity.Service.SessionAndSemesterService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,11 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.MonarchUniversity.MonarchUniversity.Payload.DepartmentDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.FacultyDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.LecturerResponseDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.ProgramDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.StudentProfileRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Service.StudentProfileService;
 import com.MonarchUniversity.MonarchUniversity.Service.SuperAdminService;
 
@@ -28,8 +26,10 @@ import lombok.AllArgsConstructor;
 public class AdminController {
 	private final StudentProfileService studentProfileService;
 	private final SuperAdminService supermanagementService;
-	
-	 @GetMapping("/faculties-management")
+    private final SessionAndSemesterService sessionAndSemesterService;
+
+
+    @GetMapping("/faculties-management")
 	    public ResponseEntity<List<FacultyDto>> getAllFacultiesViaManagement() {
 	        List<FacultyDto> faculties = supermanagementService.findAllFaculties();
 	        return ResponseEntity.ok(faculties);
@@ -56,6 +56,7 @@ public class AdminController {
 	public ResponseEntity<?> createStudentProfile(@RequestBody StudentProfileRequestDto dto){
 		return ResponseEntity.ok(studentProfileService.createStudentProfile(dto));
 	}
+
 	@GetMapping("/create-student-profile")
 	public ResponseEntity<?> getStudents(){
 		return ResponseEntity.ok(studentProfileService.getAllStudents());
@@ -77,6 +78,28 @@ public class AdminController {
         List<LecturerResponseDto> lecturers = supermanagementService.getAllLecturers();
         return ResponseEntity.ok(lecturers);
     }
-	
+    // newest/untested
+
+    @PostMapping("/create-session")
+    public ResponseEntity<?> createSession(@Valid @RequestBody SessionRequestDto dto){
+        return ResponseEntity.ok(sessionAndSemesterService.createSession(dto));
+    }
+
+    @GetMapping("/create-session")
+    public ResponseEntity<?> getAllSessions(){
+        return ResponseEntity.ok(sessionAndSemesterService.getAllSession());
+    }
+
+
+    @PostMapping("/create-semester")
+    public ResponseEntity<?> createSemester(@Valid @RequestBody SemesterRequestDto dto){
+         return ResponseEntity.ok(sessionAndSemesterService.createSemester(dto));
+    }
+
+    @GetMapping("/create-semester")
+    public ResponseEntity<?> getSemesters(){
+        return ResponseEntity.ok(sessionAndSemesterService.getAllSemester());
+    }
+
 }
 
