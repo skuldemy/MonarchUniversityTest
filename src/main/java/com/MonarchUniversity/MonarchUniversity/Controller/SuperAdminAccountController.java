@@ -2,6 +2,7 @@ package com.MonarchUniversity.MonarchUniversity.Controller;
 
 import java.util.List;
 
+import com.MonarchUniversity.MonarchUniversity.Payload.*;
 import com.MonarchUniversity.MonarchUniversity.Service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,16 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.MonarchUniversity.MonarchUniversity.Payload.DepartmentDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.FacultyDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.LecturerRequestDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.LecturerResponseDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.LevelDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.PortalActionDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.PortalManagementRequestDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.PortalManagementResponseDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.ProgramDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -45,6 +36,7 @@ public class SuperAdminAccountController {
 	private final PortalManagementService portalManagementService;
 	private final UserService userService;
     private final ImpersonateService impersonateService;
+    private final SessionAndSemesterService sessionAndSemesterService;
 	
     @Operation(summary = "1 - Faculty: Create a new faculty", description = "Creates a faculty with all required details")
     @ApiResponses({
@@ -285,6 +277,5 @@ public class SuperAdminAccountController {
     public ResponseEntity<?> impersonateUser(@PathVariable Long userId){
         return ResponseEntity.ok(impersonateService.impersonateUser(userId));
   }
-
 
 }

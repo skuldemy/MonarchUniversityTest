@@ -19,4 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long>{
     WHERE r.name NOT IN ('STUDENT', 'SUPER_ADMIN')
 """)
     List<User> findAllExceptStudents();
+
+    boolean existsByUsername(String username);
+
+
 }

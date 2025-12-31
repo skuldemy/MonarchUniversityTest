@@ -79,11 +79,10 @@ public class StudentProfileService {
                     throw new ResponseNotFoundException("A student with this matric number already exists");
                 });
 
-        // Check if email is unique via StudentProfile
-        if (studentProfileRepo.existsByEmailAddress(dto.getEmailAddress())) {
-            throw new ResponseNotFoundException("A student with this email already exists");
+
+        if (userRepo.existsByUsername(dto.getEmailAddress())) {
+            throw new ResponseNotFoundException("This email already exists");
         }
-        // Create StudentProfile entity
         StudentProfile student = new StudentProfile();
         student.setFirstName(dto.getFirstName());
         student.setMiddleName(dto.getMiddleName());

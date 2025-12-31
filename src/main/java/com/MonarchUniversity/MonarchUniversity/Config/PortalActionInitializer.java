@@ -42,5 +42,3 @@ public class PortalActionInitializer implements CommandLineRunner {
         }
     }
 }
-
-// how do I return to minjibir-main branch
