@@ -8,15 +8,13 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class FeeScheduleReqDto {
-    private Long levelId;
-    private Long programId;
-    private List<FeeAmountDto> feeAmountDtoList;
-
-
+@NoArgsConstructor
+public class FeeScheduleResDto {
+    private Long feeScheduleId;
+    private String levelName;
+    private String programName;
+    private BigDecimal totalAmount;
+    private List<FeeItemResDto> fees;
 }
-
-
 

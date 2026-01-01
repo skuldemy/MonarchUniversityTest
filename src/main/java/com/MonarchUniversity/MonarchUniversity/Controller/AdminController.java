@@ -3,9 +3,11 @@ package com.MonarchUniversity.MonarchUniversity.Controller;
 import java.util.List;
 
 import com.MonarchUniversity.MonarchUniversity.Payload.*;
+import com.MonarchUniversity.MonarchUniversity.Service.FeeScheduleService;
 import com.MonarchUniversity.MonarchUniversity.Service.SessionAndSemesterService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +29,7 @@ public class AdminController {
 	private final StudentProfileService studentProfileService;
 	private final SuperAdminService supermanagementService;
     private final SessionAndSemesterService sessionAndSemesterService;
+    private final FeeScheduleService feeScheduleService;
 
 
     @GetMapping("/faculties-management")
@@ -78,7 +81,7 @@ public class AdminController {
         List<LecturerResponseDto> lecturers = supermanagementService.getAllLecturers();
         return ResponseEntity.ok(lecturers);
     }
-    // newest/untested
+
 
     @PostMapping("/create-session")
     public ResponseEntity<?> createSession(@Valid @RequestBody SessionRequestDto dto){
@@ -101,5 +104,21 @@ public class AdminController {
         return ResponseEntity.ok(sessionAndSemesterService.getAllSemester());
     }
 
+    // new
+
+    @PostMapping("/create-fee-schedule")
+    public ResponseEntity<?> createFeeSchedule(@RequestBody FeeScheduleReqDto dto){
+        return ResponseEntity.ok(feeScheduleService.createFeeSchedule(dto));
+    }
+
+    @GetMapping("/create-fee-schedule")
+    public ResponseEntity<?> getFeeSchedule(){
+        return ResponseEntity.ok(feeScheduleService.getAllFeeSchedules());
+    }
+
+    @PutMapping("/create-fee-schedule/{itemId}")
+    public ResponseEntity<?> updateFeeSchedule(@PathVariable Long itemId, @RequestBody FeeScheduleReqDto dto){
+        return ResponseEntity.ok(feeScheduleService.updateFeeSchedule(itemId, dto));
+    }
 }
 

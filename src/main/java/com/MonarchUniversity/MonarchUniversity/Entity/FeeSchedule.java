@@ -20,7 +20,7 @@ public class FeeSchedule {
     private Level level;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id", nullable = false)
-    private Department department;
+    @JoinColumn(name = "program_id", nullable = false)
+    private Program program;
 }
 
