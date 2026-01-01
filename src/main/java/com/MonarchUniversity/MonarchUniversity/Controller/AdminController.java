@@ -106,6 +106,16 @@ public class AdminController {
 
     // new
 
+    @GetMapping("/fee-Type")
+    public ResponseEntity<?> getFeeTypes(){
+        return ResponseEntity.ok(feeScheduleService.getAllFeeTypes());
+    }
+
+    @PostMapping("/fee-Type")
+    public ResponseEntity<?> createFeeType(@RequestBody FeeReqTypeDto dto){
+        return ResponseEntity.ok(feeScheduleService.createFeeType(dto));
+    }
+
     @PostMapping("/create-fee-schedule")
     public ResponseEntity<?> createFeeSchedule(@RequestBody FeeScheduleReqDto dto){
         return ResponseEntity.ok(feeScheduleService.createFeeSchedule(dto));
