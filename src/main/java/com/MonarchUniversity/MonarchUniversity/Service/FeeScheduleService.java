@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -27,7 +28,27 @@ public class FeeScheduleService {
     }
 
 
+    public FeeResTypeDto createFeeType(FeeReqTypeDto dto){
+        FeeType feeType = new FeeType();
+        String feeName = dto.getFeeName().trim();
+        if(feeTypeRepo.existsByName(feeName)){
+            throw new ResponseNotFoundException("Such a fee name already exists");
+        }
+        feeType.setName(feeName);
+        FeeType savedFeeType = feeTypeRepo.save(feeType);
+
+
+        return new FeeResTypeDto(savedFeeType.getId(), savedFeeType.getName());
+    }
+
+    public List<FeeResTypeDto> getAllFeeTypes(){
+        return feeTypeRepo.findAll().stream().map(d-> new FeeResTypeDto(d.getId(), d.getName()))
+                .collect(Collectors.toList());
+    }
+
+
     //    Create
+
     public FeeScheduleResDto createFeeSchedule(FeeScheduleReqDto dto) {
 
         Program program = programRepository.findById(dto.getProgramId())
@@ -38,6 +59,10 @@ public class FeeScheduleService {
 
         if (!level.getProgram().getId().equals(program.getId())) {
             throw new ResponseNotFoundException("This level is not associated with this program");
+        }
+
+        if(feeScheduleRepo.existsByLevelAndProgram(level,program)){
+            throw new ResponseNotFoundException("Such fee type for level and program has been created, consider editing");
         }
 
         FeeSchedule feeSchedule = new FeeSchedule();
