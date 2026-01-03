@@ -43,6 +43,9 @@ public class DepartmentService {
                 .orElseThrow(() -> new ResponseNotFoundException("Faculty not found"));
 
         Department dept = new Department();
+        if(departmentRepo.existsByDepartmentNameIgnoreCase(dto.getDepartmentName())){
+            throw new ResponseNotFoundException("Department name already exists");
+        }
         dept.setDepartmentName(dto.getDepartmentName());
         dept.setDepartmentCode(dto.getDepartmentCode());
         dept.setFaculty(faculty);
@@ -81,6 +84,9 @@ public class DepartmentService {
         Faculty faculty = facultyRepo.findById(dto.getFacultyId())
                 .orElseThrow(() -> new ResponseNotFoundException("Faculty not found"));
 
+        if(departmentRepo.existsByDepartmentNameIgnoreCase(dto.getDepartmentName())){
+            throw new ResponseNotFoundException("Department name already exists");
+        }
         dept.setDepartmentName(dto.getDepartmentName());
         dept.setDepartmentCode(dto.getDepartmentCode());
         dept.setFaculty(faculty);

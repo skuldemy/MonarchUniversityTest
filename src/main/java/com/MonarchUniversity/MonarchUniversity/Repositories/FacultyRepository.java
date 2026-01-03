@@ -4,6 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.MonarchUniversity.MonarchUniversity.Entity.Faculty;
 
-public interface FacultyRepository extends JpaRepository<Faculty, Long> {
+import java.util.Optional;
 
+public interface FacultyRepository extends JpaRepository<Faculty, Long> {
+    boolean existsByFacultyNameIgnoreCase(String facultyName);
+
+    Optional<Faculty> findByFacultyName(String facultyName);
 }

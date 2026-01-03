@@ -1,26 +1,23 @@
 package com.MonarchUniversity.MonarchUniversity.Controller;
 
 import java.util.List;
+import java.util.Map;
 
 import com.MonarchUniversity.MonarchUniversity.Payload.*;
 import com.MonarchUniversity.MonarchUniversity.Service.FeeScheduleService;
 import com.MonarchUniversity.MonarchUniversity.Service.SessionAndSemesterService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
 import com.MonarchUniversity.MonarchUniversity.Service.StudentProfileService;
 import com.MonarchUniversity.MonarchUniversity.Service.SuperAdminService;
 
 import lombok.AllArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @AllArgsConstructor
@@ -71,11 +68,7 @@ public class AdminController {
 //	new
 	
 //	Still need to work on this
-	@PatchMapping("/create-student-profile/{id}/toggle")
-	public ResponseEntity<?> toggleStudentProfile(@PathVariable Long id){
-		return ResponseEntity.ok(studentProfileService.toggleStudentStatus(id));
-	}
-	
+
 	@GetMapping("/admin-management")
     public ResponseEntity<List<LecturerResponseDto>> getAllLecturers() {
         List<LecturerResponseDto> lecturers = supermanagementService.getAllLecturers();
@@ -130,5 +123,18 @@ public class AdminController {
     public ResponseEntity<?> updateFeeSchedule(@PathVariable Long itemId, @RequestBody FeeScheduleReqDto dto){
         return ResponseEntity.ok(feeScheduleService.updateFeeSchedule(itemId, dto));
     }
+//    new
+    @PostMapping("/upload-student-details")
+    @Transactional
+    public ResponseEntity<Map<String, Object>> uploadStudentsExcel(@RequestParam("file") MultipartFile file) throws Exception {
+        Map<String, Object> result = studentProfileService.uploadStudentsExcel(file);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @PatchMapping("/create-student-profile/{id}/toggle")
+    public ResponseEntity<?> toggleStudentProfile(@PathVariable Long id){
+        return ResponseEntity.ok(studentProfileService.toggleStudentStatus(id));
+    }
+
 }
 

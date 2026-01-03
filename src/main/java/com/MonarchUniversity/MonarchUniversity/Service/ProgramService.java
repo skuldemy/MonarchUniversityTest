@@ -31,6 +31,10 @@ public class ProgramService {
         Department department = departmentRepo.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new ResponseNotFoundException("Department not found"));
 
+       if(programRepo.existsByProgramNameIgnoreCase(dto.getProgramName())) {
+            throw new ResponseNotFoundException("Program name already exists");
+        }
+
         Program program = new Program();
         program.setProgramName(dto.getProgramName());
         program.setProgramCode(dto.getProgramCode());
@@ -61,6 +65,10 @@ public class ProgramService {
 
         Department department = departmentRepo.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new ResponseNotFoundException("Department not found"));
+
+        if(programRepo.existsByProgramNameIgnoreCase(dto.getProgramName())) {
+            throw new ResponseNotFoundException("Program name already exists");
+        }
 
         program.setProgramName(dto.getProgramName());
         program.setProgramCode(dto.getProgramCode());

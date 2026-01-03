@@ -26,6 +26,11 @@ public class FacultyService {
     
     public FacultyDto createFaculty(FacultyDto dto) {
         Faculty faculty = new Faculty();
+
+        if (facultyRepo.existsByFacultyNameIgnoreCase(dto.getFacultyName())){
+            throw new ResponseNotFoundException("Faculty name exists already");
+        }
+
         faculty.setFacultyName(dto.getFacultyName());
         faculty.setFacultyCode(dto.getFacultyCode());
         faculty.setFacultyDescription(dto.getFacultyDescription());
@@ -60,6 +65,9 @@ public class FacultyService {
             throw new ResponseForbiddenException("Faculty code is required");
         }
 
+        if (facultyRepo.existsByFacultyNameIgnoreCase(dto.getFacultyName())){
+            throw new ResponseNotFoundException("Faculty name exists already");
+        }
         faculty.setFacultyName(dto.getFacultyName());
         faculty.setFacultyCode(dto.getFacultyCode());
         faculty.setFacultyDescription(dto.getFacultyDescription());

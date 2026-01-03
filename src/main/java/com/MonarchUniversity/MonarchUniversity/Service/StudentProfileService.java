@@ -1,9 +1,14 @@
 package com.MonarchUniversity.MonarchUniversity.Service;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
+
 
 import com.MonarchUniversity.MonarchUniversity.Entity.Department;
 import com.MonarchUniversity.MonarchUniversity.Entity.Faculty;
@@ -25,6 +30,7 @@ import com.MonarchUniversity.MonarchUniversity.Repositories.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @AllArgsConstructor
@@ -38,7 +44,155 @@ public class StudentProfileService {
     private final UserRepository userRepo;
     private final RoleRepository roleRepo;
     private final PasswordEncoder encoder;
-    
+
+    @Transactional
+    public Map<String, Object> uploadStudentsExcel(MultipartFile file) throws Exception {
+
+        if (!file.getOriginalFilename().endsWith(".xlsx")) {
+            throw new ResponseNotFoundException("Only Excel (.xlsx) files are allowed");
+        }
+
+        int inserted = 0;
+        int skipped = 0;
+
+        Workbook workbook = new XSSFWorkbook(file.getInputStream());
+        Sheet sheet = workbook.getSheetAt(0);
+
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) continue;
+
+            String firstName = getCellValue(row.getCell(0));
+            String middleName = getCellValue(row.getCell(1));
+            String lastName = getCellValue(row.getCell(2));
+            String gender = getCellValue(row.getCell(3));
+            String email = getCellValue(row.getCell(5));
+            String phone = getCellValue(row.getCell(6));
+            String matricFromExcel = getCellValue(row.getCell(13));
+
+            if (firstName == null || lastName == null) {
+                skipped++;
+                continue;
+            }
+
+            // Use getCellValue() to safely extract strings from Excel
+            String facultyName = getCellValue(row.getCell(7));
+            String departmentName = getCellValue(row.getCell(8));
+            String programName = getCellValue(row.getCell(9));
+            String levelNumber = getCellValue(row.getCell(10));
+
+            // Lookup hierarchy safely, throw ResponseNotFoundException if missing
+            Faculty faculty = facultyRepo.findByFacultyName(facultyName)
+                    .orElseThrow(() -> new ResponseNotFoundException(
+                            "Faculty not found: " + facultyName));
+
+            Department department = departmentRepo
+                    .findByDepartmentNameAndFaculty(departmentName, faculty)
+                    .orElseThrow(() -> new ResponseNotFoundException(
+                            "Department '" + departmentName +
+                                    "' does not belong to faculty '" + facultyName + "'"));
+
+            Program program = programRepo
+                    .findByProgramNameAndDepartment(programName, department)
+                    .orElseThrow(() -> new ResponseNotFoundException(
+                            "Program '" + programName +
+                                    "' does not belong to department '" + departmentName + "'"));
+
+            Level level = levelRepo
+                    .findByLevelNumberAndProgram(levelNumber, program)
+                    .orElseThrow(() -> new ResponseNotFoundException(
+                            "Level '" + levelNumber +
+                                    "' does not belong to program '" + programName + "'"));
+
+            // Generate matric number if missing
+            String matric = matricFromExcel;
+            if (matric == null || matric.isBlank()) {
+                matric = generateMatricNumber(program);
+            }
+
+            // Skip duplicates
+            if (studentProfileRepo.findByMatricNumber(matric).isPresent() ||
+                    userRepo.existsByUsername(matric) ||
+                    userRepo.existsByUsername(email)) {
+                skipped++;
+                continue;
+            }
+
+            StudentProfile student = new StudentProfile();
+            student.setFirstName(firstName);
+            student.setMiddleName(middleName);
+            student.setLastName(lastName);
+            student.setGender(gender);
+            student.setEmailAddress(email);
+            student.setPhoneNumber(phone);
+            student.setFaculty(faculty);
+            student.setDateOfBirth(parseLocalDate(row.getCell(4)));
+            student.setDepartment(department);
+            student.setProgram(program);
+            student.setLevel(level);
+            student.setAdmissionYear(parseLocalDate(row.getCell(11)));
+            student.setModeOfEntry(getCellValue(row.getCell(12)));
+            student.setMatricNumber(matric);
+
+
+            // Create User
+            User user = new User();
+            user.setUsername(matric);
+            user.setPassword(encoder.encode(lastName));
+            Role role = roleRepo.findByName("STUDENT")
+                    .orElseThrow(() -> new ResponseNotFoundException("Role STUDENT not found"));
+            user.getRoles().add(role);
+            userRepo.save(user);
+
+            student.setUser(user);
+            studentProfileRepo.save(student);
+
+            inserted++;
+        }
+
+        workbook.close();
+
+        return Map.of(
+                "inserted", inserted,
+                "skipped", skipped,
+                "total", inserted + skipped
+        );
+    }
+
+    private String getCellValue(Cell cell) {
+        if (cell == null) return null;
+
+        return switch (cell.getCellType()) {
+            case STRING -> cell.getStringCellValue().trim();
+            case NUMERIC -> {
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    yield cell.getLocalDateTimeCellValue().toLocalDate().toString();
+                } else {
+                    yield String.valueOf((long) cell.getNumericCellValue());
+                }
+            }
+            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+            default -> null;
+        };
+    }
+
+    private LocalDate parseLocalDate(Cell cell) {
+        if (cell == null) return null;
+
+        switch (cell.getCellType()) {
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getLocalDateTimeCellValue().toLocalDate();
+                }
+                int year = (int) cell.getNumericCellValue();
+                return LocalDate.of(year, 1, 1);
+            case STRING:
+                return LocalDate.parse(cell.getStringCellValue().trim());
+            default:
+                throw new ResponseNotFoundException("Invalid date format in Excel");
+        }
+    }
+
     @Transactional
     public StudentProfileResponseDto createStudentProfile(StudentProfileRequestDto dto) {
 
@@ -78,7 +232,7 @@ public class StudentProfileService {
                 .ifPresent(user -> {
                     throw new ResponseNotFoundException("A student with this matric number already exists");
                 });
-
+/// student matric
 
         if (userRepo.existsByUsername(dto.getEmailAddress())) {
             throw new ResponseNotFoundException("This email already exists");
@@ -324,4 +478,46 @@ public class StudentProfileService {
 
         return response;
     }
+
+//    public StudentProfileResponseDto getStudentsInProgramAndLevel(Long programId, Long levelId){
+//
+//        Program program = programRepo.findById(programId)
+//                .orElseThrow(() -> new ResponseNotFoundException("No such Program"));
+//
+//        Level level = levelRepo.findById(levelId)
+//                .orElseThrow(() -> new ResponseNotFoundException("No such Level"));
+//
+//       return studentProfileRepo.findByProgramAndLevel(program,level)
+//               .stream().map(student -> {
+//                   StudentProfileResponseDto dto = new StudentProfileResponseDto();
+//                   dto.setId(student.getId());
+//                   dto.setFirstName(student.getFirstName());
+//                   dto.setMiddleName(student.getMiddleName());
+//                   dto.setLastName(student.getLastName());
+//                   dto.setGender(student.getGender());
+//                   dto.setDateOfBirth(student.getDateOfBirth());
+//                   dto.setNationality(student.getNationality());
+//                   dto.setStateOfOrigin(student.getStateOfOrigin());
+//                   dto.setLga(student.getLga());
+//                   dto.setProgramName(student.getProgram().getProgramName());
+//                   dto.setFacultyName(student.getFaculty().getFacultyName());
+//                   dto.setDepartmentName(student.getDepartment().getDepartmentName());
+//                   dto.setLevelName(student.getLevel().getLevelNumber());
+//                   dto.setAdmissionYear(student.getAdmissionYear());
+//                   dto.setMatricNumber(student.getMatricNumber());
+//                   dto.setModeOfEntry(student.getModeOfEntry());
+//                   dto.setEmailAddress(student.getEmailAddress());
+//                   dto.setPhoneNumber(student.getPhoneNumber());
+//                   dto.setHomeAddress(student.getHomeAddress());
+//                   dto.setStatus(
+//                           student.getUser() != null && student.getUser().isEnabled() ? "Active" : "Suspended"
+//                   );
+//
+//                   return dto;
+//               })
+//               .toList();
+//    }
+//
+
+
 }
