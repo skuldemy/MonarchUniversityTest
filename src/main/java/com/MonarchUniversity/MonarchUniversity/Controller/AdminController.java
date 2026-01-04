@@ -4,17 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.MonarchUniversity.MonarchUniversity.Payload.*;
-import com.MonarchUniversity.MonarchUniversity.Service.FeeScheduleService;
-import com.MonarchUniversity.MonarchUniversity.Service.SessionAndSemesterService;
+import com.MonarchUniversity.MonarchUniversity.Service.*;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import com.MonarchUniversity.MonarchUniversity.Service.StudentProfileService;
-import com.MonarchUniversity.MonarchUniversity.Service.SuperAdminService;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +25,7 @@ public class AdminController {
 	private final SuperAdminService supermanagementService;
     private final SessionAndSemesterService sessionAndSemesterService;
     private final FeeScheduleService feeScheduleService;
+    private final TimetableService timetableService;
 
 
     @GetMapping("/faculties-management")
@@ -123,7 +122,7 @@ public class AdminController {
     public ResponseEntity<?> updateFeeSchedule(@PathVariable Long itemId, @RequestBody FeeScheduleReqDto dto){
         return ResponseEntity.ok(feeScheduleService.updateFeeSchedule(itemId, dto));
     }
-//    new
+
     @PostMapping("/upload-student-details")
     @Transactional
     public ResponseEntity<Map<String, Object>> uploadStudentsExcel(@RequestParam("file") MultipartFile file) throws Exception {
@@ -135,6 +134,41 @@ public class AdminController {
     public ResponseEntity<?> toggleStudentProfile(@PathVariable Long id){
         return ResponseEntity.ok(studentProfileService.toggleStudentStatus(id));
     }
+
+    //    new
+    @PostMapping("/upload-timetable")
+    @Transactional
+    public ResponseEntity<Map<String, Object>> uploadTimetableExcel(
+            @RequestParam("file") MultipartFile file) throws Exception {
+
+        Map<String, Object> result = timetableService.uploadTimetableExcel(file);
+        return ResponseEntity.ok(result);
+    }
+    @GetMapping("/upload-timetable")
+    public ResponseEntity<TimetableResponseDto> getTimetable(
+            @RequestParam("program") String programName,
+            @RequestParam("level") String levelNumber,
+            @RequestParam("semester") String semester,
+            @RequestParam("academicYear") Integer academicYear
+    ) {
+
+        TimetableResponseDto response =
+                timetableService.getTimetable(programName, levelNumber, semester, academicYear);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/timetable/{id}/pdf")
+    public ResponseEntity<byte[]> downloadTimetablePdf(@PathVariable Long id) {
+
+        byte[] pdf = timetableService.generateTimetablePdf(id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=timetable.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
 
 }
 

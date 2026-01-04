@@ -15,4 +15,5 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     Optional<Program> findByProgramNameAndDepartment(
             String programName, Department department);
 
+    Optional<Program> findByProgramName(String programName);
 }
