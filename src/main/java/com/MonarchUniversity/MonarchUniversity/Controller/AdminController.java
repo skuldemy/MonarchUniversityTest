@@ -26,6 +26,7 @@ public class AdminController {
     private final SessionAndSemesterService sessionAndSemesterService;
     private final FeeScheduleService feeScheduleService;
     private final TimetableService timetableService;
+    private final StudentPaymentService studentPaymentService;
 
 
     @GetMapping("/faculties-management")
@@ -167,6 +168,12 @@ public class AdminController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=timetable.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
+    }
+//    new
+
+    @GetMapping("/student-payment-list/{levelId}/{programId}")
+    public List<StudentPaymentListDto> getStudentPaymentViaProgramAndLevel(@PathVariable Long levelId, @PathVariable Long programId){
+        return studentPaymentService.getALlStudentsPayment(levelId,programId);
     }
 
 
