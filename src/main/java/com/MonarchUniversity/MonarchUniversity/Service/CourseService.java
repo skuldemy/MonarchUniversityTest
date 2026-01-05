@@ -12,6 +12,8 @@ import com.MonarchUniversity.MonarchUniversity.Repositories.ProgramRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class CourseService {
@@ -43,10 +45,18 @@ public class CourseService {
 
         Course savedCourse = courseRepo.save(course);
 
-//        return new CourseResponseDto(course.getId(), course.getProgram().getProgramName(),
-//                course.getLevel().getLevelNumber(),
-//                );
+        return new CourseResponseDto(course.getId(),
+                course.getProgram().getProgramName(),
+                course.getLevel().getLevelNumber(),
+                course.getCourseTitle(),
+                course.getCourseType(),
+                course.getCourseCode(),
+                course.getCourseUnit()
+                );
 
+    }
+
+    public List<CourseResponseDto> getAllCoursesAttachedToProgram(){
         return null;
     }
 }

@@ -80,7 +80,7 @@
 	            public void addCorsMappings(CorsRegistry registry) {
 	                registry.addMapping("/**")
 	                    .allowedOrigins("http://localhost:3000", "https://monarch-university.vercel.app")
-	                    .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
+	                    .allowedMethods("GET","POST","PUT","DELETE","OPTIONS", "PATCH")
 	                    .allowedHeaders("*")
 	                    .allowCredentials(true);
 	            }
