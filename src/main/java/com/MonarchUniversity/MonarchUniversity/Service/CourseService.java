@@ -1,15 +1,12 @@
 package com.MonarchUniversity.MonarchUniversity.Service;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.Course;
-import com.MonarchUniversity.MonarchUniversity.Entity.Level;
-import com.MonarchUniversity.MonarchUniversity.Entity.Program;
+import com.MonarchUniversity.MonarchUniversity.Entity.*;
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseResponseDto;
-import com.MonarchUniversity.MonarchUniversity.Repositories.CourseRepository;
-import com.MonarchUniversity.MonarchUniversity.Repositories.LevelRepository;
-import com.MonarchUniversity.MonarchUniversity.Repositories.ProgramRepository;
+import com.MonarchUniversity.MonarchUniversity.Repositories.*;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +19,22 @@ public class CourseService {
     private final CourseRepository courseRepo;
     private final ProgramRepository programRepository;
     private final LevelRepository levelRepository;
+    private final StudentProfileRepo studentProfileRepository;
+    private final UserRepository userRepository;
+
+    private StudentProfile getLoggedInStudentProfile() {
+        org.springframework.security.core.userdetails.User springUser =
+                (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+
+        User userEntity = userRepository.findByUsername(springUser.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return studentProfileRepository.findByUser(userEntity)
+                .orElseThrow(() -> new RuntimeException("StudentProfile not found"));
+    }
 
     public CourseResponseDto createCourse(CourseRequestDto dto){
 
@@ -132,6 +145,27 @@ public class CourseService {
                 updatedCourse.getCourseCode(),
                 updatedCourse.getCourseUnit()
         );
+    }
+
+    public List<CourseResponseDto> getCoursesAttachedtoProgram(){
+
+        StudentProfile studentProfile = getLoggedInStudentProfile();
+
+        Program program = studentProfile.getProgram();
+        Level level = studentProfile.getLevel();
+
+        return courseRepo.findAllByProgramAndLevel(program, level).stream()
+                .map(course -> new CourseResponseDto(
+                        course.getId(),
+                        course.getProgram().getProgramName(),
+                        course.getLevel().getLevelNumber(),
+                        course.getCourseTitle(),
+                        course.getCourseType(),
+                        course.getCourseCode(),
+                        course.getCourseUnit()
+                ))
+                .toList();
+
     }
 
 }
