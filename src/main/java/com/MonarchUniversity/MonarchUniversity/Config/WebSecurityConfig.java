@@ -59,6 +59,7 @@
 	            	            ).permitAll()
 	                .requestMatchers("/auth/**").permitAll()
 	                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_STUDENT")
 	                .anyRequest().authenticated()
 	            )
 	            .addFilterBefore(jwtAuthenticationFilter(), org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
