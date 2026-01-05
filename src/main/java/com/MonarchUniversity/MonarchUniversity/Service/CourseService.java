@@ -11,6 +11,7 @@ import com.MonarchUniversity.MonarchUniversity.Repositories.LevelRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.ProgramRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,6 +35,13 @@ public class CourseService {
             throw new ResponseNotFoundException("This level is not associated with this program");
         }
 
+        if(courseRepo.existsByCourseCodeIgnoreCaseAndLevelAndProgram(dto.getCourseCode(), level, program)){
+            throw new ResponseNotFoundException("Course code already exists for this program and level");
+        }
+
+        if(courseRepo.existsByCourseTitleIgnoreCaseAndLevelAndProgram(dto.getCourseTitle(), level, program)){
+            throw new ResponseNotFoundException("Course title already exists for this program and level");
+        }
 
         Course course = new Course();
         course.setProgram(program);
@@ -56,7 +64,74 @@ public class CourseService {
 
     }
 
-    public List<CourseResponseDto> getAllCoursesAttachedToProgram(){
-        return null;
+    public List<CourseResponseDto> getAllCoursesAttachedToProgram(Long programId, Long levelId){
+
+        Program program = programRepository.findById(programId)
+                .orElseThrow(() -> new ResponseNotFoundException("No such program"));
+
+        Level level = levelRepository.findById(levelId)
+                .orElseThrow(() -> new ResponseNotFoundException("No such level"));
+
+
+        return courseRepo.findAllByProgramAndLevel(program, level).stream()
+                .map(course -> new CourseResponseDto(
+                        course.getId(),
+                        course.getProgram().getProgramName(),
+                        course.getLevel().getLevelNumber(),
+                        course.getCourseTitle(),
+                        course.getCourseType(),
+                        course.getCourseCode(),
+                        course.getCourseUnit()
+                ))
+                .toList();
+
     }
+
+    @Transactional
+    public CourseResponseDto updateCourse(Long courseId, CourseRequestDto dto) {
+
+        Course course = courseRepo.findById(courseId)
+                .orElseThrow(() -> new ResponseNotFoundException("No such course"));
+
+        Program program = programRepository.findById(dto.getProgramId())
+                .orElseThrow(() -> new ResponseNotFoundException("No such program"));
+
+        Level level = levelRepository.findById(dto.getLevelId())
+                .orElseThrow(() -> new ResponseNotFoundException("No such level"));
+
+        // Validate program ↔ level relationship
+        if (!level.getProgram().getId().equals(program.getId())) {
+            throw new ResponseNotFoundException("This level is not associated with this program");
+        }
+
+        if(courseRepo.existsByCourseCodeIgnoreCaseAndLevelAndProgram(dto.getCourseCode(), level, program)){
+            throw new ResponseNotFoundException("Course code already exists for this program and level");
+        }
+
+        if(courseRepo.existsByCourseTitleIgnoreCaseAndLevelAndProgram(dto.getCourseTitle(), level, program)){
+            throw new ResponseNotFoundException("Course title already exists for this program and level");
+        }
+
+
+        // Update fields
+        course.setProgram(program);
+        course.setLevel(level);
+        course.setCourseCode(dto.getCourseCode());
+        course.setCourseTitle(dto.getCourseTitle());
+        course.setCourseUnit(dto.getCourseUnit());
+        course.setCourseType(dto.getCourseType());
+
+        Course updatedCourse = courseRepo.save(course);
+
+        return new CourseResponseDto(
+                updatedCourse.getId(),
+                updatedCourse.getProgram().getProgramName(),
+                updatedCourse.getLevel().getLevelNumber(),
+                updatedCourse.getCourseTitle(),
+                updatedCourse.getCourseType(),
+                updatedCourse.getCourseCode(),
+                updatedCourse.getCourseUnit()
+        );
+    }
+
 }
