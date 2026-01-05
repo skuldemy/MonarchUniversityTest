@@ -103,7 +103,9 @@ public class FeeScheduleService {
         return new FeeScheduleResDto(
                 feeSchedule.getId(),
                 level.getLevelNumber(),
+                level.getId(),
                 program.getProgramName(),
+                program.getId(),
                 totalAmount,
                 feeItems
         );
@@ -133,7 +135,9 @@ public class FeeScheduleService {
             response.add(new FeeScheduleResDto(
                     schedule.getId(),
                     schedule.getLevel().getLevelNumber(),
+                    schedule.getLevel().getId(),
                     schedule.getProgram().getProgramName(),
+                    schedule.getProgram().getId(),
                     totalAmount,
                     feeItems
             ));
@@ -198,7 +202,9 @@ public FeeScheduleResDto updateFeeSchedule(Long feeScheduleId, FeeScheduleReqDto
     return new FeeScheduleResDto(
             feeSchedule.getId(),
             level.getLevelNumber(),
+            level.getId(),
             program.getProgramName(),
+            program.getId(),
             totalAmount,
             feeItems
     );

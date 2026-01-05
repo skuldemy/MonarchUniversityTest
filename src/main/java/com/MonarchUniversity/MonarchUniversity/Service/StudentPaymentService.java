@@ -145,4 +145,5 @@ public class StudentPaymentService {
                 payment.getScholarshipPercentage()
         );
     }
+
 }
