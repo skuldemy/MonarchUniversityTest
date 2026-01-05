@@ -27,6 +27,7 @@ public class AdminController {
     private final FeeScheduleService feeScheduleService;
     private final TimetableService timetableService;
     private final StudentPaymentService studentPaymentService;
+    private final CourseService courseService;
 
 
     @GetMapping("/faculties-management")
@@ -169,7 +170,7 @@ public class AdminController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
     }
-//    new
+
 
     @GetMapping("/student-payment-list/{levelId}/{programId}")
     public List<StudentPaymentListDto> getStudentPaymentViaProgramAndLevel(@PathVariable Long levelId, @PathVariable Long programId){
@@ -187,6 +188,35 @@ public class AdminController {
         );
     }
 
+    //    new
+    @PostMapping("/create-courses")
+    public ResponseEntity<CourseResponseDto> createCourse(
+            @RequestBody CourseRequestDto dto
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(courseService.createCourse(dto));
+    }
+
+    @GetMapping("/create-courses/{programId}/{levelId}")
+    public ResponseEntity<List<CourseResponseDto>> getCoursesByProgramAndLevel(
+            @PathVariable Long programId,
+            @PathVariable Long levelId
+    ) {
+        return ResponseEntity.ok(
+                courseService.getAllCoursesAttachedToProgram(programId, levelId)
+        );
+    }
+
+
+    @PutMapping("/create-courses/{courseId}")
+    public ResponseEntity<CourseResponseDto> updateCourse(
+            @PathVariable Long courseId,
+            @RequestBody CourseRequestDto dto
+    ) {
+        return ResponseEntity.ok(
+                courseService.updateCourse(courseId, dto)
+        );
+    }
 
 
 }
