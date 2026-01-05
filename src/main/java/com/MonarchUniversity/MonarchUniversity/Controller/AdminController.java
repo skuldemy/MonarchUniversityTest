@@ -176,6 +176,18 @@ public class AdminController {
         return studentPaymentService.getALlStudentsPayment(levelId,programId);
     }
 
+    @PatchMapping("/student-payments/{studentId}/scholarship")
+    public StudentPaymentListDto applyScholarship(
+            @PathVariable Long studentId,
+            @RequestBody StudentPaymentListDto request
+    ) {
+        return studentPaymentService.applyScholarship(
+                studentId,
+                request.getScholarshipPercentage()
+        );
+    }
+
+
 
 }
 
