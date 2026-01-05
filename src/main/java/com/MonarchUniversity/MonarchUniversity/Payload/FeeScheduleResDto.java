@@ -13,7 +13,9 @@ import java.util.List;
 public class FeeScheduleResDto {
     private Long feeScheduleId;
     private String levelName;
+    private Long levelId;
     private String programName;
+    private Long programId;
     private BigDecimal totalAmount;
     private List<FeeItemResDto> fees;
 }
