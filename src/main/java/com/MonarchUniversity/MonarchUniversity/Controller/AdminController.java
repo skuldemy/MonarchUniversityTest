@@ -188,36 +188,6 @@ public class AdminController {
         );
     }
 
-    //    new
-    @PostMapping("/create-courses")
-    public ResponseEntity<CourseResponseDto> createCourse(
-            @RequestBody CourseRequestDto dto
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(courseService.createCourse(dto));
-    }
-
-    @GetMapping("/create-courses/{programId}/{levelId}")
-    public ResponseEntity<List<CourseResponseDto>> getCoursesByProgramAndLevel(
-            @PathVariable Long programId,
-            @PathVariable Long levelId
-    ) {
-        return ResponseEntity.ok(
-                courseService.getAllCoursesAttachedToProgram(programId, levelId)
-        );
-    }
-
-
-    @PutMapping("/create-courses/{courseId}")
-    public ResponseEntity<CourseResponseDto> updateCourse(
-            @PathVariable Long courseId,
-            @RequestBody CourseRequestDto dto
-    ) {
-        return ResponseEntity.ok(
-                courseService.updateCourse(courseId, dto)
-        );
-    }
-
 
 }
 

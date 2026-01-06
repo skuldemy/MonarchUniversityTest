@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.MonarchUniversity.MonarchUniversity.Payload.*;
 import com.MonarchUniversity.MonarchUniversity.Service.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +38,7 @@ public class SuperAdminAccountController {
 	private final UserService userService;
     private final ImpersonateService impersonateService;
     private final SessionAndSemesterService sessionAndSemesterService;
+    private final CourseService courseService;
 	
     @Operation(summary = "1 - Faculty: Create a new faculty", description = "Creates a faculty with all required details")
     @ApiResponses({
@@ -277,5 +279,37 @@ public class SuperAdminAccountController {
     public ResponseEntity<?> impersonateUser(@PathVariable Long userId){
         return ResponseEntity.ok(impersonateService.impersonateUser(userId));
   }
+
+    //    new
+    @PostMapping("/create-courses")
+    public ResponseEntity<CourseResponseDto> createCourse(
+            @RequestBody CourseRequestDto dto
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(courseService.createCourse(dto));
+    }
+
+    @GetMapping("/create-courses/{programId}/{levelId}")
+    public ResponseEntity<List<CourseResponseDto>> getCoursesByProgramAndLevel(
+            @PathVariable Long programId,
+            @PathVariable Long levelId
+    ) {
+        return ResponseEntity.ok(
+                courseService.getAllCoursesAttachedToProgram(programId, levelId)
+        );
+    }
+
+
+    @PutMapping("/create-courses/{courseId}")
+    public ResponseEntity<CourseResponseDto> updateCourse(
+            @PathVariable Long courseId,
+            @RequestBody CourseRequestDto dto
+    ) {
+        return ResponseEntity.ok(
+                courseService.updateCourse(courseId, dto)
+        );
+    }
+
+
 
 }
