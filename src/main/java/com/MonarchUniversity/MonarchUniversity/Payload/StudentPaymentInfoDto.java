@@ -6,12 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StudentPaymentListDto {
-    private Long id;
+public class StudentPaymentInfoDto {
+    private Long studentId;
     private String fullName;
     private String matricNumber;
     private BigDecimal amountPaid;
@@ -19,5 +20,7 @@ public class StudentPaymentListDto {
     private BigDecimal remainingAmount;
     private StudentPayment.ApprovalStatus feeStatus;
     private StudentPayment.PaymentStatus paymentStatus;
-    private Integer scholarshipPercentage;
+    private List<FeeTypeStatus> feeTypeStatusList;
+
 }
+

@@ -47,11 +47,14 @@ public class StudentPayment {
         PAID
     }
 
+//    Amount paid, remaining amount, session, year, payment split
+
     public enum ApprovalStatus {
         PENDING,
         APPROVED,
         REJECTED
     }
 
+//    If a student does not pay pending amount, he/she cannot move to a new year
 }
 

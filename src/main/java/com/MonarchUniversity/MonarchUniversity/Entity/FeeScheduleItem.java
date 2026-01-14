@@ -20,9 +20,16 @@ public class FeeScheduleItem {
     @JoinColumn(name = "feeSchedule_id")
     private FeeSchedule feeSchedule;
 
+    private Integer priority;
+
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name="feeType_id")
     private FeeType feeType;
 
     private BigDecimal amount;
+    @Column(nullable = false)
+    private BigDecimal amountPaid = BigDecimal.ZERO;
+
+    private BigDecimal remainingAmount;
 }

@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface FeeScheduleItemRepo extends JpaRepository<FeeScheduleItem, Long> {
     List<FeeScheduleItem> findByFeeSchedule(FeeSchedule feeSchedule);
+    List<FeeScheduleItem> findByFeeScheduleOrderByPriorityAsc(FeeSchedule feeSchedule);
 }
