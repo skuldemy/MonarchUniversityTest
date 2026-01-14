@@ -13,7 +13,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @AllArgsConstructor
@@ -107,5 +109,28 @@ public class SessionAndSemesterService {
                         d.getRegistrationEndDate(),
                         d.getSemesterName()
                 )).toList();
+    }
+
+    public SemesterResponseDto getCurrentSemesterAndSession(){
+        LocalDate today = LocalDate.now();
+        Semester currentSemester = semesterRepo.findAll()
+                .stream()
+                .filter(s ->
+                        !today.isBefore(s.getStartDate()) &&   // today >= session.start
+                                !today.isAfter(s.getEndDate())         // today <= session.end
+                )
+                .findFirst()
+                .orElseThrow(() -> new ResponseNotFoundException(
+                        "No academic session found for the current date"
+                ));
+
+        return new SemesterResponseDto(currentSemester.getId(),
+                currentSemester.getSession().getSessionName(),
+                currentSemester.getStartDate(),
+                currentSemester.getEndDate(),
+                currentSemester.getRegistrationStartDate(),
+                currentSemester.getRegistrationEndDate(),
+                currentSemester.getSemesterName()
+                );
     }
 }

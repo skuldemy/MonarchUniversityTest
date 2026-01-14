@@ -187,7 +187,11 @@ public class AdminController {
                 request.getScholarshipPercentage()
         );
     }
-
+// new
+    @GetMapping("/get-current-semester-and-session")
+    public SemesterResponseDto getCurrentSemesterAndSession(){
+        return sessionAndSemesterService.getCurrentSemesterAndSession();
+    }
 
 }
 

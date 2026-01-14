@@ -1,15 +1,20 @@
 package com.MonarchUniversity.MonarchUniversity.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.MonarchUniversity.MonarchUniversity.Entity.FeeType;
+import com.MonarchUniversity.MonarchUniversity.Entity.PortalSchedule;
+import com.MonarchUniversity.MonarchUniversity.Payload.*;
+
+import com.MonarchUniversity.MonarchUniversity.Repositories.FeeTypeRepo;
+import com.MonarchUniversity.MonarchUniversity.Repositories.PortalScheduleRepo;
 import org.springframework.stereotype.Service;
 
 import com.MonarchUniversity.MonarchUniversity.Entity.PortalAction;
 import com.MonarchUniversity.MonarchUniversity.Entity.PortalManagement;
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
-import com.MonarchUniversity.MonarchUniversity.Payload.PortalActionDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.PortalManagementRequestDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.PortalManagementResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Repositories.PortalActionRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.PortalManagementRepo;
 
@@ -22,6 +27,8 @@ import lombok.AllArgsConstructor;
 public class PortalManagementService {
 	private final PortalManagementRepo portalManagementRepo;
 	private final PortalActionRepository portalActionRepo;
+    private final PortalScheduleRepo portalScheduleRepo;
+    private final FeeTypeRepo feeTypeRepo;
 	
 	public List<PortalActionDto> findAllPortalActions(){
 		return portalActionRepo.findAll().stream().map(p -> new PortalActionDto(p.getId(), p.getActionName())).toList();
@@ -195,5 +202,92 @@ public class PortalManagementService {
 
 	    return response;
 	}
+
+    public List<PortalActionDto> getPortalByRegisterCourses(){
+        return portalActionRepo.findAllByActionName("Register Courses").stream()
+                .map(r -> new PortalActionDto(r.getId(), r.getActionName()))
+                .collect(Collectors.toList());
+    }
+
+    public PortalScheduleResDto createPortalSchedule(PortalScheduleReqDto dto) {
+        PortalSchedule portalSchedule = new PortalSchedule();
+
+        FeeType feeType = feeTypeRepo.findById(dto.getFeeTypeId())
+                .orElseThrow(() -> new ResponseNotFoundException("No such portal action"));
+
+        if (portalScheduleRepo.existsByFeeType(feeType)) {
+            throw new ResponseNotFoundException("This portal already exists, might consider updating");
+        }
+
+        if (dto.getStartDate().isBefore(LocalDate.now())) {
+            throw new ResponseNotFoundException("Start date cannot be in the past");
+        }
+
+        portalSchedule.setFeeType(feeType);
+        portalSchedule.setDescription(dto.getDescription());
+        portalSchedule.setStartDate(dto.getStartDate());
+        portalSchedule.setEndDate(dto.getEndDate());
+
+
+        portalSchedule.setStatus(
+                !LocalDate.now().isBefore(dto.getStartDate()) &&
+                        !LocalDate.now().isAfter(dto.getEndDate())
+        );
+
+        PortalSchedule saved = portalScheduleRepo.save(portalSchedule);
+
+        return convertToRes(saved);
+    }
+
+    public PortalScheduleResDto togglePortalStatus(Long id, Boolean status) {
+        PortalSchedule portalSchedule = portalScheduleRepo.findById(id)
+                .orElseThrow(() -> new ResponseNotFoundException("Schedule not found"));
+
+        portalSchedule.setStatus(status);
+
+        PortalSchedule updated = portalScheduleRepo.save(portalSchedule);
+        return convertToRes(updated);
+    }
+
+    public PortalScheduleResDto updatePortalSchedule(Long id, PortalScheduleReqDto dto) {
+        PortalSchedule portalSchedule = portalScheduleRepo.findById(id)
+                .orElseThrow(() -> new ResponseNotFoundException("Schedule not found"));
+
+        if (dto.getStartDate() != null) {
+            if (dto.getStartDate().isBefore(LocalDate.now())) {
+                throw new ResponseNotFoundException("Start date cannot be in the past");
+            }
+            portalSchedule.setStartDate(dto.getStartDate());
+        }
+
+        if (dto.getEndDate() != null) {
+            if (dto.getEndDate().isBefore(portalSchedule.getStartDate())) {
+                throw new ResponseNotFoundException("End date cannot be before start date");
+            }
+            portalSchedule.setEndDate(dto.getEndDate());
+        }
+
+        // Recalculate status
+        portalSchedule.setStatus(
+                !LocalDate.now().isBefore(portalSchedule.getStartDate()) &&
+                        !LocalDate.now().isAfter(portalSchedule.getEndDate())
+        );
+
+        PortalSchedule updated = portalScheduleRepo.save(portalSchedule);
+        return convertToRes(updated);
+    }
+
+
+    private PortalScheduleResDto convertToRes(PortalSchedule schedule) {
+        PortalScheduleResDto dto = new PortalScheduleResDto();
+        dto.setId(schedule.getId());
+        dto.setFeeType(schedule.getFeeType().getName());
+        dto.setDescription(schedule.getDescription());
+        dto.setStartDate(schedule.getStartDate());
+        dto.setEndDate(schedule.getEndDate());
+        dto.setStatus(schedule.getStatus() ? "Active" : "InActive");
+        return dto;
+    }
+
 
 }

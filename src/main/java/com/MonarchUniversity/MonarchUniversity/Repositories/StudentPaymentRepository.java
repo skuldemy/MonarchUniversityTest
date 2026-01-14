@@ -13,4 +13,6 @@ public interface StudentPaymentRepository extends JpaRepository<StudentPayment, 
             StudentProfile student,
             FeeSchedule feeSchedule
     );
+
+    Optional<StudentPayment> findByStudentId(Long id);
 }

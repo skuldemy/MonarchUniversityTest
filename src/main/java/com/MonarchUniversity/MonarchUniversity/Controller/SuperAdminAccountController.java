@@ -39,6 +39,8 @@ public class SuperAdminAccountController {
     private final ImpersonateService impersonateService;
     private final SessionAndSemesterService sessionAndSemesterService;
     private final CourseService courseService;
+    private final FeeScheduleService feeScheduleService;
+
 	
     @Operation(summary = "1 - Faculty: Create a new faculty", description = "Creates a faculty with all required details")
     @ApiResponses({
@@ -310,6 +312,32 @@ public class SuperAdminAccountController {
         );
     }
 
+//    new
+@GetMapping("/fee-Type")
+public ResponseEntity<?> getFeeTypes(){
+    return ResponseEntity.ok(feeScheduleService.getAllFeeTypes());
+}
 
+    @PostMapping("/create-portal-for-registration")
+    public ResponseEntity<PortalScheduleResDto> createPortalSchedule(
+            @RequestBody PortalScheduleReqDto dto
+    ) {
+        PortalScheduleResDto resDto = portalManagementService.createPortalSchedule(dto);
+        return ResponseEntity.ok(resDto);
+    }
+
+    @PutMapping("/create-portal-for-registration/{id}")
+    public ResponseEntity<PortalScheduleResDto> updatePortal(
+            @PathVariable Long id,
+            @RequestBody PortalScheduleReqDto dto) {
+        return ResponseEntity.ok(portalManagementService.updatePortalSchedule(id, dto));
+    }
+
+    @PatchMapping("/create-portal-for-registration/{id}")
+    public ResponseEntity<PortalScheduleResDto> togglePortal(
+            @PathVariable Long id,
+            @RequestBody PortalScheduleToggleDto dto) {
+        return ResponseEntity.ok(portalManagementService.togglePortalStatus(id, dto.getStatus()));
+    }
 
 }

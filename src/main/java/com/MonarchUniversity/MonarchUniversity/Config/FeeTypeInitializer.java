@@ -24,7 +24,8 @@ public class FeeTypeInitializer implements CommandLineRunner {
                 "Medical",
                 "Departmental",
                 "Ict",
-                "Development"
+                "Development",
+                "Course Registration"
         );
         for (String name : actions) {
             if (feeTypeRepo.findByName(name).isEmpty()) {
