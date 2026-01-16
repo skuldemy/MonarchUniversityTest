@@ -333,6 +333,11 @@ public ResponseEntity<?> getFeeTypes(){
         return ResponseEntity.ok(portalManagementService.updatePortalSchedule(id, dto));
     }
 
+    @GetMapping("/create-portal-for-registration")
+    public List<PortalScheduleResDto> getAllPortalSchedule(){
+        return portalManagementService.getAllPortalSchedules();
+    }
+
     @PatchMapping("/create-portal-for-registration/{id}")
     public ResponseEntity<PortalScheduleResDto> togglePortal(
             @PathVariable Long id,
