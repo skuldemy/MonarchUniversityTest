@@ -81,25 +81,29 @@ public class StudentPaymentService {
                     .findByStudentAndFeeSchedule(student, feeSchedule)
                     .orElse(null);
 
-            BigDecimal remainingAmount = payment.getTotalFee()
-                    .subtract(payment.getAmountPaid());
-
             if (payment == null) {
+
+                BigDecimal remainingAmount = totalFee; // no amount paid yet
 
                 response.add(new StudentPaymentListDto(
                         student.getId(),
                         student.getFirstName() + " " + student.getLastName(),
                         student.getMatricNumber(),
-                        BigDecimal.ZERO,
-                        totalFee,
-                        remainingAmount,
+                        BigDecimal.ZERO,            // amountPaid
+                        totalFee,                   // totalFee
+                        remainingAmount,            // balance
                         StudentPayment.ApprovalStatus.PENDING,
                         StudentPayment.PaymentStatus.NO_PAYMENT,
                         0
                 ));
             } else {
 
-                response.add(mapToDto(payment));
+                BigDecimal remainingAmount = totalFee.subtract(payment.getAmountPaid());
+
+                StudentPaymentListDto dto = mapToDto(payment);
+                dto.setRemainingAmount(remainingAmount);
+
+                response.add(dto);
             }
         }
 

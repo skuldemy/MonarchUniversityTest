@@ -1,6 +1,7 @@
 package com.MonarchUniversity.MonarchUniversity.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -238,6 +239,19 @@ public class PortalManagementService {
 
         return convertToRes(saved);
     }
+
+    public List<PortalScheduleResDto> getAllPortalSchedules(){
+        return new ArrayList<>(portalScheduleRepo.findAll().stream()
+                .map(d -> new PortalScheduleResDto(d.getId(),
+                        d.getFeeType().getName(),
+                        d.getDescription(),
+                        d.getStartDate(),
+                        d.getEndDate(),
+                        d.getStatus().toString()
+                        ))
+                .collect(Collectors.toList()));
+    }
+
 
     public PortalScheduleResDto togglePortalStatus(Long id, Boolean status) {
         PortalSchedule portalSchedule = portalScheduleRepo.findById(id)
