@@ -3,10 +3,10 @@ package com.MonarchUniversity.MonarchUniversity.Repositories;
 import java.util.List;
 import java.util.Optional;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.Department;
+import com.MonarchUniversity.MonarchUniversity.Model.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.Program;
+import com.MonarchUniversity.MonarchUniversity.Model.Program;
 
 public interface ProgramRepository extends JpaRepository<Program, Long> {
 	List<Program> findByDepartmentId(Long id);

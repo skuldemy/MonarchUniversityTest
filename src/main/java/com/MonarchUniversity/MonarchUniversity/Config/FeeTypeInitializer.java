@@ -1,11 +1,9 @@
 package com.MonarchUniversity.MonarchUniversity.Config;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.FeeType;
-import com.MonarchUniversity.MonarchUniversity.Entity.PortalAction;
+import com.MonarchUniversity.MonarchUniversity.Model.FeeType;
 import com.MonarchUniversity.MonarchUniversity.Repositories.FeeTypeRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

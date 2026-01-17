@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.PortalAction;
+import com.MonarchUniversity.MonarchUniversity.Model.PortalAction;
 import com.MonarchUniversity.MonarchUniversity.Repositories.PortalActionRepository;
 
 import lombok.RequiredArgsConstructor;

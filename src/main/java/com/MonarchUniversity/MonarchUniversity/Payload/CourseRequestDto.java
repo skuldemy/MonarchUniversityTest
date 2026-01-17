@@ -1,10 +1,5 @@
 package com.MonarchUniversity.MonarchUniversity.Payload;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.Level;
-import com.MonarchUniversity.MonarchUniversity.Entity.Program;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

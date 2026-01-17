@@ -4,8 +4,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.Role;
-import com.MonarchUniversity.MonarchUniversity.Entity.User;
+import com.MonarchUniversity.MonarchUniversity.Model.Role;
+import com.MonarchUniversity.MonarchUniversity.Model.User;
 import com.MonarchUniversity.MonarchUniversity.Repositories.RoleRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.UserRepository;
 

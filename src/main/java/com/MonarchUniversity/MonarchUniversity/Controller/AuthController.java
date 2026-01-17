@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.User;
+import com.MonarchUniversity.MonarchUniversity.Model.User;
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
 import com.MonarchUniversity.MonarchUniversity.Jwt.JwtService;
 import com.MonarchUniversity.MonarchUniversity.Payload.LoginRequest;

@@ -1,6 +1,6 @@
 package com.MonarchUniversity.MonarchUniversity.Payload;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.StudentPayment;
+import com.MonarchUniversity.MonarchUniversity.Model.StudentPayment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

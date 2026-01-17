@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.PortalAction;
+import com.MonarchUniversity.MonarchUniversity.Model.PortalAction;
 
 public interface PortalActionRepository extends JpaRepository<PortalAction, Long> {
 	Optional<PortalAction> findByActionName(String name);

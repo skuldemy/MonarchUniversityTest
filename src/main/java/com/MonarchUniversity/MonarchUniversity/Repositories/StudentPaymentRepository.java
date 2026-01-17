@@ -1,8 +1,8 @@
 package com.MonarchUniversity.MonarchUniversity.Repositories;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.FeeSchedule;
-import com.MonarchUniversity.MonarchUniversity.Entity.StudentPayment;
-import com.MonarchUniversity.MonarchUniversity.Entity.StudentProfile;
+import com.MonarchUniversity.MonarchUniversity.Model.FeeSchedule;
+import com.MonarchUniversity.MonarchUniversity.Model.StudentPayment;
+import com.MonarchUniversity.MonarchUniversity.Model.StudentProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
