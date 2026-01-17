@@ -3,12 +3,12 @@ package com.MonarchUniversity.MonarchUniversity.Repositories;
 import java.util.List;
 import java.util.Optional;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.Level;
-import com.MonarchUniversity.MonarchUniversity.Entity.Program;
-import com.MonarchUniversity.MonarchUniversity.Entity.User;
+import com.MonarchUniversity.MonarchUniversity.Model.Level;
+import com.MonarchUniversity.MonarchUniversity.Model.Program;
+import com.MonarchUniversity.MonarchUniversity.Model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.StudentProfile;
+import com.MonarchUniversity.MonarchUniversity.Model.StudentProfile;
 
 public interface StudentProfileRepo extends JpaRepository<StudentProfile, Long> {
 	Optional<StudentProfile> findByMatricNumber(String matricNumber);

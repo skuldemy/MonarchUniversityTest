@@ -1,0 +1,17 @@
+package com.MonarchUniversity.MonarchUniversity.Service;
+
+
+import com.MonarchUniversity.MonarchUniversity.Model.Level;
+import com.MonarchUniversity.MonarchUniversity.Model.Program;
+import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitRequestDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitResponseDto;
+
+import java.util.List;
+
+public interface CourseUnitService {
+    public String createCourseUnit(CourseUnitRequestDto dto);
+    public List<CourseUnitResponseDto> getCouseUnitResponse(Long programId, Long levelId,
+                                                            String semesterName
+                                                            );
+
+}

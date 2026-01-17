@@ -1,8 +1,8 @@
 package com.MonarchUniversity.MonarchUniversity.Repositories;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.Level;
-import com.MonarchUniversity.MonarchUniversity.Entity.Program;
-import com.MonarchUniversity.MonarchUniversity.Entity.Timetable;
+import com.MonarchUniversity.MonarchUniversity.Model.Level;
+import com.MonarchUniversity.MonarchUniversity.Model.Program;
+import com.MonarchUniversity.MonarchUniversity.Model.Timetable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

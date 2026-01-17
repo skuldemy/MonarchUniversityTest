@@ -1,10 +1,9 @@
 package com.MonarchUniversity.MonarchUniversity.Repositories;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.Timetable;
-import com.MonarchUniversity.MonarchUniversity.Entity.TimetableEntry;
+import com.MonarchUniversity.MonarchUniversity.Model.Timetable;
+import com.MonarchUniversity.MonarchUniversity.Model.TimetableEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Arrays;
 import java.util.List;
 
 public interface TimetableEntryRepository extends JpaRepository<TimetableEntry, Long> {

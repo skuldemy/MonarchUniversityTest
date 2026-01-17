@@ -3,7 +3,7 @@ package com.MonarchUniversity.MonarchUniversity.Config;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.Role;
+import com.MonarchUniversity.MonarchUniversity.Model.Role;
 import com.MonarchUniversity.MonarchUniversity.Repositories.RoleRepository;
 
 import lombok.RequiredArgsConstructor;

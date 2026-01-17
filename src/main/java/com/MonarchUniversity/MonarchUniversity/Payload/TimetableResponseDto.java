@@ -1,6 +1,6 @@
 package com.MonarchUniversity.MonarchUniversity.Payload;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.Timetable;
+import com.MonarchUniversity.MonarchUniversity.Model.Timetable;
 import lombok.Data;
 
 import java.util.List;

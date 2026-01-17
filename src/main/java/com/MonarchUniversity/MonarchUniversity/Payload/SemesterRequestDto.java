@@ -1,6 +1,5 @@
 package com.MonarchUniversity.MonarchUniversity.Payload;
 
-import com.MonarchUniversity.MonarchUniversity.Entity.Session;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
