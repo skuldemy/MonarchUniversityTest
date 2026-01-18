@@ -265,18 +265,17 @@ public class StudentPaymentService {
     @Transactional
     public StudentPaymentInfoDto makePayment(PaymentRequestDto dto) {
 
-        // 1️⃣ Get logged-in student
+
         StudentProfile student = getLoggedInStudentProfile();
 
-        // 2️⃣ Get fee schedule
-        FeeSchedule feeSchedule = feeScheduleRepo
+            FeeSchedule feeSchedule = feeScheduleRepo
                 .findByLevelAndProgram(student.getLevel(), student.getProgram())
                 .orElseThrow(() -> new ResponseNotFoundException("Fee schedule not found"));
 
-        // 3️⃣ Get fee schedule items (template)
+
         List<FeeScheduleItem> items = feeScheduleItemRepo.findByFeeScheduleOrderByPriorityAsc(feeSchedule);
 
-        // 4️⃣ Get or initialize student payment record
+
         StudentPayment payment = studentPaymentRepo
                 .findByStudentAndFeeSchedule(student, feeSchedule)
                 .orElseGet(() -> {
@@ -290,11 +289,11 @@ public class StudentPaymentService {
                     return studentPaymentRepo.save(p);
                 });
 
-        // 5️⃣ Ensure nulls
+
         if (payment.getTotalFee() == null) payment.setTotalFee(BigDecimal.ZERO);
         if (payment.getAmountPaid() == null) payment.setAmountPaid(BigDecimal.ZERO);
 
-        // 6️⃣ Determine amount to pay
+
         BigDecimal amountToPay;
         switch (dto.getPaymentType()) {
             case "FULL":
@@ -312,16 +311,16 @@ public class StudentPaymentService {
                 throw new IllegalArgumentException("Invalid payment type");
         }
 
-        // 7️⃣ Ensure amount does not exceed remaining
+
         BigDecimal remainingBalance = payment.getTotalFee().subtract(payment.getAmountPaid());
         if (amountToPay.compareTo(remainingBalance) > 0) {
             throw new IllegalArgumentException("Cannot pay more than remaining balance");
         }
 
-        // 8️⃣ Split payment across items
+
         splitPaymentAcrossItemsMemory(items, payment, amountToPay);
 
-        // 9️⃣ Return updated info
+
         return getStudentPaymentListMemory(items, payment);
     }
 
