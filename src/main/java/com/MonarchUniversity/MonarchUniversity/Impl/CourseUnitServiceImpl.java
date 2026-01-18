@@ -6,6 +6,7 @@ import com.MonarchUniversity.MonarchUniversity.Model.Program;
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitResponseDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitUpdate;
 import com.MonarchUniversity.MonarchUniversity.Repositories.CourseUnitRepo;
 import com.MonarchUniversity.MonarchUniversity.Repositories.LevelRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.ProgramRepository;
@@ -38,6 +39,11 @@ public class CourseUnitServiceImpl implements CourseUnitService{
                     " consider updating the semester");
         }
 
+        if (courseUnitRepo.existsByProgramAndLevelAndSemesterName(program,level, dto.getSemesterName())){
+            throw new ResponseNotFoundException("This response already exists, you might consider updating");
+        }
+
+
         CourseUnit courseUnit = new CourseUnit();
         courseUnit.setLevel(level);
         courseUnit.setProgram(program);
@@ -50,7 +56,7 @@ public class CourseUnitServiceImpl implements CourseUnitService{
     }
 
     @Override
-    public List<CourseUnitResponseDto> getCouseUnitResponse(Long programId,
+    public CourseUnitResponseDto getCouseUnitResponse(Long programId,
                                                             Long levelId,
                                                             String semesterName
 
@@ -68,16 +74,32 @@ public class CourseUnitServiceImpl implements CourseUnitService{
         }
 
 
-        List<CourseUnit> courseUnitList = courseUnitRepo
+        CourseUnit course = courseUnitRepo
                 .getCourseUnitByProgramAndLevelAndSemesterName(program,level,semesterName);
-        return courseUnitList
-                .stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
+//        return courseUnitList
+//                .stream()
+//                .map(this::mapToDto)
+//                .collect(Collectors.toList());
+   return mapToDto(course);
+    }
+
+    @Override
+    public String updateCourseUnit(Long courseUnitId, CourseUnitUpdate update) {
+
+    CourseUnit courseUnit = courseUnitRepo.findById(courseUnitId)
+            .orElseThrow(()-> new ResponseNotFoundException("No such"));
+
+
+    courseUnit.setMinUnits(update.getMinUnits());
+    courseUnit.setMaxUnits(update.getMaxUnits());
+
+    courseUnitRepo.save(courseUnit);
+        return "successfully updated!";
     }
 
     private CourseUnitResponseDto mapToDto(CourseUnit c) {
         return new CourseUnitResponseDto(
+                c.getId(),
                 c.getProgram().getProgramName(),
                 c.getLevel().getLevelNumber(),
                 c.getSemesterName(),

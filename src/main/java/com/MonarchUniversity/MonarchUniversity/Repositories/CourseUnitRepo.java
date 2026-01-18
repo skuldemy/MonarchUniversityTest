@@ -9,8 +9,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CourseUnitRepo extends JpaRepository<CourseUnit, Long> {
-    List<CourseUnit> getCourseUnitByProgramAndLevelAndSemesterName(Program program,
+    CourseUnit getCourseUnitByProgramAndLevelAndSemesterName(Program program,
                                                                Level level,
                                                                String semester
-                                                               );
+    );
+    boolean existsByProgramAndLevelAndSemesterName(Program program,
+                                                   Level level,
+                                                   String semester
+    );
 }
