@@ -1,4 +1,4 @@
-package com.MonarchUniversity.MonarchUniversity.Payload
+package com.MonarchUniversity.MonarchUniversity.Payload;
 
 import com.MonarchUniversity.MonarchUniversity.Model.CourseUnit
 import jakarta.validation.constraints.Min
