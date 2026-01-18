@@ -4,17 +4,10 @@ import java.util.List;
 
 import com.MonarchUniversity.MonarchUniversity.Payload.*;
 import com.MonarchUniversity.MonarchUniversity.Impl.*;
+import com.MonarchUniversity.MonarchUniversity.Service.CourseUnitService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,6 +33,7 @@ public class SuperAdminAccountController {
     private final SessionAndSemesterService sessionAndSemesterService;
     private final CourseService courseService;
     private final FeeScheduleService feeScheduleService;
+    private final CourseUnitService courseUnitService;
 
 	
     @Operation(summary = "1 - Faculty: Create a new faculty", description = "Creates a faculty with all required details")
@@ -345,4 +339,19 @@ public ResponseEntity<?> getFeeTypes(){
         return ResponseEntity.ok(portalManagementService.togglePortalStatus(id, dto.getStatus()));
     }
 
+//    new
+    @PostMapping("/course-unit")
+    public ResponseEntity<?> createCourseUnit(@RequestBody @Valid CourseUnitRequestDto dto){
+        return ResponseEntity.ok(courseUnitService.createCourseUnit(dto));
+    }
+    @GetMapping("/course-unit")
+    public ResponseEntity<?> getCourseUnit(@RequestParam Long programId,@RequestParam Long levelId,
+                                           @RequestParam String semesterName){
+        return ResponseEntity.ok(courseUnitService.getCouseUnitResponse(programId,levelId,semesterName));
+    }
+
+    @PutMapping("/course-unit/{id}")
+    public ResponseEntity<?> updateCourseUnit(@PathVariable Long id, @RequestBody @Valid CourseUnitUpdate dto){
+        return ResponseEntity.ok(courseUnitService.updateCourseUnit(id, dto));
+    }
 }
