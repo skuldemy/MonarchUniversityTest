@@ -14,7 +14,7 @@ public interface CourseUnitService {
     public CourseUnitResponseDto getCouseUnitResponse(Long programId, Long levelId,
                                                             String semesterName
                                                             );
-    public String updateCourseUnit(Long courseUnitId,
+    public String updateCourseUnits(Long courseUnitId,
                                    CourseUnitUpdate update
     );
 

@@ -1,4 +1,4 @@
-package com.MonarchUniversity.MonarchUniversity.Payload
+package com.MonarchUniversity.MonarchUniversity.Payload;
 
 import com.MonarchUniversity.MonarchUniversity.Model.CourseUnit
 import jakarta.validation.constraints.Min
@@ -17,11 +17,11 @@ data class CourseUnitRequestDto (
     @field:NotNull(message = "Minimum units is required")
     @field:Min(value = 1, message = "Minimum units must be at least 1")
 
-    val minUnits : Integer,
+    val minUnits : Int,
     @field:NotNull(message = "Max units is required")
     @field:Min(value = 1, message = "Max units must be at least 1")
 
-    val maxUnits : Integer
+    val maxUnits : Int
 )
 
 
@@ -32,7 +32,7 @@ data class CourseUnitResponseDto (
     val levelNumber : String,
     val semesterName: String,
     val minUnits : Int,
-    val maxUnits : Int,
+    val maxUnits : Int
 )
 
 data class CourseUnitUpdate(

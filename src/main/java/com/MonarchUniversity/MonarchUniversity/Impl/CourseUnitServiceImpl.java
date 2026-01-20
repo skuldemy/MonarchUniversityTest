@@ -84,7 +84,7 @@ public class CourseUnitServiceImpl implements CourseUnitService{
     }
 
     @Override
-    public String updateCourseUnit(Long courseUnitId, CourseUnitUpdate update) {
+    public String updateCourseUnits(Long courseUnitId, CourseUnitUpdate update) {
 
     CourseUnit courseUnit = courseUnitRepo.findById(courseUnitId)
             .orElseThrow(()-> new ResponseNotFoundException("No such"));
