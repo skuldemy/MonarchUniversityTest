@@ -352,6 +352,6 @@ public ResponseEntity<?> getFeeTypes(){
 
     @PutMapping("/course-unit/{id}")
     public ResponseEntity<?> updateCourseUnit(@PathVariable Long id, @RequestBody @Valid CourseUnitUpdate dto){
-        return ResponseEntity.ok(courseUnitService.updateCourseUnit(id, dto));
+        return ResponseEntity.ok(courseUnitService.updateCourseUnits(id, dto));
     }
 }

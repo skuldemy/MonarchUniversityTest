@@ -294,7 +294,14 @@ public class StudentPaymentService {
         if (payment.getAmountPaid() == null) payment.setAmountPaid(BigDecimal.ZERO);
 
 
+        if (payment.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalStateException(
+                    "Total fee is zero. Fee schedule is not properly configured."
+            );
+        }.
         BigDecimal amountToPay;
+
+
         switch (dto.getPaymentType()) {
             case "FULL":
                 amountToPay = payment.getTotalFee().subtract(payment.getAmountPaid());
@@ -371,6 +378,64 @@ public class StudentPaymentService {
 
         studentPaymentRepo.save(payment);
     }
+
+//    private void splitPaymentAcrossItemsMemory(List<FeeScheduleItem> items,
+//                                               StudentPayment payment,
+//                                               BigDecimal amountToPay) {
+//
+//        BigDecimal remaining = amountToPay;
+//
+//        // Sort by priority: Course Registration first, Tuition second, then others
+//        items.sort((a, b) -> {
+//            String nameA = a.getFeeType().getName();
+//            String nameB = b.getFeeType().getName();
+//
+//            if ("Course Registration".equalsIgnoreCase(nameA)) return -1;
+//            if ("Course Registration".equalsIgnoreCase(nameB)) return 1;
+//            if ("Tuition".equalsIgnoreCase(nameA)) return -1;
+//            if ("Tuition".equalsIgnoreCase(nameB)) return 1;
+//
+//            int p1 = a.getPriority() != null ? a.getPriority() : Integer.MAX_VALUE;
+//            int p2 = b.getPriority() != null ? b.getPriority() : Integer.MAX_VALUE;
+//            return Integer.compare(p1, p2);
+//        });
+//
+//        for (FeeScheduleItem item : items) {
+//            BigDecimal itemPaid = item.getAmountPaid() != null ? item.getAmountPaid() : BigDecimal.ZERO;
+//            BigDecimal itemRemaining = item.getAmount().subtract(itemPaid);
+//
+//            if (itemRemaining.compareTo(BigDecimal.ZERO) <= 0) continue; // already paid
+//
+//            BigDecimal payNow;
+//
+//            if ("Course Registration".equalsIgnoreCase(item.getFeeType().getName())) {
+//                // Always pay full course registration first
+//                payNow = itemRemaining.min(remaining);
+//            } else {
+//                // For other items, pay whatever is left
+//                payNow = remaining.min(itemRemaining);
+//            }
+//
+//            item.setAmountPaid(itemPaid.add(payNow));
+//            remaining = remaining.subtract(payNow);
+//
+//            if (remaining.compareTo(BigDecimal.ZERO) <= 0) break; // no more money left
+//        }
+//
+//        // Update total payment
+//        BigDecimal totalPaidThisRound = amountToPay.subtract(remaining);
+//        payment.setAmountPaid(payment.getAmountPaid().add(totalPaidThisRound));
+//        payment.setApprovalStatus(StudentPayment.ApprovalStatus.PENDING);
+//
+//        // Update payment status
+//        if (payment.getAmountPaid().compareTo(payment.getTotalFee()) >= 0) {
+//            payment.setPaymentStatus(StudentPayment.PaymentStatus.PAID);
+//        } else {
+//            payment.setPaymentStatus(StudentPayment.PaymentStatus.PARTIAL);
+//        }
+//
+//        studentPaymentRepo.save(payment);
+//    }
 
 
     private StudentPaymentInfoDto getStudentPaymentListMemory(List<FeeScheduleItem> items,
