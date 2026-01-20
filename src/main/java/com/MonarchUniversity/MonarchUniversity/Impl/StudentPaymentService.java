@@ -45,6 +45,30 @@ public class StudentPaymentService {
     }
 
 
+    public LevelProgramDto getLevelAndProgram(){
+        StudentProfile studentProfile = getLoggedInStudentProfile();
+
+
+
+        Level level = studentProfile.getLevel();
+        Program program = studentProfile.getProgram();
+
+        FeeSchedule feeSchedule = feeScheduleRepo
+                .findByLevelAndProgram(level, program)
+                .orElseThrow(() -> new ResponseNotFoundException("Fee schedule not found"));
+
+        List<FeeScheduleItem> items = feeScheduleItemRepo.findByFeeScheduleOrderByPriorityAsc(feeSchedule);
+
+        BigDecimal baseFee = calculateTotal(items);
+
+        if (baseFee == null) {
+            baseFee = BigDecimal.ZERO;
+        }
+
+        return new LevelProgramDto(level.getLevelNumber(),program.getProgramName(), baseFee);
+    }
+
+
     private BigDecimal calculateTotal(List<FeeScheduleItem> items) {
         return items.stream()
                 .map(FeeScheduleItem::getAmount)
@@ -235,6 +259,8 @@ public class StudentPaymentService {
         BigDecimal totalPaid = payment.getAmountPaid();
 
         // 💡 Compute proportional amounts (same as makePayment)
+
+
         for (FeeScheduleItem item : items) {
 
             BigDecimal proportionalPaid = BigDecimal.ZERO;
@@ -261,6 +287,8 @@ public class StudentPaymentService {
 
         return dto;
     }
+
+
 
     @Transactional
     public StudentPaymentInfoDto makePayment(PaymentRequestDto dto) {
