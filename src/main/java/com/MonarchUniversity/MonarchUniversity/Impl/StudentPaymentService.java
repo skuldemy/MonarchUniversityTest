@@ -295,7 +295,7 @@ public class StudentPaymentService {
 
 
         if (payment.getTotalFee().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalStateException(
+            throw new ResponseNotFoundException(
                     "Total fee is zero. Fee schedule is not properly configured."
             );
         }
