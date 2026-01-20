@@ -298,7 +298,7 @@ public class StudentPaymentService {
             throw new IllegalStateException(
                     "Total fee is zero. Fee schedule is not properly configured."
             );
-        }.
+        }
         BigDecimal amountToPay;
 
 
