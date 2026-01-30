@@ -3,6 +3,7 @@ package com.MonarchUniversity.MonarchUniversity.Impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.MonarchUniversity.MonarchUniversity.Payload.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +14,6 @@ import com.MonarchUniversity.MonarchUniversity.Model.Program;
 import com.MonarchUniversity.MonarchUniversity.Model.Role;
 import com.MonarchUniversity.MonarchUniversity.Model.User;
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
-import com.MonarchUniversity.MonarchUniversity.Payload.DepartmentDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.FacultyDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.LecturerRequestDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.LecturerResponseDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.LevelDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.ProgramDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.RoleDto;
 import com.MonarchUniversity.MonarchUniversity.Repositories.DepartmentRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.FacultyRepository;
 import com.MonarchUniversity.MonarchUniversity.Repositories.LecturerProfileRepo;
@@ -43,8 +37,8 @@ public class SuperAdminService {
 	private final PasswordEncoder enconder;
 	private final LevelRepository levelRepo;
 	
-	public List<FacultyDto> findAllFaculties(){
-		return facultyRepo.findAll().stream().map(f -> new FacultyDto(f.getId(), f.getFacultyName())).collect(Collectors.toList());
+	public List<FacultyResponseDto> findAllFaculties(){
+		return facultyRepo.findAll().stream().map(f -> new FacultyResponseDto(f.getId(), f.getFacultyName())).collect(Collectors.toList());
 	}
 	
 	public List<DepartmentDto> findDepartments(Long id){

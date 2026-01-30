@@ -30,8 +30,8 @@ public class AdminController {
 
 
     @GetMapping("/faculties-management")
-	    public ResponseEntity<List<FacultyDto>> getAllFacultiesViaManagement() {
-	        List<FacultyDto> faculties = supermanagementService.findAllFaculties();
+	    public ResponseEntity<List<FacultyResponseDto>> getAllFacultiesViaManagement() {
+	        List<FacultyResponseDto> faculties = supermanagementService.findAllFaculties();
 	        return ResponseEntity.ok(faculties);
 	    }
 	    
