@@ -183,7 +183,6 @@ public class SuperAdminService {
 	    if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
 	        user.setPassword(dto.getPassword());
 	    }
-	    userRepo.save(user);
 
 	    if (dto.getFacultyId() != null && dto.getDepartmentId() != null) {
 	        Faculty faculty = facultyRepo.findById(dto.getFacultyId())
@@ -203,7 +202,10 @@ public class SuperAdminService {
 	            throw new ResponseNotFoundException("Cannot assign STUDENT role");
 	        }
 	        lecturer.setRole(role);
-	    }
+            user.getRoles().add(role);
+            userRepo.save(user);
+
+        }
 
 	    if (dto.getFullName() != null && !dto.getFullName().isBlank()) {
 	        lecturer.setFullName(dto.getFullName());
