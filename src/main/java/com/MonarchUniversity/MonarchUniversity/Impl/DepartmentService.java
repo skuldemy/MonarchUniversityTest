@@ -116,7 +116,7 @@ public class DepartmentService {
         return "Department successfully deleted";
     }
 
-    @Cacheable(value = "departments")
+
     public List<DepartmentDto> getAllDepartments() {
         return departmentRepo.findAll()
                 .stream()

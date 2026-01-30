@@ -99,7 +99,7 @@ public class FacultyService {
         facultyRepo.delete(faculty);
         return "Faculty successfully deleted";
     }
-    @Cacheable("faculties")
+
     public List<FacultyResponseDto> getAllFaculties(){
     	return facultyRepo.findAll().stream().map(r-> new FacultyResponseDto(
                 r.getId(),
