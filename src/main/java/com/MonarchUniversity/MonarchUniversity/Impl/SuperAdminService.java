@@ -181,7 +181,7 @@ public class SuperAdminService {
 	        user.setUsername(dto.getEmailAddress());
 	    }
 	    if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-	        user.setPassword(dto.getPassword());
+	        user.setPassword(enconder.encode(dto.getPassword()) );
 	    }
 
 	    if (dto.getFacultyId() != null && dto.getDepartmentId() != null) {
@@ -202,6 +202,7 @@ public class SuperAdminService {
 	            throw new ResponseNotFoundException("Cannot assign STUDENT role");
 	        }
 	        lecturer.setRole(role);
+            user.getRoles().clear();
             user.getRoles().add(role);
             userRepo.save(user);
 
