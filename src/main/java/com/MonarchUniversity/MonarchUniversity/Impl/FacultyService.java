@@ -3,6 +3,7 @@ package com.MonarchUniversity.MonarchUniversity.Impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.MonarchUniversity.MonarchUniversity.Payload.FacultyResponseDto;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class FacultyService {
     	return facultyRepo.count();
     }
     
-    public FacultyDto createFaculty(FacultyDto dto) {
+    public FacultyResponseDto createFaculty(FacultyDto dto) {
         Faculty faculty = new Faculty();
 
         if (facultyRepo.existsByFacultyNameIgnoreCase(dto.getFacultyName())){
@@ -41,7 +42,7 @@ public class FacultyService {
 
         Faculty savedFaculty = facultyRepo.save(faculty);
 
-        return new FacultyDto(
+        return new FacultyResponseDto(
         	    savedFaculty.getId(),
         	    savedFaculty.getFacultyName(),
         	    savedFaculty.getFacultyCode(),            
@@ -54,7 +55,7 @@ public class FacultyService {
  
     }
 
-    public FacultyDto editFaculty(Long id, FacultyDto dto) {
+    public FacultyResponseDto editFaculty(Long id, FacultyDto dto) {
         Faculty faculty = facultyRepo.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("No such Faculty Id"));
 
@@ -78,7 +79,7 @@ public class FacultyService {
 
         Faculty saved = facultyRepo.save(faculty);
 
-        return new FacultyDto(
+        return new FacultyResponseDto(
                 saved.getId(),
                 saved.getFacultyName(),
                 saved.getFacultyCode(),
@@ -98,9 +99,9 @@ public class FacultyService {
         facultyRepo.delete(faculty);
         return "Faculty successfully deleted";
     }
-    @Cacheable("faculties")
-    public List<FacultyDto> getAllFaculties(){
-    	return facultyRepo.findAll().stream().map(r-> new FacultyDto(
+
+    public List<FacultyResponseDto> getAllFaculties(){
+    	return facultyRepo.findAll().stream().map(r-> new FacultyResponseDto(
                 r.getId(),
                 r.getFacultyName(),
                 r.getFacultyCode(),

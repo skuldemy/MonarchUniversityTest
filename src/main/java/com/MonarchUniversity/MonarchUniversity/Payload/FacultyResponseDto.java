@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FacultyDto {
+public class FacultyResponseDto {
+    private Long id;
     @NotBlank(message = "Faculty name is required")
     private String facultyName;
     @NotBlank(message = "Faculty code is required")
@@ -18,5 +19,10 @@ public class FacultyDto {
     private String facultyAddress;
     private Integer establishedYear;
     private String facultyMotto;
+
+    public FacultyResponseDto(Long id, @NotBlank(message = "Faculty name is required") String facultyName) {
+        this.id = id;
+        this.facultyName = facultyName;
+    }
 
 }

@@ -44,7 +44,7 @@ public class SuperAdminAccountController {
     
 	@PostMapping("/faculty")
 	public ResponseEntity<?> createFaculty(@RequestBody @Valid FacultyDto dto){
-		 FacultyDto createdFaculty = facultyService.createFaculty(dto);
+		 FacultyResponseDto createdFaculty = facultyService.createFaculty(dto);
 		    return ResponseEntity.status(201).body(createdFaculty);
 	}
 	
@@ -159,8 +159,8 @@ public class SuperAdminAccountController {
     }
     
     @GetMapping("/faculties-management")
-    public ResponseEntity<List<FacultyDto>> getAllFacultiesViaManagement() {
-        List<FacultyDto> faculties = managementService.findAllFaculties();
+    public ResponseEntity<List<FacultyResponseDto>> getAllFacultiesViaManagement() {
+        List<FacultyResponseDto> faculties = managementService.findAllFaculties();
         return ResponseEntity.ok(faculties);
     }
     
