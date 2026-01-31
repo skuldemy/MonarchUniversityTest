@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 public class StudentPaymentService {
     private final LevelRepository levelRepository;
-    private final ProgramRepository programRepository;
+    private final DepartmentRepository departmentRepository;
     private final FeeScheduleRepo feeScheduleRepo;
     private final FeeTypeRepo feeTypeRepo;
     private final FeeScheduleItemRepo feeScheduleItemRepo;
@@ -51,10 +51,10 @@ public class StudentPaymentService {
 
 
         Level level = studentProfile.getLevel();
-        Program program = studentProfile.getProgram();
+        Department department = studentProfile.getDepartment();
 
         FeeSchedule feeSchedule = feeScheduleRepo
-                .findByLevelAndProgram(level, program)
+                .findByLevelAndDepartment(level, department)
                 .orElseThrow(() -> new ResponseNotFoundException("Fee schedule not found"));
 
         List<FeeScheduleItem> items = feeScheduleItemRepo.findByFeeScheduleOrderByPriorityAsc(feeSchedule);
@@ -65,7 +65,7 @@ public class StudentPaymentService {
             baseFee = BigDecimal.ZERO;
         }
 
-        return new LevelProgramDto(level.getLevelNumber(),program.getProgramName(), baseFee);
+        return new LevelProgramDto(level.getLevelNumber(),department.getDepartmentName(), baseFee);
     }
 
 
@@ -76,16 +76,16 @@ public class StudentPaymentService {
     }
 
 
-    public List<StudentPaymentListDto> getALlStudentsPayment(Long levelId, Long programId) {
+    public List<StudentPaymentListDto> getALlStudentsPayment(Long levelId, Long departmentId) {
 
         Level level = levelRepository.findById(levelId)
                 .orElseThrow(() -> new ResponseNotFoundException("No such level"));
 
-        Program program = programRepository.findById(programId)
+        Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new ResponseNotFoundException("No such program"));
 
         FeeSchedule feeSchedule = feeScheduleRepo
-                .findByLevelAndProgram(level, program)
+                .findByLevelAndDepartment(level, department)
                 .orElseThrow(() -> new ResponseNotFoundException(
                         "No fee schedule for this level and program"));
 
@@ -95,7 +95,7 @@ public class StudentPaymentService {
         BigDecimal totalFee = calculateTotal(items);
 
         List<StudentProfile> students =
-                studentProfileRepo.findByProgramAndLevel(program, level);
+                studentProfileRepo.findByDepartmentAndLevel(department, level);
 
         List<StudentPaymentListDto> response = new ArrayList<>();
 
@@ -150,7 +150,7 @@ public class StudentPaymentService {
                 .orElseThrow(() -> new ResponseNotFoundException("Student not found"));
 
         FeeSchedule feeSchedule = feeScheduleRepo
-                .findByLevelAndProgram(student.getLevel(), student.getProgram())
+                .findByLevelAndDepartment(student.getLevel(), student.getDepartment())
                 .orElseThrow(() -> new ResponseNotFoundException("Fee schedule not found"));
 
         StudentPayment payment = studentPaymentRepo
@@ -210,7 +210,7 @@ public class StudentPaymentService {
         StudentProfile studentProfile = getLoggedInStudentProfile();
 
         FeeSchedule feeSchedule = feeScheduleRepo
-                .findByLevelAndProgram(studentProfile.getLevel(), studentProfile.getProgram())
+                .findByLevelAndDepartment(studentProfile.getLevel(), studentProfile.getDepartment())
                 .orElseThrow(() -> new ResponseNotFoundException("No fee schedule found"));
 
         List<FeeScheduleItem> items = feeScheduleItemRepo
@@ -297,7 +297,7 @@ public class StudentPaymentService {
         StudentProfile student = getLoggedInStudentProfile();
 
             FeeSchedule feeSchedule = feeScheduleRepo
-                .findByLevelAndProgram(student.getLevel(), student.getProgram())
+                .findByLevelAndDepartment(student.getLevel(), student.getDepartment())
                 .orElseThrow(() -> new ResponseNotFoundException("Fee schedule not found"));
 
 

@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Positive
 
 data class CourseUnitRequestDto (
-    @field:NotNull(message = "Program ID is required")
-    @field:Positive(message = "Program ID must be a positive number")
-    val programId : Long,
+    @field:NotNull(message = "Department ID is required")
+    @field:Positive(message = "Department ID must be a positive number")
+    val departmentId : Long,
     @field:NotNull(message = "Level is required")
     @field:Positive(message = "Level ID must be a positive number")
     val levelId : Long,

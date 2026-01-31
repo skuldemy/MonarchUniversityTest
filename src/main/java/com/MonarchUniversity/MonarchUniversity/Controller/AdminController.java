@@ -46,11 +46,11 @@ public class AdminController {
 	    	List<ProgramDto> programs = supermanagementService.findPrograms(programId);
 	    	return ResponseEntity.ok(programs);
 	    }
-
-	    @GetMapping("/levels-management/{programId}/levels")
-	    public ResponseEntity<?> getAllLevelsViaProgram(@PathVariable Long programId){
-	    	return ResponseEntity.ok(supermanagementService.findLevelsViaProgram(programId));
-	    }
+// IMPORTANT
+//	    @GetMapping("/levels-management/{programId}/levels")
+//	    public ResponseEntity<?> getAllLevelsViaProgram(@PathVariable Long programId){
+//	    	return ResponseEntity.ok(supermanagementService.findLevelsViaProgram(programId));
+//	    }
 	
 	@PostMapping("/create-student-profile")
 	public ResponseEntity<?> createStudentProfile(@RequestBody StudentProfileRequestDto dto){
@@ -147,14 +147,14 @@ public class AdminController {
     }
     @GetMapping("/upload-timetable")
     public ResponseEntity<TimetableResponseDto> getTimetable(
-            @RequestParam("program") String programName,
+            @RequestParam("departmentName") String departmentName,
             @RequestParam("level") String levelNumber,
             @RequestParam("semester") String semester,
             @RequestParam("academicYear") Integer academicYear
     ) {
 
         TimetableResponseDto response =
-                timetableService.getTimetable(programName, levelNumber, semester, academicYear);
+                timetableService.getTimetable(departmentName, levelNumber, semester, academicYear);
 
         return ResponseEntity.ok(response);
     }

@@ -19,7 +19,7 @@ public class RoleInitializer implements CommandLineRunner {
 		// TODO Auto-generated method stub
 		 	createRoleIfNotExists("SUPER_ADMIN");
 	        createRoleIfNotExists("ADMIN");
-	        createRoleIfNotExists("FACULTY_HEAD");
+	        createRoleIfNotExists("DEAN");
 	        createRoleIfNotExists("LECTURER");
 	        createRoleIfNotExists("STUDENT");
 	        createRoleIfNotExists("HOD");

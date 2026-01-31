@@ -20,8 +20,8 @@ public class Level {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "program_id")
-	private Program program;
+	@JoinColumn(name = "department_id")
+	private Department department;
 	private String levelNumber; 
 	private String semester;
 	private Integer capacity;

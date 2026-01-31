@@ -18,6 +18,7 @@ public class CourseService {
 
     private final CourseRepository courseRepo;
     private final ProgramRepository programRepository;
+    private final DepartmentRepository departmentRepository;
     private final LevelRepository levelRepository;
     private final StudentProfileRepo studentProfileRepository;
     private final UserRepository userRepository;
@@ -38,26 +39,26 @@ public class CourseService {
 
     public CourseResponseDto createCourse(CourseRequestDto dto){
 
-        Program program = programRepository.findById(dto.getProgramId())
+        Department department = departmentRepository.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new ResponseNotFoundException("No such program"));
 
         Level level = levelRepository.findById(dto.getLevelId())
                 .orElseThrow(() -> new ResponseNotFoundException("No such level"));
 
-        if (!level.getProgram().getId().equals(program.getId())) {
+        if (!level.getDepartment().getId().equals(department.getId())) {
             throw new ResponseNotFoundException("This level is not associated with this program");
         }
 
-        if(courseRepo.existsByCourseCodeIgnoreCaseAndLevelAndProgram(dto.getCourseCode(), level, program)){
+        if(courseRepo.existsByCourseCodeIgnoreCaseAndLevelAndDepartment(dto.getCourseCode(), level, department)){
             throw new ResponseNotFoundException("Course code already exists for this program and level");
         }
 
-        if(courseRepo.existsByCourseTitleIgnoreCaseAndLevelAndProgram(dto.getCourseTitle(), level, program)){
+        if(courseRepo.existsByCourseTitleIgnoreCaseAndLevelAndDepartment(dto.getCourseTitle(), level, department)){
             throw new ResponseNotFoundException("Course title already exists for this program and level");
         }
 
         Course course = new Course();
-        course.setProgram(program);
+        course.setDepartment(department);
         course.setLevel(level);
         course.setCourseCode(dto.getCourseCode());
         course.setCourseTitle(dto.getCourseTitle());
@@ -67,7 +68,7 @@ public class CourseService {
         Course savedCourse = courseRepo.save(course);
 
         return new CourseResponseDto(course.getId(),
-                course.getProgram().getProgramName(),
+                course.getDepartment().getDepartmentName(),
                 course.getLevel().getLevelNumber(),
                 course.getCourseTitle(),
                 course.getCourseType(),
@@ -77,19 +78,19 @@ public class CourseService {
 
     }
 
-    public List<CourseResponseDto> getAllCoursesAttachedToProgram(Long programId, Long levelId){
+    public List<CourseResponseDto> getAllCoursesAttachedToProgram(Long departmentId, Long levelId){
 
-        Program program = programRepository.findById(programId)
-                .orElseThrow(() -> new ResponseNotFoundException("No such program"));
+        Department department = departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new ResponseNotFoundException("No such department"));
 
         Level level = levelRepository.findById(levelId)
                 .orElseThrow(() -> new ResponseNotFoundException("No such level"));
 
 
-        return courseRepo.findAllByProgramAndLevel(program, level).stream()
+        return courseRepo.findAllByDepartmentAndLevel(department, level).stream()
                 .map(course -> new CourseResponseDto(
                         course.getId(),
-                        course.getProgram().getProgramName(),
+                        course.getDepartment().getDepartmentName(),
                         course.getLevel().getLevelNumber(),
                         course.getCourseTitle(),
                         course.getCourseType(),
@@ -106,28 +107,28 @@ public class CourseService {
         Course course = courseRepo.findById(courseId)
                 .orElseThrow(() -> new ResponseNotFoundException("No such course"));
 
-        Program program = programRepository.findById(dto.getProgramId())
+        Department department = departmentRepository.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new ResponseNotFoundException("No such program"));
 
         Level level = levelRepository.findById(dto.getLevelId())
                 .orElseThrow(() -> new ResponseNotFoundException("No such level"));
 
         // Validate program ↔ level relationship
-        if (!level.getProgram().getId().equals(program.getId())) {
-            throw new ResponseNotFoundException("This level is not associated with this program");
+        if (!level.getDepartment().getId().equals(department.getId())) {
+            throw new ResponseNotFoundException("This level is not associated with this department");
         }
 
-        if(courseRepo.existsByCourseCodeIgnoreCaseAndLevelAndProgram(dto.getCourseCode(), level, program)){
-            throw new ResponseNotFoundException("Course code already exists for this program and level");
+        if(courseRepo.existsByCourseCodeIgnoreCaseAndLevelAndDepartment(dto.getCourseCode(), level, department)){
+            throw new ResponseNotFoundException("Course code already exists for this department and level");
         }
 
-        if(courseRepo.existsByCourseTitleIgnoreCaseAndLevelAndProgram(dto.getCourseTitle(), level, program)){
+        if(courseRepo.existsByCourseTitleIgnoreCaseAndLevelAndDepartment(dto.getCourseTitle(), level, department)){
             throw new ResponseNotFoundException("Course title already exists for this program and level");
         }
 
 
         // Update fields
-        course.setProgram(program);
+        course.setDepartment(department);
         course.setLevel(level);
         course.setCourseCode(dto.getCourseCode());
         course.setCourseTitle(dto.getCourseTitle());
@@ -138,7 +139,7 @@ public class CourseService {
 
         return new CourseResponseDto(
                 updatedCourse.getId(),
-                updatedCourse.getProgram().getProgramName(),
+                updatedCourse.getDepartment().getDepartmentName(),
                 updatedCourse.getLevel().getLevelNumber(),
                 updatedCourse.getCourseTitle(),
                 updatedCourse.getCourseType(),
@@ -151,13 +152,13 @@ public class CourseService {
 
         StudentProfile studentProfile = getLoggedInStudentProfile();
 
-        Program program = studentProfile.getProgram();
+        Department department = studentProfile.getDepartment();
         Level level = studentProfile.getLevel();
 
-        return courseRepo.findAllByProgramAndLevel(program, level).stream()
+        return courseRepo.findAllByDepartmentAndLevel(department, level).stream()
                 .map(course -> new CourseResponseDto(
                         course.getId(),
-                        course.getProgram().getProgramName(),
+                        course.getDepartment().getDepartmentName(),
                         course.getLevel().getLevelNumber(),
                         course.getCourseTitle(),
                         course.getCourseType(),

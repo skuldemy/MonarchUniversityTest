@@ -18,7 +18,6 @@ public class StudentProfileResponseDto {
 	private String nationality;
 	private String stateOfOrigin;
 	private String lga;
-	private String programName;
 	private String facultyName;
 	private String departmentName;
 	private String levelName;

@@ -25,7 +25,7 @@ public class TimetableResponseDto {
         dto.setTimetableId(timetable.getId());
         dto.setFaculty(timetable.getFaculty().getFacultyName());
         dto.setDepartment(timetable.getDepartment().getDepartmentName());
-        dto.setProgram(timetable.getProgram().getProgramName());
+        dto.setProgram(timetable.getDepartment().getDepartmentName());
         dto.setLevel(timetable.getLevel().getLevelNumber());
         dto.setSemester(timetable.getSemester());
         dto.setAcademicYear(timetable.getAcademicYear());

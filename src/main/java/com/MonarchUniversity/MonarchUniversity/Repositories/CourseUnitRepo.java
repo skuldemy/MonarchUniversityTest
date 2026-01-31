@@ -1,20 +1,17 @@
 package com.MonarchUniversity.MonarchUniversity.Repositories;
 
-import com.MonarchUniversity.MonarchUniversity.Model.CourseUnit;
-import com.MonarchUniversity.MonarchUniversity.Model.Level;
-import com.MonarchUniversity.MonarchUniversity.Model.Program;
-import com.MonarchUniversity.MonarchUniversity.Model.Semester;
+import com.MonarchUniversity.MonarchUniversity.Model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 public interface CourseUnitRepo extends JpaRepository<CourseUnit, Long> {
-    CourseUnit getCourseUnitByProgramAndLevelAndSemesterName(Program program,
+    CourseUnit getCourseUnitByDepartmentAndLevelAndSemesterName(Department department,
                                                                Level level,
                                                                String semester
     );
-    boolean existsByProgramAndLevelAndSemesterName(Program program,
-                                                   Level level,
-                                                   String semester
+    boolean existsByDepartmentAndLevelAndSemesterName(Department department,
+                                                      Level level,
+                                                      String semester
     );
 }

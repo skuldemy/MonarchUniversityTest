@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class FeeScheduleReqDto {
     private Long levelId;
-    private Long programId;
+    private Long departmentId;
     private List<FeeAmountDto> feeAmountDtoList;
 
 

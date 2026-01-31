@@ -59,19 +59,18 @@ public class TimetableService {
 
             String facultyName = getCellValue(row.getCell(0));
             String departmentName = getCellValue(row.getCell(1));
-            String programName = getCellValue(row.getCell(2));
-            String levelNumber = getCellValue(row.getCell(3));
-            String semester = getCellValue(row.getCell(4));
-            Integer academicYear = Integer.valueOf(getCellValue(row.getCell(5)));
+            String levelNumber = getCellValue(row.getCell(2));
+            String semester = getCellValue(row.getCell(3));
+            Integer academicYear = Integer.valueOf(getCellValue(row.getCell(4)));
 
-            String dayValue = getCellValue(row.getCell(6));
-            String startTimeValue = getCellValue(row.getCell(7));
-            String endTimeValue = getCellValue(row.getCell(8));
-            String courseCode = getCellValue(row.getCell(9));
-            String courseTitle = getCellValue(row.getCell(10));
-            String venue = getCellValue(row.getCell(11));
+            String dayValue = getCellValue(row.getCell(5));
+            String startTimeValue = getCellValue(row.getCell(6));
+            String endTimeValue = getCellValue(row.getCell(7));
+            String courseCode = getCellValue(row.getCell(8));
+            String courseTitle = getCellValue(row.getCell(9));
+            String venue = getCellValue(row.getCell(10));
 
-            if (facultyName == null || programName == null || courseCode == null) {
+            if (facultyName == null || departmentName == null || courseCode == null) {
                 skipped++;
                 continue;
             }
@@ -86,25 +85,25 @@ public class TimetableService {
                             "Department does not belong to faculty"));
 
             Program program = programRepo
-                    .findByProgramNameAndDepartment(programName, department)
+                    .findByProgramNameAndDepartment(departmentName, department)
                     .orElseThrow(() -> new ResponseNotFoundException(
                             "Program does not belong to department"));
 
             Level level = levelRepo
-                    .findByLevelNumberAndProgram(levelNumber, program)
+                    .findByLevelNumberAndDepartment(levelNumber, department)
                     .orElseThrow(() -> new ResponseNotFoundException(
                             "Level does not belong to program"));
 
             // Create or reuse timetable (once per file)
             if (timetable == null) {
                 timetable = timetableRepo
-                        .findByProgramAndLevelAndSemesterAndAcademicYear(
-                                program, level, semester, academicYear)
+                        .findByDepartmentAndLevelAndSemesterAndAcademicYear(
+                                department, level, semester, academicYear)
                         .orElseGet(() -> {
                             Timetable t = new Timetable();
                             t.setFaculty(faculty);
                             t.setDepartment(department);
-                            t.setProgram(program);
+
                             t.setLevel(level);
                             t.setSemester(semester);
                             t.setAcademicYear(academicYear);
@@ -137,21 +136,21 @@ public class TimetableService {
 
     @Transactional(readOnly = true)
     public TimetableResponseDto getTimetable(
-            String programName,
+            String departmentName,
             String levelNumber,
             String semester,
             Integer academicYear
     ) {
 
-        Program program = programRepo.findByProgramName(programName)
-                .orElseThrow(() -> new ResponseNotFoundException("Program not found"));
+        Department department = departmentRepo.findByDepartmentName(departmentName)
+                .orElseThrow(() -> new ResponseNotFoundException("No such program"));
 
-        Level level = levelRepo.findByLevelNumberAndProgram(levelNumber, program)
+        Level level = levelRepo.findByLevelNumberAndDepartment(levelNumber, department)
                 .orElseThrow(() -> new ResponseNotFoundException("Level not found"));
 
         Timetable timetable = timetableRepo
-                .findByProgramAndLevelAndSemesterAndAcademicYear(
-                        program, level, semester, academicYear
+                .findByDepartmentAndLevelAndSemesterAndAcademicYear(
+                        department, level, semester, academicYear
                 )
                 .orElseThrow(() -> new ResponseNotFoundException("Timetable not found"));
 
@@ -189,7 +188,7 @@ public class TimetableService {
             Font headerFont = new Font(Font.HELVETICA, 14, Font.BOLD);
             Font cellFont   = new Font(Font.HELVETICA, 10);
             Paragraph title = new Paragraph(
-                    timetable.getProgram().getProgramName() + " " +
+                    timetable.getDepartment().getDepartmentName() + " " +
                             timetable.getLevel().getLevelNumber() + " Level Timetable\n" +
                             timetable.getSemester() + " Semester " +
                             timetable.getAcademicYear(),

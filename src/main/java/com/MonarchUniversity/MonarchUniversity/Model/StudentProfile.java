@@ -26,9 +26,6 @@ public class StudentProfile {
 	private String stateOfOrigin;
 	private String lga;
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "program_id")
-	private Program program;
-	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "faculty_id")
 	private Faculty faculty;
 	@ManyToOne(fetch = FetchType.LAZY)

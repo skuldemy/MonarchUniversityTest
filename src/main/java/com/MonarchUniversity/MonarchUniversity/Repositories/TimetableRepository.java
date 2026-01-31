@@ -1,5 +1,6 @@
 package com.MonarchUniversity.MonarchUniversity.Repositories;
 
+import com.MonarchUniversity.MonarchUniversity.Model.Department;
 import com.MonarchUniversity.MonarchUniversity.Model.Level;
 import com.MonarchUniversity.MonarchUniversity.Model.Program;
 import com.MonarchUniversity.MonarchUniversity.Model.Timetable;
@@ -8,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface TimetableRepository extends JpaRepository<Timetable, Long> {
-    Optional<Timetable> findByProgramAndLevelAndSemesterAndAcademicYear(Program program, Level level, String semester, Integer academicYear);
+    Optional<Timetable> findByDepartmentAndLevelAndSemesterAndAcademicYear(Department department, Level level, String semester, Integer academicYear);
 }

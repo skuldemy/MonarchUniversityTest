@@ -3,6 +3,8 @@ package com.MonarchUniversity.MonarchUniversity.Impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.MonarchUniversity.MonarchUniversity.Model.Department;
+import com.MonarchUniversity.MonarchUniversity.Repositories.DepartmentRepository;
 import org.springframework.stereotype.Service;
 
 import com.MonarchUniversity.MonarchUniversity.Model.Level;
@@ -20,15 +22,15 @@ import lombok.RequiredArgsConstructor;
 public class LevelService {
 
     private final LevelRepository levelRepo;
-    private final ProgramRepository programRepo;
+    private final DepartmentRepository departmentRepo;
 
        public LevelDto createLevel(LevelDto dto) {
 
-        Program program = programRepo.findById(dto.getProgramId())
-                .orElseThrow(() -> new ResponseNotFoundException("Program not found"));
+        Department department = departmentRepo.findById(dto.getDepartmentId())
+                .orElseThrow(() -> new ResponseNotFoundException("Department not found"));
 
         Level level = new Level();
-        level.setProgram(program);
+        level.setDepartment(department);
         level.setLevelNumber(dto.getLevelNumber());
         level.setSemester(dto.getSemester());
         level.setCapacity(dto.getCapacity());
@@ -49,14 +51,15 @@ public class LevelService {
         if (dto.getSemester() == null || dto.getSemester().isBlank()) {
             throw new ResponseForbiddenException("Semester is required");
         }
-        if (dto.getProgramId() == null) {
+        if (dto.getDepartmentId() == null) {
             throw new ResponseForbiddenException("Program ID is required");
         }
 
-        Program program = programRepo.findById(dto.getProgramId())
-                .orElseThrow(() -> new ResponseNotFoundException("Program not found"));
+        Department department = departmentRepo.findById(dto.getDepartmentId())
+                .orElseThrow(() -> new ResponseNotFoundException("Department not found"));
 
-        level.setProgram(program);
+
+        level.setDepartment(department);
         level.setLevelNumber(dto.getLevelNumber());
         level.setSemester(dto.getSemester());
         level.setCapacity(dto.getCapacity());
@@ -94,8 +97,8 @@ public class LevelService {
     private LevelDto mapToDto(Level level) {
         return new LevelDto(
                 level.getId(),
-                level.getProgram() != null ? level.getProgram().getId() : null,
-                level.getProgram().getProgramName(),
+                level.getDepartment() != null ? level.getDepartment().getId() : null,
+                level.getDepartment().getDepartmentName(),
                 level.getLevelNumber(),
                 level.getSemester(),
                 level.getCapacity()

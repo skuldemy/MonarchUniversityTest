@@ -13,8 +13,8 @@ public class LevelDto {
 
     private Long id;
 
-    @NotNull(message = "Program is required")
-    private Long programId;
+    @NotNull(message = "Department is required")
+    private Long departmentId;
 
     private String programName;
     
