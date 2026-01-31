@@ -197,11 +197,11 @@ public class SuperAdminAccountController {
     }
     
 
-  @GetMapping("/department-management/{programId}/programs")
-  public ResponseEntity<List<ProgramDto>> getProgramsByDepartment(@PathVariable Long programId){
-  	List<ProgramDto> programs = managementService.findPrograms(programId);
-  	return ResponseEntity.ok(programs);
-  }
+//  @GetMapping("/department-management/{programId}/programs")
+//  public ResponseEntity<List<ProgramDto>> getProgramsByDepartment(@PathVariable Long programId){
+//  	List<ProgramDto> programs = managementService.findPrograms(programId);
+//  	return ResponseEntity.ok(programs);
+//  }
   
   @GetMapping("/portal-actions")
   public ResponseEntity<List<PortalActionDto>> getAllPortalActions(){

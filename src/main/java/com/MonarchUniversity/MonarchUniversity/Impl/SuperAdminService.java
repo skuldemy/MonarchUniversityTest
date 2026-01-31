@@ -1,3 +1,21 @@
+package com.MonarchUniversity.MonarchUniversity.Impl;
+import java.util.ArrayList; import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
+import com.MonarchUniversity.MonarchUniversity.Model.Course;
+import com.MonarchUniversity.MonarchUniversity.Model.LecturerProfile;
+import com.MonarchUniversity.MonarchUniversity.Model.Role;
+import com.MonarchUniversity.MonarchUniversity.Model.User;
+import com.MonarchUniversity.MonarchUniversity.Payload.*;
+import com.MonarchUniversity.MonarchUniversity.Repositories.*;
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 @Service
 @AllArgsConstructor
 public class SuperAdminService {

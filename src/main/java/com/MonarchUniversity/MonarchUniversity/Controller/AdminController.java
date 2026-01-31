@@ -40,12 +40,12 @@ public class AdminController {
 	        List<DepartmentDto> departments = supermanagementService.findDepartments(facultyId);
 	        return ResponseEntity.ok(departments);
 	    }
-	   
-	    @GetMapping("/department-management/{programId}/programs")
-	    public ResponseEntity<List<ProgramDto>> getProgramsByDepartment(@PathVariable Long programId){
-	    	List<ProgramDto> programs = supermanagementService.findPrograms(programId);
-	    	return ResponseEntity.ok(programs);
-	    }
+//
+//	    @GetMapping("/department-management/{programId}/programs")
+//	    public ResponseEntity<List<ProgramDto>> getProgramsByDepartment(@PathVariable Long programId){
+//	    	List<ProgramDto> programs = supermanagementService.findPrograms(programId);
+//	    	return ResponseEntity.ok(programs);
+//	    }
 // IMPORTANT
 //	    @GetMapping("/levels-management/{programId}/levels")
 //	    public ResponseEntity<?> getAllLevelsViaProgram(@PathVariable Long programId){
