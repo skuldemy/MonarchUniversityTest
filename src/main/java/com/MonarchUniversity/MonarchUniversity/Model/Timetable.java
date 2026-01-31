@@ -21,8 +21,6 @@ public class Timetable {
     @ManyToOne(fetch = FetchType.LAZY)
     private Department department;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Program program;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Level level;

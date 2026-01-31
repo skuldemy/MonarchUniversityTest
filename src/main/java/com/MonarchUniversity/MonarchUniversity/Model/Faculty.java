@@ -1,12 +1,11 @@
 package com.MonarchUniversity.MonarchUniversity.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -23,5 +22,7 @@ public class Faculty {
 	private String facultyAddress;
 	private Integer establishedYear;
 	private String facultyMotto;
+    @OneToMany(mappedBy = "faculty")
+    private List<Department> departments;
 	
 }

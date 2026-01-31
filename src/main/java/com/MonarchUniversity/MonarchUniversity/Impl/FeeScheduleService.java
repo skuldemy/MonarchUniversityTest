@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class FeeScheduleService {
     private final LevelRepository levelRepository;
-    private final ProgramRepository programRepository;
+    private final DepartmentRepository departmentRepository;
     private final FeeScheduleRepo feeScheduleRepo;
     private final FeeTypeRepo feeTypeRepo;
     private final FeeScheduleItemRepo feeScheduleItemRepo;
@@ -51,23 +51,23 @@ public class FeeScheduleService {
 
     public FeeScheduleResDto createFeeSchedule(FeeScheduleReqDto dto) {
 
-        Program program = programRepository.findById(dto.getProgramId())
+        Department department = departmentRepository.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new ResponseNotFoundException("No such program"));
 
         Level level = levelRepository.findById(dto.getLevelId())
                 .orElseThrow(() -> new ResponseNotFoundException("No such level"));
 
-        if (!level.getProgram().getId().equals(program.getId())) {
+        if (!level.getDepartment().getId().equals(department.getId())) {
             throw new ResponseNotFoundException("This level is not associated with this program");
         }
 
-        if(feeScheduleRepo.existsByLevelAndProgram(level,program)){
-            throw new ResponseNotFoundException("Such fee type for level and program has been created, consider editing");
+        if(feeScheduleRepo.existsByLevelAndDepartment(level,department)){
+            throw new ResponseNotFoundException("Such fee type for level and department has been created, consider editing");
         }
 
         FeeSchedule feeSchedule = new FeeSchedule();
         feeSchedule.setLevel(level);
-        feeSchedule.setProgram(program);
+        feeSchedule.setDepartment(department);
 
         feeScheduleRepo.save(feeSchedule);
 
@@ -104,8 +104,8 @@ public class FeeScheduleService {
                 feeSchedule.getId(),
                 level.getLevelNumber(),
                 level.getId(),
-                program.getProgramName(),
-                program.getId(),
+                department.getDepartmentName(),
+                department.getId(),
                 totalAmount,
                 feeItems
         );
@@ -136,8 +136,8 @@ public class FeeScheduleService {
                     schedule.getId(),
                     schedule.getLevel().getLevelNumber(),
                     schedule.getLevel().getId(),
-                    schedule.getProgram().getProgramName(),
-                    schedule.getProgram().getId(),
+                    schedule.getDepartment().getDepartmentName(),
+                    schedule.getDepartment().getId(),
                     totalAmount,
                     feeItems
             ));
@@ -153,17 +153,17 @@ public FeeScheduleResDto updateFeeSchedule(Long feeScheduleId, FeeScheduleReqDto
     FeeSchedule feeSchedule = feeScheduleRepo.findById(feeScheduleId)
             .orElseThrow(() -> new ResponseNotFoundException("Fee schedule not found"));
 
-    Program program = programRepository.findById(dto.getProgramId())
-            .orElseThrow(() -> new ResponseNotFoundException("No such program"));
+    Department department = departmentRepository.findById(dto.getDepartmentId())
+            .orElseThrow(() -> new ResponseNotFoundException("No such department"));
 
     Level level = levelRepository.findById(dto.getLevelId())
             .orElseThrow(() -> new ResponseNotFoundException("No such level"));
 
-    if (!level.getProgram().getId().equals(program.getId())) {
-        throw new ResponseNotFoundException("This level is not associated with this program");
+    if (!level.getDepartment().getId().equals(department.getId())) {
+        throw new ResponseNotFoundException("This level is not associated with this department");
     }
 
-    feeSchedule.setProgram(program);
+    feeSchedule.setDepartment(department);
     feeSchedule.setLevel(level);
     feeScheduleRepo.save(feeSchedule);
 
@@ -203,8 +203,8 @@ public FeeScheduleResDto updateFeeSchedule(Long feeScheduleId, FeeScheduleReqDto
             feeSchedule.getId(),
             level.getLevelNumber(),
             level.getId(),
-            program.getProgramName(),
-            program.getId(),
+            department.getDepartmentName(),
+            department.getId(),
             totalAmount,
             feeItems
     );

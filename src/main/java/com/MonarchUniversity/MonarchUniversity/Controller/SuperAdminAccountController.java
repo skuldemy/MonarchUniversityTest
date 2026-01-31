@@ -185,7 +185,7 @@ public class SuperAdminAccountController {
     @PutMapping("/admin-management/{id}")
     public ResponseEntity<LecturerResponseDto> updateLecturer(
             @PathVariable Long id,
-            @RequestBody @Valid LecturerRequestDto dto) {
+            @RequestBody @Valid UpdateLecturerRequestDto dto) {
         LecturerResponseDto updated = managementService.updateLecturer(id, dto);
         return ResponseEntity.ok(updated);
     }

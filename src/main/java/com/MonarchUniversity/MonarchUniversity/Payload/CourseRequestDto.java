@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CourseRequestDto {
-    private Long programId;
+    private Long departmentId;
     private Long levelId;
     private String courseTitle;
     private String courseType; // elective, core, specialization

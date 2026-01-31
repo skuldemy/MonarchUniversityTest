@@ -78,8 +78,7 @@ public class StudentProfileService {
             // Use getCellValue() to safely extract strings from Excel
             String facultyName = getCellValue(row.getCell(7));
             String departmentName = getCellValue(row.getCell(8));
-            String programName = getCellValue(row.getCell(9));
-            String levelNumber = getCellValue(row.getCell(10));
+            String levelNumber = getCellValue(row.getCell(9));
 
             // Lookup hierarchy safely, throw ResponseNotFoundException if missing
             Faculty faculty = facultyRepo.findByFacultyName(facultyName)
@@ -92,22 +91,17 @@ public class StudentProfileService {
                             "Department '" + departmentName +
                                     "' does not belong to faculty '" + facultyName + "'"));
 
-            Program program = programRepo
-                    .findByProgramNameAndDepartment(programName, department)
-                    .orElseThrow(() -> new ResponseNotFoundException(
-                            "Program '" + programName +
-                                    "' does not belong to department '" + departmentName + "'"));
 
             Level level = levelRepo
-                    .findByLevelNumberAndProgram(levelNumber, program)
+                    .findByLevelNumberAndDepartment(levelNumber, department)
                     .orElseThrow(() -> new ResponseNotFoundException(
                             "Level '" + levelNumber +
-                                    "' does not belong to program '" + programName + "'"));
+                                    "' does not belong to department '" + departmentName + "'"));
 
             // Generate matric number if missing
             String matric = matricFromExcel;
             if (matric == null || matric.isBlank()) {
-                matric = generateMatricNumber(program);
+                matric = generateMatricNumber(department);
             }
 
             // Skip duplicates
@@ -128,7 +122,6 @@ public class StudentProfileService {
             student.setFaculty(faculty);
             student.setDateOfBirth(parseLocalDate(row.getCell(4)));
             student.setDepartment(department);
-            student.setProgram(program);
             student.setLevel(level);
             student.setAdmissionYear(parseLocalDate(row.getCell(11)));
             student.setModeOfEntry(getCellValue(row.getCell(12)));
@@ -197,8 +190,7 @@ public class StudentProfileService {
     public StudentProfileResponseDto createStudentProfile(StudentProfileRequestDto dto) {
 
         // Fetch related entities
-        Program program = programRepo.findById(dto.getProgramId())
-                .orElseThrow(() -> new ResponseNotFoundException("No such Program"));
+
         Faculty faculty = facultyRepo.findById(dto.getFacultyId())
                 .orElseThrow(() -> new ResponseNotFoundException("No such Faculty"));
         Department department = departmentRepo.findById(dto.getDepartmentId())
@@ -211,17 +203,13 @@ public class StudentProfileService {
             throw new ResponseNotFoundException("This department does not belong to this faculty");
         }
 
-        if (!program.getDepartment().getId().equals(department.getId())) {
-            throw new ResponseNotFoundException("This program does not belong to this department");
-        }
-
-        if (!level.getProgram().getId().equals(program.getId())) {
-            throw new ResponseNotFoundException("This level does not belong to this program");
+        if (!level.getDepartment().getId().equals(department.getId())) {
+            throw new ResponseNotFoundException("This level does not belong to this department");
         }
 
         String matric = dto.getMatricNumber();
         if ((matric == null || matric.isBlank()) && dto.isAutoGenerateMatric()) {
-            matric = generateMatricNumber(program);
+            matric = generateMatricNumber(department);
         } else if (matric == null || matric.isBlank()) {
             throw new ResponseNotFoundException(
                     "Matric number is required or set autoGenerateMatric = true");
@@ -246,7 +234,6 @@ public class StudentProfileService {
         student.setNationality(dto.getNationality());
         student.setStateOfOrigin(dto.getStateOfOrigin());
         student.setLga(dto.getLga());
-        student.setProgram(program);
         student.setFaculty(faculty);
         student.setDepartment(department);
         student.setLevel(level);
@@ -269,7 +256,6 @@ public class StudentProfileService {
         response.setNationality(student.getNationality());
         response.setStateOfOrigin(student.getStateOfOrigin());
         response.setLga(student.getLga());
-        response.setProgramName(student.getProgram().getProgramName());
         response.setFacultyName(student.getFaculty().getFacultyName());
         response.setDepartmentName(student.getDepartment().getDepartmentName());
         response.setLevelName(student.getLevel().getLevelNumber());
@@ -312,7 +298,6 @@ public class StudentProfileService {
                     dto.setNationality(student.getNationality());
                     dto.setStateOfOrigin(student.getStateOfOrigin());
                     dto.setLga(student.getLga());
-                    dto.setProgramName(student.getProgram().getProgramName());
                     dto.setFacultyName(student.getFaculty().getFacultyName());
                     dto.setDepartmentName(student.getDepartment().getDepartmentName());
                     dto.setLevelName(student.getLevel().getLevelNumber());
@@ -348,8 +333,6 @@ public class StudentProfileService {
         StudentProfile student = studentProfileRepo.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("No student found with id: " + id));
 
-        Program program = programRepo.findById(dto.getProgramId())
-                .orElseThrow(() -> new ResponseNotFoundException("No such Program"));
         Faculty faculty = facultyRepo.findById(dto.getFacultyId())
                 .orElseThrow(() -> new ResponseNotFoundException("No such Faculty"));
         Department department = departmentRepo.findById(dto.getDepartmentId())
@@ -360,10 +343,8 @@ public class StudentProfileService {
         // Validate relationships
         if (!department.getFaculty().getId().equals(faculty.getId()))
             throw new ResponseNotFoundException("This department does not belong to this faculty");
-        if (!program.getDepartment().getId().equals(department.getId()))
-            throw new ResponseNotFoundException("This program does not belong to this department");
-        if (!level.getProgram().getId().equals(program.getId()))
-            throw new ResponseNotFoundException("This level does not belong to this program");
+        if (!level.getDepartment().getId().equals(department.getId()))
+            throw new ResponseNotFoundException("This level does not belong to this department");
 
         // Update fields
         student.setFirstName(dto.getFirstName());
@@ -374,7 +355,6 @@ public class StudentProfileService {
         student.setNationality(dto.getNationality());
         student.setStateOfOrigin(dto.getStateOfOrigin());
         student.setLga(dto.getLga());
-        student.setProgram(program);
         student.setFaculty(faculty);
         student.setDepartment(department);
         student.setLevel(level);
@@ -387,7 +367,7 @@ public class StudentProfileService {
         // Update matric number if changed or auto-generate
         String matric = dto.getMatricNumber();
         if ((matric == null || matric.isBlank()) && dto.isAutoGenerateMatric()) {
-            matric = generateMatricNumber(program);
+            matric = generateMatricNumber(department);
         } else if (matric == null || matric.isBlank()) {
             throw new ResponseNotFoundException("Matric number is required or set autoGenerateMatric = true");
         }
@@ -407,7 +387,6 @@ public class StudentProfileService {
         response.setNationality(student.getNationality());
         response.setStateOfOrigin(student.getStateOfOrigin());
         response.setLga(student.getLga());
-        response.setProgramName(student.getProgram().getProgramName());
         response.setFacultyName(student.getFaculty().getFacultyName());
         response.setDepartmentName(student.getDepartment().getDepartmentName());
         response.setLevelName(student.getLevel().getLevelNumber());
@@ -421,13 +400,13 @@ public class StudentProfileService {
         return response;
     }
 
-    private String generateMatricNumber(Program program) {
+    private String generateMatricNumber(Department department) {
         String matric;
         boolean isUnique = false;
 
         do {
             // Generate a matric number
-            String prefix = "MNU-" + program.getId();
+            String prefix = "MNU-" + department.getId();
             String random = String.format("%05d", (int) (Math.random() * 100000));
             matric = prefix + "-" + random;
 
@@ -465,7 +444,6 @@ public class StudentProfileService {
         response.setNationality(student.getNationality());
         response.setStateOfOrigin(student.getStateOfOrigin());
         response.setLga(student.getLga());
-        response.setProgramName(student.getProgram().getProgramName());
         response.setFacultyName(student.getFaculty().getFacultyName());
         response.setDepartmentName(student.getDepartment().getDepartmentName());
         response.setLevelName(student.getLevel().getLevelNumber());

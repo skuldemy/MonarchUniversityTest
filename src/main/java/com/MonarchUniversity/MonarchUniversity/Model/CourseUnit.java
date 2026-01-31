@@ -15,9 +15,9 @@ public class CourseUnit {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "program_id"
+            name = "department_id"
     )
-    private Program program;
+    private Department department;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "level_id"

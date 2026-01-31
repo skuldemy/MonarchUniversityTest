@@ -1,16 +1,14 @@
 package com.MonarchUniversity.MonarchUniversity.Impl;
 
 import com.MonarchUniversity.MonarchUniversity.Model.CourseUnit;
+import com.MonarchUniversity.MonarchUniversity.Model.Department;
 import com.MonarchUniversity.MonarchUniversity.Model.Level;
 import com.MonarchUniversity.MonarchUniversity.Model.Program;
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitUpdate;
-import com.MonarchUniversity.MonarchUniversity.Repositories.CourseUnitRepo;
-import com.MonarchUniversity.MonarchUniversity.Repositories.LevelRepository;
-import com.MonarchUniversity.MonarchUniversity.Repositories.ProgramRepository;
-import com.MonarchUniversity.MonarchUniversity.Repositories.SemesterRepo;
+import com.MonarchUniversity.MonarchUniversity.Repositories.*;
 import com.MonarchUniversity.MonarchUniversity.Service.CourseUnitService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,31 +20,31 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CourseUnitServiceImpl implements CourseUnitService{
     private final LevelRepository levelRepository;
-    private final ProgramRepository programRepository;
+    private final DepartmentRepository departmentRepository;
     private final SemesterRepo semesterRepo;
     private final CourseUnitRepo courseUnitRepo;
 
     @Override
     public String createCourseUnit(CourseUnitRequestDto dto) {
-        Program program = programRepository.findById(dto.getProgramId())
-                .orElseThrow(()-> new ResponseNotFoundException("No such available program"));
+        Department department = departmentRepository.findById(dto.getDepartmentId())
+                .orElseThrow(() -> new ResponseNotFoundException("No such program"));
 
-        Level level = levelRepository.findByIdAndProgram(dto.getLevelId(),
-                program).orElseThrow(()-> new ResponseNotFoundException("No such level for this program"));
+        Level level = levelRepository.findByIdAndDepartment(dto.getLevelId(), department
+                ).orElseThrow(()-> new ResponseNotFoundException("No such level for this program"));
 
         if(!level.getSemester().equals(dto.getSemesterName())){
             throw new ResponseNotFoundException("No such semester for this level," +
                     " consider updating the semester");
         }
 
-        if (courseUnitRepo.existsByProgramAndLevelAndSemesterName(program,level, dto.getSemesterName())){
+        if (courseUnitRepo.existsByDepartmentAndLevelAndSemesterName(department,level, dto.getSemesterName())){
             throw new ResponseNotFoundException("This response already exists, you might consider updating");
         }
 
 
         CourseUnit courseUnit = new CourseUnit();
         courseUnit.setLevel(level);
-        courseUnit.setProgram(program);
+        courseUnit.setDepartment(department);
         courseUnit.setSemesterName(dto.getSemesterName());
         courseUnit.setMinUnits(dto.getMinUnits());
         courseUnit.setMaxUnits(dto.getMaxUnits());
@@ -56,17 +54,17 @@ public class CourseUnitServiceImpl implements CourseUnitService{
     }
 
     @Override
-    public CourseUnitResponseDto getCouseUnitResponse(Long programId,
+    public CourseUnitResponseDto getCouseUnitResponse(Long departmentId,
                                                             Long levelId,
                                                             String semesterName
 
                                                             ) {
 
-        Program program = programRepository.findById(programId)
+        Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(()-> new ResponseNotFoundException("No such available program"));
 
-        Level level = levelRepository.findByIdAndProgram(levelId,
-                program).orElseThrow(()-> new ResponseNotFoundException("No such level for this program"));
+        Level level = levelRepository.findByIdAndDepartment(levelId,
+                department).orElseThrow(()-> new ResponseNotFoundException("No such level for this department"));
 
         if(!level.getSemester().equals(semesterName)){
             throw new ResponseNotFoundException("No such semester for this level," +
@@ -75,7 +73,7 @@ public class CourseUnitServiceImpl implements CourseUnitService{
 
 
         CourseUnit course = courseUnitRepo
-                .getCourseUnitByProgramAndLevelAndSemesterName(program,level,semesterName);
+                .getCourseUnitByDepartmentAndLevelAndSemesterName(department,level,semesterName);
 //        return courseUnitList
 //                .stream()
 //                .map(this::mapToDto)
@@ -100,7 +98,7 @@ public class CourseUnitServiceImpl implements CourseUnitService{
     private CourseUnitResponseDto mapToDto(CourseUnit c) {
         return new CourseUnitResponseDto(
                 c.getId(),
-                c.getProgram().getProgramName(),
+                c.getDepartment().getDepartmentName(),
                 c.getLevel().getLevelNumber(),
                 c.getSemesterName(),
                 c.getMinUnits(),
