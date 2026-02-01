@@ -203,6 +203,10 @@ public class SuperAdminAccountController {
         List<LecturerResponseDto> lecturers = managementService.getAllLecturers();
         return ResponseEntity.ok(lecturers);
     }
+    @GetMapping("/admin-management/{id}")
+    public ResponseEntity<?> getLecturerById(@PathVariable Long id){
+        return ResponseEntity.ok(managementService.getLecturerById(id));
+    }
     @PutMapping("/admin-management/{id}")
     public ResponseEntity<LecturerResponseDto> updateLecturer(
             @PathVariable Long id,
