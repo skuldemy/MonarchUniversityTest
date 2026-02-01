@@ -31,44 +31,61 @@ public class LevelService {
 
         Level level = new Level();
         level.setDepartment(department);
+        if(levelRepo.existsByLevelNumberAndDepartment(dto.getLevelNumber(), department)){
+            throw new ResponseNotFoundException("Level exists for this department");
+        }
         level.setLevelNumber(dto.getLevelNumber());
-        level.setSemester(dto.getSemester());
         level.setCapacity(dto.getCapacity());
 
         Level saved = levelRepo.save(level);
         return mapToDto(saved);
     }
 
+    public List<LevelDto>  getLevelByDepartment(Long departmentId){
+        Department department = departmentRepo.findById(departmentId)
+                .orElseThrow(()-> new ResponseNotFoundException("No such department"));
+        List<Level> levels = levelRepo.findByDepartment(department);
+        if(levels==null){
+            return null;
+        }
+        return levels.stream()
+                .map(l -> mapToDto(l)).collect(Collectors.toList());
+    }
   
     public LevelDto editLevel(Long id, LevelDto dto) {
 
         Level level = levelRepo.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("Level not found"));
 
-        if (dto.getLevelNumber() == null || dto.getLevelNumber().isBlank()) {
+        if (dto.getLevelNumber() == null ) {
             throw new ResponseForbiddenException("Level number is required");
         }
-        if (dto.getSemester() == null || dto.getSemester().isBlank()) {
-            throw new ResponseForbiddenException("Semester is required");
-        }
+
         if (dto.getDepartmentId() == null) {
-            throw new ResponseForbiddenException("Program ID is required");
+            throw new ResponseForbiddenException("Department is required");
         }
 
         Department department = departmentRepo.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new ResponseNotFoundException("Department not found"));
 
-
+        if(levelRepo.existsByLevelNumberAndDepartmentAndIdNot(dto.getLevelNumber(), department,id)){
+            throw new ResponseNotFoundException("Level exists for this department");
+        }
         level.setDepartment(department);
         level.setLevelNumber(dto.getLevelNumber());
-        level.setSemester(dto.getSemester());
         level.setCapacity(dto.getCapacity());
 
         Level updated = levelRepo.save(level);
         return mapToDto(updated);
     }
 
-   
+
+    public LevelDto getLevelById(Long id){
+           Level level = levelRepo.findById(id)
+                   .orElseThrow(()-> new ResponseNotFoundException("No such level"));
+           return mapToDto(level);
+    }
+
     public String deleteLevel(Long id) {
         Level level = levelRepo.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("Level not found"));
@@ -77,21 +94,13 @@ public class LevelService {
         return "Level successfully deleted";
     }
 
-//    @Cacheable("levels")
-//    public List<LevelDto> getAllLevels() {
-//        return levelRepo.findAll()
-//                .stream()
-//                .map(this::mapToDto)
-//                .collect(Collectors.toList());
-//    }
-//    
-//    @Cacheable("levels")
     public List<LevelDto> getAllLevels() {
         return levelRepo.findAll()
                 .stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
+
 
     
     private LevelDto mapToDto(Level level) {
@@ -100,7 +109,6 @@ public class LevelService {
                 level.getDepartment() != null ? level.getDepartment().getId() : null,
                 level.getDepartment().getDepartmentName(),
                 level.getLevelNumber(),
-                level.getSemester(),
                 level.getCapacity()
         );
     }

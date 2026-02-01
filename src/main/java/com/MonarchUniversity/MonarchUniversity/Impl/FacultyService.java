@@ -33,8 +33,15 @@ public class FacultyService {
         }
 
         faculty.setFacultyName(dto.getFacultyName());
+        if (facultyRepo.existsByFacultyCodeIgnoreCase(dto.getFacultyCode())){
+            throw new ResponseNotFoundException("Faculty code exists already");
+        }
+
         faculty.setFacultyCode(dto.getFacultyCode());
         faculty.setFacultyDescription(dto.getFacultyDescription());
+        if (facultyRepo.existsByFacultyEmailIgnoreCase(dto.getFacultyEmail())){
+            throw new ResponseNotFoundException("Faculty email exists already");
+        }
         faculty.setFacultyEmail(dto.getFacultyEmail());
         faculty.setFacultyAddress(dto.getFacultyAddress());
         faculty.setEstablishedYear(dto.getEstablishedYear());
@@ -42,36 +49,40 @@ public class FacultyService {
 
         Faculty savedFaculty = facultyRepo.save(faculty);
 
-        return new FacultyResponseDto(
-        	    savedFaculty.getId(),
-        	    savedFaculty.getFacultyName(),
-        	    savedFaculty.getFacultyCode(),            
-        	    savedFaculty.getFacultyDescription(),
-        	    savedFaculty.getFacultyEmail(),           
-        	    savedFaculty.getFacultyAddress(),
-        	    savedFaculty.getEstablishedYear(),
-        	    savedFaculty.getFacultyMotto()
-        	);
- 
+        return mapToDto(savedFaculty);
+    }
+
+    public FacultyResponseDto getFacultyById(Long id){
+        Faculty faculty = facultyRepo.findById(id)
+                .orElseThrow(()-> new ResponseNotFoundException("No such faculty"));
+
+        return mapToDto(faculty);
     }
 
     public FacultyResponseDto editFaculty(Long id, FacultyDto dto) {
         Faculty faculty = facultyRepo.findById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("No such Faculty Id"));
 
-        if (dto.getFacultyName() == null || dto.getFacultyName().isBlank()) {
-            throw new ResponseForbiddenException("Faculty name is required");
-        }
-        if (dto.getFacultyCode() == null || dto.getFacultyCode().isBlank()) {
-            throw new ResponseForbiddenException("Faculty code is required");
-        }
+//        if (dto.getFacultyName() == null || dto.getFacultyName().isBlank()) {
+//            throw new ResponseForbiddenException("Faculty name is required");
+//        }
+//        if (dto.getFacultyCode() == null || dto.getFacultyCode().isBlank()) {
+//            throw new ResponseForbiddenException("Faculty code is required");
+//        }
 
-        if (facultyRepo.existsByFacultyNameIgnoreCase(dto.getFacultyName())){
+        if (facultyRepo.existsByFacultyNameIgnoreCaseAndIdNot(dto.getFacultyName(),id)){
             throw new ResponseNotFoundException("Faculty name exists already");
         }
         faculty.setFacultyName(dto.getFacultyName());
+        if (facultyRepo.existsByFacultyCodeIgnoreCaseAndIdNot(dto.getFacultyCode(), id)){
+            throw new ResponseNotFoundException("Faculty code exists already");
+        }
         faculty.setFacultyCode(dto.getFacultyCode());
         faculty.setFacultyDescription(dto.getFacultyDescription());
+        if (facultyRepo.existsByFacultyEmailIgnoreCaseAndIdNot(dto.getFacultyEmail(), id)){
+            throw new ResponseNotFoundException("Faculty email exists already");
+        }
+
         faculty.setFacultyEmail(dto.getFacultyEmail());
         faculty.setFacultyAddress(dto.getFacultyAddress());
         faculty.setEstablishedYear(dto.getEstablishedYear());
@@ -79,16 +90,7 @@ public class FacultyService {
 
         Faculty saved = facultyRepo.save(faculty);
 
-        return new FacultyResponseDto(
-                saved.getId(),
-                saved.getFacultyName(),
-                saved.getFacultyCode(),
-                saved.getFacultyDescription(),
-                saved.getFacultyEmail(),
-                saved.getFacultyAddress(),
-                saved.getEstablishedYear(),
-                saved.getFacultyMotto()
-        );
+        return mapToDto(saved);
     }
 
     
@@ -101,16 +103,21 @@ public class FacultyService {
     }
 
     public List<FacultyResponseDto> getAllFaculties(){
-    	return facultyRepo.findAll().stream().map(r-> new FacultyResponseDto(
-                r.getId(),
-                r.getFacultyName(),
-                r.getFacultyCode(),
-                r.getFacultyDescription(),
-                r.getFacultyEmail(),
-                r.getFacultyAddress(),
-                r.getEstablishedYear(),
-                r.getFacultyMotto()
-        )).collect(Collectors.toList());
+    	return facultyRepo.findAll().stream().map(r-> mapToDto(r)
+        ).collect(Collectors.toList());
+    }
+
+    public FacultyResponseDto mapToDto(Faculty saved){
+        return new FacultyResponseDto(
+                saved.getId(),
+                saved.getFacultyName(),
+                saved.getFacultyCode(),
+                saved.getFacultyDescription(),
+                saved.getFacultyEmail(),
+                saved.getFacultyAddress(),
+                saved.getEstablishedYear(),
+                saved.getFacultyMotto()
+        );
     }
 }
 

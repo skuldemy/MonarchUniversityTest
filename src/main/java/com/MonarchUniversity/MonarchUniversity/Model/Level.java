@@ -22,7 +22,6 @@ public class Level {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "department_id")
 	private Department department;
-	private String levelNumber; 
-	private String semester;
+	private String levelNumber;
 	private Integer capacity;
 }

@@ -41,7 +41,7 @@ public class SuperAdminAccountController {
         @ApiResponse(responseCode = "201", description = "Faculty created successfully"),
         @ApiResponse(responseCode = "403", description = "Faculty name or code is missing")
     })
-    
+
 	@PostMapping("/faculty")
 	public ResponseEntity<?> createFaculty(@RequestBody @Valid FacultyDto dto){
 		 FacultyResponseDto createdFaculty = facultyService.createFaculty(dto);
@@ -54,7 +54,13 @@ public class SuperAdminAccountController {
 	public ResponseEntity<?> getAllFaculties(){
 		return ResponseEntity.ok(facultyService.getAllFaculties());
 	}
-	
+
+    @GetMapping("/faculty/{id}")
+    public ResponseEntity<?> getFacultyById(@PathVariable Long id){
+        return ResponseEntity.ok(facultyService.getFacultyById(id));
+    }
+
+
     @Operation(summary = "1 - Faculty: Edit a faculty", description = "Updates the faculty identified by ID")
     
     @PutMapping("/faculty/{id}")
@@ -81,6 +87,11 @@ public class SuperAdminAccountController {
     @GetMapping("/department")
     public ResponseEntity<List<DepartmentDto>> getAllDepartments() {
         return ResponseEntity.ok(departmentService.getAllDepartments());
+    }
+
+    @GetMapping("/department/{id}")
+    public ResponseEntity<?> getDepartmentById(@PathVariable Long id){
+        return ResponseEntity.ok(departmentService.getDepartmentById(id));
     }
 
     @Operation(summary = "2 - Department: Edit a department", description = "Updates the department identified by ID")
@@ -137,11 +148,21 @@ public class SuperAdminAccountController {
     	return ResponseEntity.status(201).body(created);
     }
     
-    @GetMapping("/level")
-    public ResponseEntity<List<LevelDto>> getAllLevels(){
-    	return ResponseEntity.ok(levelService.getAllLevels());
+//    @GetMapping("/level")
+//    public ResponseEntity<List<LevelDto>> getAllLevels(){
+//    	return ResponseEntity.ok(levelService.getAllLevels());
+//    }
+
+    @GetMapping("/level/via-department-id/{departmentId}")
+    public ResponseEntity<?> getLevelsViaDepartment(@PathVariable Long departmentId){
+        return ResponseEntity.ok(levelService.getLevelByDepartment(departmentId));
     }
-    
+
+    @GetMapping("/level/{id}")
+    public ResponseEntity<?> getLevelById(@PathVariable Long id){
+        return ResponseEntity.ok(levelService.getLevelById(id));
+    }
+
     @PutMapping("/level/{id}")
     public ResponseEntity<LevelDto> editLevel(@PathVariable Long id, @RequestBody @Valid LevelDto dto){
     	return ResponseEntity.ok(levelService.editLevel(id, dto));
