@@ -86,6 +86,10 @@ public class SuperAdminService {
 
         List<Course> courses = courseRepo.findAllById(dto.getCoursesOffering());
 
+        if (courses.size() != dto.getCoursesOffering().size()) {
+            throw new ResponseNotFoundException("One or more courses not found");
+        }
+
         LecturerProfile lecturer = new LecturerProfile();
         lecturer.setUser(user);
         lecturer.setFullName(dto.getFullName());
@@ -137,7 +141,13 @@ public class SuperAdminService {
             lecturer.setFullName(dto.getFullName());
 
         if (dto.getCoursesOffering() != null) {
-            lecturer.setCourses(courseRepo.findAllById(dto.getCoursesOffering()));
+            List<Course> courses = courseRepo.findAllById(dto.getCoursesOffering());
+
+            if (courses.size() != dto.getCoursesOffering().size()) {
+                throw new ResponseNotFoundException("One or more courses not found");
+            }
+
+            lecturer.setCourses(courses);
         }
 
         userRepo.save(user);
@@ -174,19 +184,17 @@ public class SuperAdminService {
                         .collect(Collectors.toSet())
         );
 
-        List<Course> courses = lecturer.getCourses();
+        List<LecturerCourseDto> courseDtos = lecturer.getCourses()
+                .stream()
+                .map(c -> new LecturerCourseDto(
+                        c.getCourseTitle(),
+                        c.getCourseCode(),
+                        c.getDepartment().getDepartmentName(),
+                        c.getLevel().getLevelNumber()
+                ))
+                .toList();
 
-        res.setCoursesOffering(
-                courses.stream()
-                        .map(Course::getCourseTitle)
-                        .toList()
-        );
-
-        res.setDepartmentName(
-                courses.stream()
-                        .map(c -> c.getDepartment().getDepartmentName())
-                        .collect(Collectors.joining(", "))
-        );
+        res.setCourses(courseDtos);
 
         return res;
     }
@@ -199,4 +207,5 @@ public class SuperAdminService {
         userRepo.delete(lecturer.getUser());
         lecturerRepo.delete(lecturer);
     }
+
 }
