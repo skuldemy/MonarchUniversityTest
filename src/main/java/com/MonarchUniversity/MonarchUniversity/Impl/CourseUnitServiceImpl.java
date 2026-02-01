@@ -32,10 +32,10 @@ public class CourseUnitServiceImpl implements CourseUnitService{
         Level level = levelRepository.findByIdAndDepartment(dto.getLevelId(), department
                 ).orElseThrow(()-> new ResponseNotFoundException("No such level for this program"));
 
-        if(!level.getSemester().equals(dto.getSemesterName())){
-            throw new ResponseNotFoundException("No such semester for this level," +
-                    " consider updating the semester");
-        }
+//        if(!level.getSemester().equals(dto.getSemesterName())){
+//            throw new ResponseNotFoundException("No such semester for this level," +
+//                    " consider updating the semester");
+//        }
 
         if (courseUnitRepo.existsByDepartmentAndLevelAndSemesterName(department,level, dto.getSemesterName())){
             throw new ResponseNotFoundException("This response already exists, you might consider updating");
@@ -66,10 +66,10 @@ public class CourseUnitServiceImpl implements CourseUnitService{
         Level level = levelRepository.findByIdAndDepartment(levelId,
                 department).orElseThrow(()-> new ResponseNotFoundException("No such level for this department"));
 
-        if(!level.getSemester().equals(semesterName)){
-            throw new ResponseNotFoundException("No such semester for this level," +
-                    " consider updating the semester");
-        }
+//        if(!level.getSemester().equals(semesterName)){
+//            throw new ResponseNotFoundException("No such semester for this level," +
+//                    " consider updating the semester");
+//        }
 
 
         CourseUnit course = courseUnitRepo

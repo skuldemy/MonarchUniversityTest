@@ -11,6 +11,9 @@ import com.MonarchUniversity.MonarchUniversity.Model.Department;
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
 	List<Department> findByFacultyId(Long id);
     boolean existsByDepartmentNameIgnoreCase(String departmentName);
+    boolean existsByDepartmentCodeIgnoreCase(String departmentCode);
+    boolean existsByDepartmentNameIgnoreCaseAndIdNot(String departmentName, Long id);
+    boolean existsByDepartmentCodeIgnoreCaseAndIdNot(String departmentCode,Long id);
     Optional<Department> findByDepartmentName(String departmentName);
     Optional<Department> findByDepartmentNameAndFaculty(
             String departmentName, Faculty faculty);

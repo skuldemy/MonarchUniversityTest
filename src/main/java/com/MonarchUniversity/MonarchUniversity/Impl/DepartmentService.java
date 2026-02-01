@@ -47,6 +47,9 @@ public class DepartmentService {
             throw new ResponseNotFoundException("Department name already exists");
         }
         dept.setDepartmentName(dto.getDepartmentName());
+        if(departmentRepo.existsByDepartmentCodeIgnoreCase(dto.getDepartmentCode())){
+            throw new ResponseNotFoundException("Department code already exists");
+        }
         dept.setDepartmentCode(dto.getDepartmentCode());
         dept.setFaculty(faculty);
         dept.setDepartmentDescription(dto.getDepartmentDescription());
@@ -55,16 +58,7 @@ public class DepartmentService {
 
         Department saved = departmentRepo.save(dept);
 
-        return new DepartmentDto(
-                saved.getId(),
-                saved.getDepartmentName(),
-                saved.getDepartmentCode(),
-                saved.getFaculty().getId(),
-                saved.getFaculty().getFacultyName(),
-                saved.getDepartmentDescription(),
-                saved.getOfficeLocation(),
-                saved.getEstablishedYear()
-        );
+        return mapToDto(saved);
     }
 
     public DepartmentDto editDepartment(Long id, DepartmentDto dto) {
@@ -84,8 +78,11 @@ public class DepartmentService {
         Faculty faculty = facultyRepo.findById(dto.getFacultyId())
                 .orElseThrow(() -> new ResponseNotFoundException("Faculty not found"));
 
-        if(departmentRepo.existsByDepartmentNameIgnoreCase(dto.getDepartmentName())){
+        if(departmentRepo.existsByDepartmentNameIgnoreCaseAndIdNot(dto.getDepartmentName(),id)){
             throw new ResponseNotFoundException("Department name already exists");
+        }
+        if(departmentRepo.existsByDepartmentCodeIgnoreCaseAndIdNot(dto.getDepartmentCode(),id)){
+            throw new ResponseNotFoundException("Department code already exists");
         }
         dept.setDepartmentName(dto.getDepartmentName());
         dept.setDepartmentCode(dto.getDepartmentCode());
@@ -96,16 +93,13 @@ public class DepartmentService {
 
         Department saved = departmentRepo.save(dept);
 
-        return new DepartmentDto(
-                saved.getId(),
-                saved.getDepartmentName(),
-                saved.getDepartmentCode(),
-                saved.getFaculty().getId(),
-                saved.getFaculty().getFacultyName(),
-                saved.getDepartmentDescription(),
-                saved.getOfficeLocation(),
-                saved.getEstablishedYear()
-        );
+        return mapToDto(saved);
+    }
+
+    public DepartmentDto getDepartmentById(Long id){
+        Department department = departmentRepo.findById(id)
+                .orElseThrow(()-> new ResponseNotFoundException("No such department"));
+        return mapToDto(department);
     }
 
     public String deleteDepartment(Long id) {
@@ -120,16 +114,19 @@ public class DepartmentService {
     public List<DepartmentDto> getAllDepartments() {
         return departmentRepo.findAll()
                 .stream()
-                .map(d -> new DepartmentDto(
-                        d.getId(),
-                        d.getDepartmentName(),
-                        d.getDepartmentCode(),
-                        d.getFaculty() != null ? d.getFaculty().getId() : null,
-                        d.getFaculty() != null ? d.getFaculty().getFacultyName() : null,
-                        d.getDepartmentDescription(),
-                        d.getOfficeLocation(),
-                        d.getEstablishedYear()
-                ))
+                .map(d -> mapToDto(d))
                 .collect(Collectors.toList());
+    }
+    public DepartmentDto mapToDto(Department saved){
+       return new DepartmentDto(
+                saved.getId(),
+                saved.getDepartmentName(),
+                saved.getDepartmentCode(),
+                saved.getFaculty().getId(),
+                saved.getFaculty().getFacultyName(),
+                saved.getDepartmentDescription(),
+                saved.getOfficeLocation(),
+                saved.getEstablishedYear()
+        );
     }
 }

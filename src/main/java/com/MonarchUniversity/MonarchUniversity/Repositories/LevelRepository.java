@@ -13,5 +13,8 @@ public interface LevelRepository extends JpaRepository<Level, Long> {
 	List<Level> findByDepartmentId(Long id);
 
     Optional<Level> findByLevelNumberAndDepartment(String levelNumber, Department department);
+    boolean existsByLevelNumberAndDepartment(String levelNumber, Department department);
+    boolean existsByLevelNumberAndDepartmentAndIdNot(String levelNumber, Department department, Long id);
     Optional<Level> findByIdAndDepartment(Long levelId, Department department);
+    List<Level> findByDepartment(Department department);
 }
