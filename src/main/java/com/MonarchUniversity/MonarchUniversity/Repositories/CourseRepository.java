@@ -14,4 +14,19 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     boolean existsByCourseCodeIgnoreCaseAndLevelAndDepartment(String courseCode, Level level, Department department);
 
     boolean existsByCourseTitleIgnoreCaseAndLevelAndDepartment(String courseTitle, Level level, Department department);
+
+    boolean existsByCourseCodeIgnoreCaseAndLevelAndDepartmentAndIdNot(
+            String courseCode,
+            Level level,
+            Department department,
+            Long id
+    );
+
+    boolean existsByCourseTitleIgnoreCaseAndLevelAndDepartmentAndIdNot(
+            String courseTitle,
+            Level level,
+            Department department,
+            Long id
+    );
+
 }

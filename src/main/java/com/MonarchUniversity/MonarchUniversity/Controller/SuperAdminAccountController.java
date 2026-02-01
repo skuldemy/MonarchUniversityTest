@@ -306,16 +306,20 @@ public class SuperAdminAccountController {
                 .body(courseService.createCourse(dto));
     }
 
-    @GetMapping("/create-courses/{programId}/{levelId}")
-    public ResponseEntity<List<CourseResponseDto>> getCoursesByProgramAndLevel(
-            @PathVariable Long programId,
+    @GetMapping("/create-courses/{departmentId}/{levelId}")
+    public ResponseEntity<List<CourseResponseDto>> getCoursesByDepartmentAndLevel(
+            @PathVariable Long departmentId,
             @PathVariable Long levelId
     ) {
         return ResponseEntity.ok(
-                courseService.getAllCoursesAttachedToProgram(programId, levelId)
+                courseService.getAllCoursesAttachedToProgram(departmentId, levelId)
         );
     }
 
+@GetMapping(("/create-courses/{courseId}"))
+public ResponseEntity<?> getCourseById(@PathVariable Long courseId){
+        return ResponseEntity.ok(courseService.getCourseById(courseId));
+}
 
     @PutMapping("/create-courses/{courseId}")
     public ResponseEntity<CourseResponseDto> updateCourse(
@@ -326,6 +330,7 @@ public class SuperAdminAccountController {
                 courseService.updateCourse(courseId, dto)
         );
     }
+
 
 //    new
 @GetMapping("/fee-Type")
