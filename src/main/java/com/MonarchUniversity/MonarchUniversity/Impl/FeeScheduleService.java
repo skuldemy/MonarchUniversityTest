@@ -32,7 +32,7 @@ public class FeeScheduleService {
         FeeType feeType = new FeeType();
         String feeName = dto.getFeeName().trim();
         if(feeTypeRepo.existsByName(feeName)){
-            throw new ResponseNotFoundException("Such a fee name already exists");
+            throw new ResponseNotFoundException("Such fee name exists in the system");
         }
         feeType.setName(feeName);
         FeeType savedFeeType = feeTypeRepo.save(feeType);
@@ -52,7 +52,7 @@ public class FeeScheduleService {
     public FeeScheduleResDto createFeeSchedule(FeeScheduleReqDto dto) {
 
         Department department = departmentRepository.findById(dto.getDepartmentId())
-                .orElseThrow(() -> new ResponseNotFoundException("No such program"));
+                .orElseThrow(() -> new ResponseNotFoundException("No such department"));
 
         Level level = levelRepository.findById(dto.getLevelId())
                 .orElseThrow(() -> new ResponseNotFoundException("No such level"));

@@ -189,7 +189,10 @@ public class SuperAdminService {
                 .map(c -> new LecturerCourseDto(
                         c.getCourseTitle(),
                         c.getCourseCode(),
+                        c.getId(),
+                        c.getDepartment().getId(),
                         c.getDepartment().getDepartmentName(),
+                        c.getLevel().getId(),
                         c.getLevel().getLevelNumber()
                 ))
                 .toList();

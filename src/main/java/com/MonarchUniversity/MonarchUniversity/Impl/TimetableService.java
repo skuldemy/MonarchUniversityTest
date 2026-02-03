@@ -84,15 +84,15 @@ public class TimetableService {
                     .orElseThrow(() -> new ResponseNotFoundException(
                             "Department does not belong to faculty"));
 
-            Program program = programRepo
-                    .findByProgramNameAndDepartment(departmentName, department)
-                    .orElseThrow(() -> new ResponseNotFoundException(
-                            "Program does not belong to department"));
+//            Program program = programRepo
+//                    .findByProgramNameAndDepartment(departmentName, department)
+//                    .orElseThrow(() -> new ResponseNotFoundException(
+//                            "Program does not belong to department"));
 
             Level level = levelRepo
                     .findByLevelNumberAndDepartment(levelNumber, department)
                     .orElseThrow(() -> new ResponseNotFoundException(
-                            "Level does not belong to program"));
+                            "Level does not belong to department"));
 
             // Create or reuse timetable (once per file)
             if (timetable == null) {
@@ -143,7 +143,7 @@ public class TimetableService {
     ) {
 
         Department department = departmentRepo.findByDepartmentName(departmentName)
-                .orElseThrow(() -> new ResponseNotFoundException("No such program"));
+                .orElseThrow(() -> new ResponseNotFoundException("No such department"));
 
         Level level = levelRepo.findByLevelNumberAndDepartment(levelNumber, department)
                 .orElseThrow(() -> new ResponseNotFoundException("Level not found"));
