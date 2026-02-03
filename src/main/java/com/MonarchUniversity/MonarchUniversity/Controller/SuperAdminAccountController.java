@@ -34,6 +34,7 @@ public class SuperAdminAccountController {
     private final CourseService courseService;
     private final FeeScheduleService feeScheduleService;
     private final CourseUnitService courseUnitService;
+    private final StudentProfileService studentProfileService;
 
 	
     @Operation(summary = "1 - Faculty: Create a new faculty", description = "Creates a faculty with all required details")
@@ -383,5 +384,10 @@ public ResponseEntity<?> getFeeTypes(){
     @PutMapping("/course-unit/{id}")
     public ResponseEntity<?> updateCourseUnit(@PathVariable Long id, @RequestBody @Valid CourseUnitUpdate dto){
         return ResponseEntity.ok(courseUnitService.updateCourseUnits(id, dto));
+    }
+
+    @GetMapping("/students-in-level-department/{departmentId}/{levelId}")
+    public ResponseEntity<?> getStudentOfferingCourses(@PathVariable Long departmentId, @PathVariable Long levelId){
+        return ResponseEntity.ok(studentProfileService.findStudentsInDepartmentAndLevel(departmentId,levelId));
     }
 }
