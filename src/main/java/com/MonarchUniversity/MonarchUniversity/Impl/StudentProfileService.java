@@ -493,6 +493,46 @@ public class StudentProfileService {
         return response;
     }
 
+    public List<StudentProfileResponseDto> findStudentsInDepartmentAndLevel(Long departmentId,Long levelId){
+
+        Department department = departmentRepo.findById(departmentId)
+                .orElseThrow(() -> new ResponseNotFoundException("No such Department"));
+        Level level = levelRepo.findById(levelId)
+                .orElseThrow(() -> new ResponseNotFoundException("No such Level"));
+
+
+        List<StudentProfile> studentProfileList = studentProfileRepo
+                .findByDepartmentAndLevel(department, level);
+        return studentProfileList.stream()
+                .map(student -> {
+                    StudentProfileResponseDto dto = new StudentProfileResponseDto();
+                    dto.setId(student.getId());
+                    dto.setFirstName(student.getFirstName());
+                    dto.setMiddleName(student.getMiddleName());
+                    dto.setLastName(student.getLastName());
+                    dto.setGender(student.getGender());
+                    dto.setDateOfBirth(student.getDateOfBirth());
+                    dto.setNationality(student.getNationality());
+                    dto.setStateOfOrigin(student.getStateOfOrigin());
+                    dto.setLga(student.getLga());
+                    dto.setFacultyName(student.getFaculty().getFacultyName());
+                    dto.setDepartmentName(student.getDepartment().getDepartmentName());
+                    dto.setLevelName(student.getLevel().getLevelNumber());
+                    dto.setAdmissionYear(student.getAdmissionYear());
+                    dto.setMatricNumber(student.getMatricNumber());
+                    dto.setModeOfEntry(student.getModeOfEntry());
+                    dto.setEmailAddress(student.getEmailAddress());
+                    dto.setPhoneNumber(student.getPhoneNumber());
+                    dto.setHomeAddress(student.getHomeAddress());
+                    dto.setStatus(
+                            student.getUser() != null && student.getUser().isEnabled() ? "Active" : "Suspended"
+                    );
+
+                    return dto;
+                })
+                .toList();
+    }
+
 //    public StudentProfileResponseDto getStudentsInProgramAndLevel(Long programId, Long levelId){
 //
 //        Program program = programRepo.findById(programId)
