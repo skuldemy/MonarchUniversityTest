@@ -61,6 +61,12 @@ public class AdminController {
 	public ResponseEntity<?> getStudents(){
 		return ResponseEntity.ok(studentProfileService.getAllStudents());
 	}
+
+    @GetMapping("/create-student-profile/{departmentId}/{levelId}")
+    public ResponseEntity<?> getStudentsByLevelAndDepartment(@PathVariable Long departmentId, @PathVariable Long levelId){
+        return ResponseEntity.ok(studentProfileService.getStudentByDepartmentAndLevel(departmentId,levelId));
+    }
+
 	@PutMapping("/create-student-profile/{id}")
 	public ResponseEntity<?> updateStudentsViaId(@PathVariable Long id, @RequestBody StudentProfileRequestDto dto){
 		return ResponseEntity.ok(studentProfileService.updateStudent(id, dto));
