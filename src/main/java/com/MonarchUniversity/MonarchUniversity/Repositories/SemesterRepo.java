@@ -20,4 +20,9 @@ public interface SemesterRepo extends JpaRepository<Semester, Long> {
     Optional<Semester> findBySessionIdAndActiveTrue(Long sessionId);
 
     boolean existsBySessionIdAndSemesterName(Long sessionId, String semesterName);
+    boolean existsBySessionIdAndSemesterNameAndIdNot(
+            Long sessionId,
+            String semesterName,
+            Long id
+    );
 }

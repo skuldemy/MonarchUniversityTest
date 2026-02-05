@@ -390,4 +390,48 @@ public ResponseEntity<?> getFeeTypes(){
     public ResponseEntity<?> getStudentOfferingCourses(@PathVariable Long departmentId, @PathVariable Long levelId){
         return ResponseEntity.ok(studentProfileService.findStudentsInDepartmentAndLevel(departmentId,levelId));
     }
+    // new
+
+
+    @PostMapping("/create-session")
+    public ResponseEntity<?> createSession(@Valid @RequestBody SessionRequestDto dto){
+        return ResponseEntity.ok(sessionAndSemesterService.createSession(dto));
+    }
+
+    @GetMapping("/create-session")
+    public ResponseEntity<?> getAllSessions(){
+        return ResponseEntity.ok(sessionAndSemesterService.getAllSession());
+    }
+
+    @PutMapping("/create-session/{id}")
+    public ResponseEntity<?> updateSessionById(@PathVariable Long id,@Valid @RequestBody SessionRequestDto dto){
+        return ResponseEntity.ok(sessionAndSemesterService.updateSession(id,dto));
+    }
+
+    @GetMapping("/create-session/{id}")
+    public ResponseEntity<?> getSessionById(@PathVariable Long id){
+        return ResponseEntity.ok(sessionAndSemesterService.getSessionById(id));
+    }
+
+
+    @PostMapping("/create-semester")
+    public ResponseEntity<?> createSemester(@Valid @RequestBody SemesterRequestDto dto){
+        return ResponseEntity.ok(sessionAndSemesterService.createSemester(dto));
+    }
+
+    @GetMapping("/create-semester")
+    public ResponseEntity<?> getSemesters(){
+        return ResponseEntity.ok(sessionAndSemesterService.getAllSemester());
+    }
+
+    @PutMapping("/create-semester/{id}")
+    public ResponseEntity<?> updateSemesterById(@PathVariable Long id,@Valid @RequestBody SemesterRequestDto dto){
+        return ResponseEntity.ok(sessionAndSemesterService.updateSemester(id,dto));
+    }
+
+    @GetMapping("/create-semester/{id}")
+    public ResponseEntity<?> getSemesterById(@PathVariable Long id){
+        return ResponseEntity.ok(sessionAndSemesterService.getSemesterById(id));
+    }
+
 }

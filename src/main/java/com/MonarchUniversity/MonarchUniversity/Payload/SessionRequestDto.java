@@ -15,4 +15,5 @@ public class SessionRequestDto{
     @NotBlank(message = "Session name is required")
     private String sessionName;
     private String remarks;
+    private boolean active;
 }

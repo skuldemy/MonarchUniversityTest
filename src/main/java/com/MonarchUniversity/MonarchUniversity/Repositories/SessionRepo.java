@@ -15,4 +15,5 @@ public interface SessionRepo extends JpaRepository<Session, Long> {
     void deactivateAllSessions();
 
     Optional<Session> findByActiveTrue();
+    boolean existsBySessionNameAndIdNot(String sessionName, Long id);
 }

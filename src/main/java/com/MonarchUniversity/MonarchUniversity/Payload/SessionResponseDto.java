@@ -13,4 +13,5 @@ public class SessionResponseDto{
     private Long id;
     private String sessionName;
     private String remarks;
+    private String active;
 }
