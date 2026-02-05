@@ -92,6 +92,15 @@ public class AdminController {
         return ResponseEntity.ok(sessionAndSemesterService.getAllSession());
     }
 
+    @PutMapping("/create-session/{id}")
+    public ResponseEntity<?> updateSessionById(@PathVariable Long id,@Valid @RequestBody SessionRequestDto dto){
+        return ResponseEntity.ok(sessionAndSemesterService.updateSession(id,dto));
+    }
+
+    @GetMapping("/create-session/{id}")
+    public ResponseEntity<?> getSessionById(@PathVariable Long id){
+        return ResponseEntity.ok(sessionAndSemesterService.getSessionById(id));
+    }
 
     @PostMapping("/create-semester")
     public ResponseEntity<?> createSemester(@Valid @RequestBody SemesterRequestDto dto){
@@ -103,6 +112,15 @@ public class AdminController {
         return ResponseEntity.ok(sessionAndSemesterService.getAllSemester());
     }
 
+    @PutMapping("/create-semester/{id}")
+    public ResponseEntity<?> updateSemesterById(@PathVariable Long id,@Valid @RequestBody SemesterRequestDto dto){
+        return ResponseEntity.ok(sessionAndSemesterService.updateSemester(id,dto));
+    }
+
+    @GetMapping("/create-semester/{id}")
+    public ResponseEntity<?> getSemesterById(@PathVariable Long id){
+        return ResponseEntity.ok(sessionAndSemesterService.getSemesterById(id));
+    }
     // new
 
     @GetMapping("/fee-Type")

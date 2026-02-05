@@ -12,6 +12,7 @@ import com.MonarchUniversity.MonarchUniversity.Repositories.SessionRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,9 +38,17 @@ public class SessionAndSemesterService {
         session.setActive(true);
 
         Session savedSession = sessionRepo.save(session);
+        String status = "";
+        if(savedSession.isActive()){
+            status = "Active";
+        }
+        else{
+           status = "Not_Active";
+        }
 
         return new SessionResponseDto(savedSession.getId(), savedSession.getSessionName(),
-                savedSession.getRemarks()
+                savedSession.getRemarks(),
+                status
                 );
     }
 
@@ -88,13 +97,25 @@ public class SessionAndSemesterService {
 
         return sessionRepo.findAll()
                 .stream()
-                .map(session -> new SessionResponseDto(
-                        session.getId(),
-                        session.getSessionName(),
-                        session.getRemarks()
-                ))
+                .map(session -> {
+
+                    String status;
+                    if (session.isActive()) {
+                        status = "Active";
+                    } else {
+                        status = "Not Active";
+                    }
+
+                    return new SessionResponseDto(
+                            session.getId(),
+                            session.getSessionName(),
+                            session.getRemarks(),
+                            status
+                    );
+                })
                 .toList();
     }
+
 
     public List<SemesterResponseDto> getAllSemester(){
         return semesterRepo.findAll()
@@ -132,4 +153,134 @@ public class SessionAndSemesterService {
                 currentSemester.getSemesterName()
                 );
     }
+
+    public SemesterResponseDto getSemesterById(@PathVariable Long id){
+        Semester currentSemester = semesterRepo.findById(id)
+                .orElseThrow(()-> new ResponseNotFoundException("No such semester"));
+
+        return new SemesterResponseDto(currentSemester.getId(),
+                currentSemester.getSession().getSessionName(),
+                currentSemester.getStartDate(),
+                currentSemester.getEndDate(),
+                currentSemester.getRegistrationStartDate(),
+                currentSemester.getRegistrationEndDate(),
+                currentSemester.getSemesterName()
+        );
+    }
+
+    public SessionResponseDto getSessionById(@PathVariable Long id){
+        Session session = sessionRepo.findById(id)
+                .orElseThrow(()-> new ResponseNotFoundException("No such session"));
+
+        String status = "";
+        if(session.isActive()){
+            status = "Active";
+        }
+        else{
+            status = "Not_Active";
+        }
+
+
+        return new SessionResponseDto(
+                session.getId(),
+                session.getSessionName(),
+                session.getRemarks(),
+                status
+        );
+    }
+
+    @Transactional
+    public SessionResponseDto updateSession(Long id, SessionRequestDto dto) {
+
+        Session existingSession = sessionRepo.findById(id)
+                .orElseThrow(() -> new ResponseNotFoundException("No such session"));
+
+        String newSessionName = dto.getSessionName().trim();
+
+        // check for duplicate session name (excluding itself)
+        boolean nameExists = sessionRepo.existsBySessionNameAndIdNot(newSessionName, id);
+        if (nameExists) {
+            throw new IllegalArgumentException("Another session with this name already exists");
+        }
+
+        // If this session is being set to active, deactivate others
+        if (dto.isActive()) {
+            sessionRepo.deactivateAllSessions();
+            existingSession.setActive(true);
+        }
+
+        existingSession.setSessionName(newSessionName);
+        existingSession.setRemarks(dto.getRemarks());
+
+        Session updated = sessionRepo.save(existingSession);
+
+        String status = "";
+        if(updated.isActive()){
+            status = "Active";
+        }
+        else{
+            status = "Not_Active";
+        }
+
+
+        return new SessionResponseDto(
+                updated.getId(),
+                updated.getSessionName(),
+                updated.getRemarks(),
+                status
+        );
+    }
+
+    @Transactional
+    public SemesterResponseDto updateSemester(Long id, SemesterRequestDto dto) {
+
+        Semester existingSemester = semesterRepo.findById(id)
+                .orElseThrow(() -> new ResponseNotFoundException("No such semester"));
+
+        Session session = sessionRepo.findById(dto.getSessionId())
+                .orElseThrow(() -> new ResponseNotFoundException("No such session"));
+
+        // Date validations
+        if (dto.getEndDate().isBefore(dto.getStartDate())) {
+            throw new IllegalArgumentException("End date cannot be before start date");
+        }
+
+        if (dto.getRegistrationEndDate().isBefore(dto.getRegistrationStartDate())) {
+            throw new IllegalArgumentException("Registration end date cannot be before registration start date");
+        }
+
+        // Check duplicate semester name inside session (excluding itself)
+        boolean exists = semesterRepo.existsBySessionIdAndSemesterNameAndIdNot(
+                dto.getSessionId(),
+                dto.getSemesterName(),
+                id
+        );
+
+        if (exists) {
+            throw new IllegalArgumentException("Semester already exists for this session");
+        }
+
+        // If set to active → deactivate others in same session
+
+
+        existingSemester.setSession(session);
+        existingSemester.setSemesterName(dto.getSemesterName());
+        existingSemester.setStartDate(dto.getStartDate());
+        existingSemester.setEndDate(dto.getEndDate());
+        existingSemester.setRegistrationStartDate(dto.getRegistrationStartDate());
+        existingSemester.setRegistrationEndDate(dto.getRegistrationEndDate());
+
+        Semester updated = semesterRepo.save(existingSemester);
+
+        return new SemesterResponseDto(
+                updated.getId(),
+                updated.getSession().getSessionName(),
+                updated.getStartDate(),
+                updated.getEndDate(),
+                updated.getRegistrationStartDate(),
+                updated.getRegistrationEndDate(),
+                updated.getSemesterName()
+        );
+    }
+
 }
