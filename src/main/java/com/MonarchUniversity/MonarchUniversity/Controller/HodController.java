@@ -25,9 +25,15 @@ public class HodController {
         return ResponseEntity.ok(hodService.getLevelsViaDepartment(departmentId));
     }
 
-    @GetMapping("/get-levels-via-depeartment/{levelId}/{departmentId}")
+
+    @GetMapping("/get-levels-via-department/{levelId}/{departmentId}")
     public ResponseEntity<?> getCoursesByLevelAndDepartment(@PathVariable Long levelId, @PathVariable Long departmentId){
         return ResponseEntity.ok(hodService.getCoursesByLevelAndDepartment(levelId,departmentId));
+    }
+
+    @GetMapping("/semesters")
+    public ResponseEntity<?> getAllSemesters(){
+        return ResponseEntity.ok(hodService.getAllSemester());
     }
 
     @PostMapping("/semester-course/{levelId}/{departmentId}/{semesterId}")
