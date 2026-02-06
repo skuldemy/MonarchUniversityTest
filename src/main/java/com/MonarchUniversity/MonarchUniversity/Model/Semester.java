@@ -20,8 +20,6 @@ public class Semester {
     private Session session;
     private LocalDate startDate;
     private LocalDate endDate;
-    private LocalDate registrationStartDate;
-    private LocalDate registrationEndDate;
     private String semesterName;
     @Column(nullable = false)
     private boolean active = false;

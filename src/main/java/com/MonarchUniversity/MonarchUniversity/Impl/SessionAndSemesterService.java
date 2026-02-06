@@ -71,16 +71,10 @@ public class SessionAndSemesterService {
             throw new IllegalArgumentException("End date cannot be before start date");
         }
 
-        if (dto.getRegistrationEndDate().isBefore(dto.getRegistrationStartDate())) {
-            throw new IllegalArgumentException("Registration end date cannot be before registration start date");
-        }
-
         semesterRepo.deactivateAllBySessionId(session.getId());
         semester.setSession(session);
         semester.setStartDate(dto.getStartDate());
         semester.setEndDate(dto.getEndDate());
-        semester.setRegistrationStartDate(dto.getRegistrationStartDate());
-        semester.setRegistrationEndDate(dto.getRegistrationEndDate());
         semester.setSemesterName(dto.getSemesterName());
         semester.setActive(true);
 
@@ -88,7 +82,6 @@ public class SessionAndSemesterService {
 
         return new SemesterResponseDto(savedSemester.getId(), savedSemester.getSession().getSessionName(),
                 savedSemester.getStartDate(), savedSemester.getEndDate(),
-                savedSemester.getRegistrationStartDate(), savedSemester.getRegistrationEndDate(),
                 savedSemester.getSemesterName()
                 );
     }
@@ -125,8 +118,6 @@ public class SessionAndSemesterService {
                         d.getSession().getSessionName(),
                         d.getStartDate(),
                         d.getEndDate(),
-                        d.getRegistrationStartDate(),
-                        d.getRegistrationEndDate(),
                         d.getSemesterName()
                 )).toList();
     }
@@ -148,8 +139,6 @@ public class SessionAndSemesterService {
                 currentSemester.getSession().getSessionName(),
                 currentSemester.getStartDate(),
                 currentSemester.getEndDate(),
-                currentSemester.getRegistrationStartDate(),
-                currentSemester.getRegistrationEndDate(),
                 currentSemester.getSemesterName()
                 );
     }
@@ -162,8 +151,6 @@ public class SessionAndSemesterService {
                 currentSemester.getSession().getSessionName(),
                 currentSemester.getStartDate(),
                 currentSemester.getEndDate(),
-                currentSemester.getRegistrationStartDate(),
-                currentSemester.getRegistrationEndDate(),
                 currentSemester.getSemesterName()
         );
     }
@@ -245,9 +232,6 @@ public class SessionAndSemesterService {
             throw new IllegalArgumentException("End date cannot be before start date");
         }
 
-        if (dto.getRegistrationEndDate().isBefore(dto.getRegistrationStartDate())) {
-            throw new IllegalArgumentException("Registration end date cannot be before registration start date");
-        }
 
         // Check duplicate semester name inside session (excluding itself)
         boolean exists = semesterRepo.existsBySessionIdAndSemesterNameAndIdNot(
@@ -267,8 +251,6 @@ public class SessionAndSemesterService {
         existingSemester.setSemesterName(dto.getSemesterName());
         existingSemester.setStartDate(dto.getStartDate());
         existingSemester.setEndDate(dto.getEndDate());
-        existingSemester.setRegistrationStartDate(dto.getRegistrationStartDate());
-        existingSemester.setRegistrationEndDate(dto.getRegistrationEndDate());
 
         Semester updated = semesterRepo.save(existingSemester);
 
@@ -277,8 +259,6 @@ public class SessionAndSemesterService {
                 updated.getSession().getSessionName(),
                 updated.getStartDate(),
                 updated.getEndDate(),
-                updated.getRegistrationStartDate(),
-                updated.getRegistrationEndDate(),
                 updated.getSemesterName()
         );
     }

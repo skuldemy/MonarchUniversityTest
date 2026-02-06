@@ -14,7 +14,5 @@ public class SemesterResponseDto {
     private String session;
     private LocalDate startDate;
     private LocalDate endDate;
-    private LocalDate registrationStartDate;
-    private LocalDate registrationEndDate;
     private String semesterName;
 }

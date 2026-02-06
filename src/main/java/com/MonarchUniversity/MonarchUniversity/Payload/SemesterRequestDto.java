@@ -17,9 +17,5 @@ public class SemesterRequestDto {
     private LocalDate startDate;
     @NotNull(message = "end date cannot be empty")
     private LocalDate endDate;
-    @NotNull(message = "registration start date cannot be empty")
-    private LocalDate registrationStartDate;
-    @NotNull(message = "registration end date cannot be empty")
-    private LocalDate registrationEndDate;
     private String semesterName;
 }

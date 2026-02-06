@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class RoleService {
 	private final RoleRepository roleRepo;
 	
-	@Cacheable("roles")
+
 	public List<RoleDto> getAllUserRoles(){
 		return roleRepo.findAll().stream().map(r -> new RoleDto(r.getId(), r.getName())).collect(Collectors.toList());
 	}
