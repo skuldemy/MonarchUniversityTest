@@ -5,6 +5,7 @@ import com.MonarchUniversity.MonarchUniversity.Model.*;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.DepartmentDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.LevelDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.SemesterResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Repositories.*;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +23,7 @@ public class HodService {
     private final LevelRepository levelRepository;
     private final CourseRepository courseRepository;
     private final DepartmentRepository departmentRepository;
+    private final SemesterRepo semesterRepo;
 
     private LecturerProfile getLoggedInLecturerProfile() {
         org.springframework.security.core.userdetails.User springUser =
@@ -76,6 +78,19 @@ public class HodService {
                 .map(course -> coursemapToDto(course))
                 .toList();
     }
+
+    public List<SemesterResponseDto> getAllSemester(){
+        return semesterRepo.findAll()
+                .stream()
+                .map(d -> new SemesterResponseDto(
+                        d.getId(),
+                        d.getSession().getSessionName(),
+                        d.getStartDate(),
+                        d.getEndDate(),
+                        d.getSemesterName()
+                )).toList();
+    }
+
 
     private LevelDto levelmapToDto(Level level) {
         return new LevelDto(
