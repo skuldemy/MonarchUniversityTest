@@ -26,7 +26,7 @@ public class HodController {
     }
 
 
-    @GetMapping("/get-levels-via-department/{levelId}/{departmentId}")
+    @GetMapping("/get-courses-via-levels-department/{levelId}/{departmentId}")
     public ResponseEntity<?> getCoursesByLevelAndDepartment(@PathVariable Long levelId, @PathVariable Long departmentId){
         return ResponseEntity.ok(hodService.getCoursesByLevelAndDepartment(levelId,departmentId));
     }
