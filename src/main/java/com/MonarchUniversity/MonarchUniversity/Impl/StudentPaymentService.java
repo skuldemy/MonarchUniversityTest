@@ -135,6 +135,60 @@ public class StudentPaymentService {
     }
 
 
+//    public StudentPaymentListDto getStudentPayment(Long studentPaymentId) {
+//
+//
+//        FeeSchedule feeSchedule = feeScheduleRepo
+//                .findById(studentPaymentId)
+//                .orElseThrow(() -> new ResponseNotFoundException(
+//                        "No fee schedule for this level and program"));
+//
+//        List<FeeScheduleItem> items =
+//                feeScheduleItemRepo.findByFeeSchedule(feeSchedule);
+//
+//        BigDecimal totalFee = calculateTotal(items);
+//
+//        List<StudentProfile> students =
+//                studentProfileRepo.findByDepartmentAndLevel(department, level);
+//
+//        List<StudentPaymentListDto> response = new ArrayList<>();
+//
+//        for (StudentProfile student : students) {
+//
+//            StudentPayment payment = studentPaymentRepo
+//                    .findByStudentAndFeeSchedule(student, feeSchedule)
+//                    .orElse(null);
+//
+//            if (payment == null) {
+//
+//                BigDecimal remainingAmount = totalFee; // no amount paid yet
+//
+//                response.add(new StudentPaymentListDto(
+//                        student.getId(),
+//                        student.getFirstName() + " " + student.getLastName(),
+//                        student.getMatricNumber(),
+//                        BigDecimal.ZERO,            // amountPaid
+//                        totalFee,                   // totalFee
+//                        remainingAmount,            // balance
+//                        StudentPayment.ApprovalStatus.PENDING,
+//                        StudentPayment.PaymentStatus.NO_PAYMENT,
+//                        0
+//                ));
+//            } else {
+//
+//                BigDecimal remainingAmount = totalFee.subtract(payment.getAmountPaid());
+//
+//                StudentPaymentListDto dto = mapToDto(payment);
+//                dto.setRemainingAmount(remainingAmount);
+//
+//                response.add(dto);
+//            }
+//        }
+//
+//        return response;
+//    }
+//
+
 
     @Transactional
     public StudentPaymentListDto applyScholarship(
