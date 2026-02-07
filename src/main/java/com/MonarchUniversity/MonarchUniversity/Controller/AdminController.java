@@ -195,9 +195,9 @@ public class AdminController {
     }
 
 
-    @GetMapping("/student-payment-list/{levelId}/{programId}")
-    public List<StudentPaymentListDto> getStudentPaymentViaProgramAndLevel(@PathVariable Long levelId, @PathVariable Long programId){
-        return studentPaymentService.getALlStudentsPayment(levelId,programId);
+    @GetMapping("/student-payment-list/{levelId}/{departmentId}")
+    public List<StudentPaymentListDto> getStudentPaymentViaProgramAndLevel(@PathVariable Long levelId, @PathVariable Long departmentId){
+        return studentPaymentService.getALlStudentsPayment(levelId,departmentId);
     }
 
     @PatchMapping("/student-payments/{studentId}/scholarship")
