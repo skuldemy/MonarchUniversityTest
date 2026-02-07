@@ -186,18 +186,6 @@ public class CourseService {
 
     }
 
-//    public SemesterResponseDto getCurrentSemesterAndSession(){
-//        LocalDate today = LocalDate.now();
-//
-//        return new SemesterResponseDto(currentSemester.getId(),
-//                currentSemester.getSession().getSessionName(),
-//                currentSemester.getStartDate(),
-//                currentSemester.getEndDate(),
-//                currentSemester.getSemesterName()
-//        );
-//    }
-//
-
     private CourseResponseDto mapToDto(Course course) {
         return new CourseResponseDto(course.getId(),
                 course.getDepartment().getDepartmentName(),

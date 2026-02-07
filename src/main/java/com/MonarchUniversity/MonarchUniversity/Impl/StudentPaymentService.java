@@ -228,7 +228,6 @@ public class StudentPaymentService {
         BigDecimal totalFee = calculateTotal(items);
         dto.setTotalFee(totalFee);
 
-        // 💡 If student has not paid anything
         if (payment == null) {
             dto.setAmountPaid(BigDecimal.ZERO);
             dto.setRemainingAmount(totalFee);
