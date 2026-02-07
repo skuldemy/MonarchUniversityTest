@@ -71,6 +71,19 @@ public class SessionAndSemesterService {
             throw new IllegalArgumentException("End date cannot be before start date");
         }
 
+        boolean overlap = semesterRepo.existsOverlappingSemester(
+                dto.getSessionId(),
+                dto.getStartDate(),
+                dto.getEndDate()
+        );
+
+        if (overlap) {
+            throw new IllegalArgumentException(
+                    "Semester dates overlap with an existing semester in this session"
+            );
+        }
+
+
         semesterRepo.deactivateAllBySessionId(session.getId());
         semester.setSession(session);
         semester.setStartDate(dto.getStartDate());
@@ -230,6 +243,19 @@ public class SessionAndSemesterService {
         // Date validations
         if (dto.getEndDate().isBefore(dto.getStartDate())) {
             throw new IllegalArgumentException("End date cannot be before start date");
+        }
+
+        boolean overlap = semesterRepo.existsOverlappingSemesterForUpdate(
+                dto.getSessionId(),
+                dto.getStartDate(),
+                dto.getEndDate(),
+                id
+        );
+
+        if (overlap) {
+            throw new IllegalArgumentException(
+                    "Updated dates overlap with another semester in this session"
+            );
         }
 
 
