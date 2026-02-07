@@ -4,12 +4,14 @@ import com.MonarchUniversity.MonarchUniversity.Model.*;
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseResponseDto;
+import com.MonarchUniversity.MonarchUniversity.Payload.SemesterResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Repositories.*;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -22,6 +24,8 @@ public class CourseService {
     private final LevelRepository levelRepository;
     private final StudentProfileRepo studentProfileRepository;
     private final UserRepository userRepository;
+    private final SemesterRepo semesterRepo;
+    private final SemesterCourseRepo semesterCourseRepo;
 
     private StudentProfile getLoggedInStudentProfile() {
         org.springframework.security.core.userdetails.User springUser =
@@ -37,7 +41,7 @@ public class CourseService {
                 .orElseThrow(() -> new RuntimeException("StudentProfile not found"));
     }
 
-    public CourseResponseDto createCourse(CourseRequestDto dto){
+    public CourseResponseDto createCourse(CourseRequestDto dto) {
 
         Department department = departmentRepository.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new ResponseNotFoundException("No such department"));
@@ -49,11 +53,11 @@ public class CourseService {
             throw new ResponseNotFoundException("This level is not associated with this department");
         }
 
-        if(courseRepo.existsByCourseCodeIgnoreCaseAndLevelAndDepartment(dto.getCourseCode(), level, department)){
+        if (courseRepo.existsByCourseCodeIgnoreCaseAndLevelAndDepartment(dto.getCourseCode(), level, department)) {
             throw new ResponseNotFoundException("Course code already exists for this department and level");
         }
 
-        if(courseRepo.existsByCourseTitleIgnoreCaseAndLevelAndDepartment(dto.getCourseTitle(), level, department)){
+        if (courseRepo.existsByCourseTitleIgnoreCaseAndLevelAndDepartment(dto.getCourseTitle(), level, department)) {
             throw new ResponseNotFoundException("Course title already exists for this department and level");
         }
 
@@ -74,11 +78,11 @@ public class CourseService {
                 course.getCourseType(),
                 course.getCourseCode(),
                 course.getCourseUnit()
-                );
+        );
 
     }
 
-    public List<CourseResponseDto> getAllCoursesAttachedToProgram(Long departmentId, Long levelId){
+    public List<CourseResponseDto> getAllCoursesAttachedToProgram(Long departmentId, Long levelId) {
 
         Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new ResponseNotFoundException("No such department"));
@@ -93,9 +97,9 @@ public class CourseService {
 
     }
 
-    public CourseResponseDto getCourseById(Long id){
+    public CourseResponseDto getCourseById(Long id) {
         Course course = courseRepo.findById(id)
-                .orElseThrow(()-> new ResponseNotFoundException("No such course"));
+                .orElseThrow(() -> new ResponseNotFoundException("No such course"));
         return mapToDto(course);
     }
 
@@ -116,13 +120,13 @@ public class CourseService {
             throw new ResponseNotFoundException("This level is not associated with this department");
         }
 
-        if(courseRepo.existsByCourseCodeIgnoreCaseAndLevelAndDepartmentAndIdNot(
-                dto.getCourseCode(), level, department, courseId)){
+        if (courseRepo.existsByCourseCodeIgnoreCaseAndLevelAndDepartmentAndIdNot(
+                dto.getCourseCode(), level, department, courseId)) {
             throw new ResponseNotFoundException("Course code already exists for this department and level");
         }
 
-        if(courseRepo.existsByCourseTitleIgnoreCaseAndLevelAndDepartmentAndIdNot(
-                dto.getCourseTitle(), level, department, courseId)){
+        if (courseRepo.existsByCourseTitleIgnoreCaseAndLevelAndDepartmentAndIdNot(
+                dto.getCourseTitle(), level, department, courseId)) {
             throw new ResponseNotFoundException("Course title already exists for this department and level");
         }
 
@@ -140,21 +144,62 @@ public class CourseService {
         return mapToDto(course);
     }
 
-    public List<CourseResponseDto> getCoursesAttachedtoProgram(){
+    public List<CourseResponseDto> getCoursesAttachedtoProgram() {
+
+        LocalDate today = LocalDate.now();
+
+        Semester currentSemester = semesterRepo.findAll()
+                .stream()
+                .filter(s ->
+                        !today.isBefore(s.getStartDate()) &&
+                                !today.isAfter(s.getEndDate())
+                )
+                .findFirst()
+                .orElseThrow(() -> new ResponseNotFoundException(
+                        "No academic session found for the current date"
+                ));
 
         StudentProfile studentProfile = getLoggedInStudentProfile();
 
         Department department = studentProfile.getDepartment();
         Level level = studentProfile.getLevel();
 
-        return courseRepo.findAllByDepartmentAndLevel(department, level).stream()
-                .map(course -> mapToDto(course))
+        List<SemesterCourse> semesterCourses =
+                semesterCourseRepo.findBySemesterAndCourse_DepartmentAndCourse_Level(
+                        currentSemester, department, level
+                );
+
+        return semesterCourses.stream()
+                .map(sc -> {
+                    Course c = sc.getCourse();
+                    return new CourseResponseDto(
+                            c.getId(),
+                            c.getDepartment().getDepartmentName(),
+                            c.getLevel().getLevelNumber(),
+                            c.getCourseTitle(),
+                            c.getCourseType(),
+                            c.getCourseCode(),
+                            c.getCourseUnit()
+                    );
+                })
                 .toList();
 
     }
 
-    private CourseResponseDto mapToDto(Course course){
-       return new CourseResponseDto(course.getId(),
+//    public SemesterResponseDto getCurrentSemesterAndSession(){
+//        LocalDate today = LocalDate.now();
+//
+//        return new SemesterResponseDto(currentSemester.getId(),
+//                currentSemester.getSession().getSessionName(),
+//                currentSemester.getStartDate(),
+//                currentSemester.getEndDate(),
+//                currentSemester.getSemesterName()
+//        );
+//    }
+//
+
+    private CourseResponseDto mapToDto(Course course) {
+        return new CourseResponseDto(course.getId(),
                 course.getDepartment().getDepartmentName(),
                 course.getLevel().getLevelNumber(),
                 course.getCourseTitle(),
@@ -162,7 +207,6 @@ public class CourseService {
                 course.getCourseCode(),
                 course.getCourseUnit()
         );
-
     }
 
 }
