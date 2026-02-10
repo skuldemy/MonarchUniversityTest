@@ -60,6 +60,8 @@ public class SuperAdminService {
                 r.getName().equals("DEAN")
         );
 
+
+
         if (hasGeneralRole && hasAcademicRole) {
             throw new ResponseNotFoundException("Cannot mix global and academic roles");
         }
@@ -70,6 +72,8 @@ public class SuperAdminService {
 
         userRepo.findByUsername(dto.getEmailAddress())
                 .ifPresent(u -> { throw new ResponseNotFoundException("User already exists"); });
+
+
 
         User user = new User();
         user.setUsername(dto.getEmailAddress());
@@ -84,10 +88,31 @@ public class SuperAdminService {
         user.setRoles(roles);
         userRepo.save(user);
 
+
+
+
+
         List<Course> courses = courseRepo.findAllById(dto.getCoursesOffering());
+
 
         if (courses.size() != dto.getCoursesOffering().size()) {
             throw new ResponseNotFoundException("One or more courses not found");
+        }
+
+        boolean isHod = roles.stream()
+                .anyMatch(r -> r.getName().equals("HOD"));
+
+        if (isHod) {
+            boolean hodExistsInAnyDept = courses.stream()
+                    .map(c -> c.getDepartment().getId())
+                    .distinct()
+                    .anyMatch(deptId ->
+                            lecturerRepo.findHodByDepartment(deptId).isPresent()
+                    );
+
+            if (hodExistsInAnyDept) {
+                throw new ResponseNotFoundException("One of the departments already has a HOD");
+            }
         }
 
         LecturerProfile lecturer = new LecturerProfile();
@@ -148,6 +173,23 @@ public class SuperAdminService {
             }
 
             lecturer.setCourses(courses);
+        }
+
+        // 🔥 SAME LOGIC AS CREATE
+        boolean isHod = user.getRoles().stream()
+                .anyMatch(r -> r.getName().equals("HOD"));
+
+        if (isHod) {
+            boolean hodExistsInAnyDept = lecturer.getCourses().stream()
+                    .map(c -> c.getDepartment().getId())
+                    .distinct()
+                    .anyMatch(deptId ->
+                            lecturerRepo.existsHodByDepartment(deptId)
+                    );
+
+            if (hodExistsInAnyDept) {
+                throw new ResponseNotFoundException("One of the departments already has a HOD");
+            }
         }
 
         userRepo.save(user);
