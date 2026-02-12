@@ -126,6 +126,7 @@ public class HodService {
         );
 
     }
+// get courses via lecturer
 
 }
 
