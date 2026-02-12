@@ -22,11 +22,19 @@ public interface SemesterRepo extends JpaRepository<Semester, Long> {
     Optional<Semester> findBySessionIdAndActiveTrue(Long sessionId);
 
     boolean existsBySessionIdAndSemesterName(Long sessionId, String semesterName);
+    boolean existsBySemesterName( String semesterName);
     boolean existsBySessionIdAndSemesterNameAndIdNot(
             Long sessionId,
             String semesterName,
             Long id
     );
+
+    boolean existsBySemesterNameAndIdNot(
+
+            String semesterName,
+            Long id
+    );
+
     @Query("""
     SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END
     FROM Semester s
@@ -59,5 +67,10 @@ public interface SemesterRepo extends JpaRepository<Semester, Long> {
             @Param("id") Long id
     );
 
+    @Query("""
+    SELECT s FROM Semester s
+    WHERE :today BETWEEN s.startDate AND s.endDate
+""")
+    Optional<Semester> findCurrentSemester(LocalDate today);
 
 }

@@ -27,15 +27,16 @@ public class SessionAndSemesterService {
     public SessionResponseDto createSession(SessionRequestDto dto){
         String sessionName = dto.getSessionName().trim();
         Session session = new Session();
+        if(sessionRepo.count()>1){
+            throw new ResponseNotFoundException("It can't create more than one session, consider editing");
+        }
         if(sessionRepo.existsBySessionName(sessionName)){
             throw new ResponseNotFoundException("Session " + session.getSessionName() + "already exists in the system");
         }
-        sessionRepo.deactivateAllSessions();
 
 
         session.setSessionName(sessionName);
         session.setRemarks(dto.getRemarks());
-        session.setActive(true);
 
         Session savedSession = sessionRepo.save(session);
         String status = "";
@@ -59,14 +60,24 @@ public class SessionAndSemesterService {
         Semester semester = new Semester();
         Session session = sessionRepo.findById(dto.getSessionId()).orElseThrow(()->
                 new ResponseNotFoundException("No such session"));
-        boolean semesterExists = semesterRepo.existsBySessionIdAndSemesterName(dto.getSessionId(), dto.getSemesterName());
+        if(semesterRepo.count()>3){
+            throw new ResponseNotFoundException("It can't more than 3 semsesters, consider editing");
+        }
+        boolean semesterExists = semesterRepo.existsBySemesterName(dto.getSemesterName());
         if(semesterExists){
             throw new ResponseNotFoundException("Session and semester already exists");
         }
-        if (!session.isActive()) {
-            throw new ResponseNotFoundException("Cannot create semester for an inactive session, contact the" +
-                    " IT team to update inactive session to active");
+
+        List<String> allowedSemesters = List.of(
+                "First Semester", "Second Semester", "Supplementary"
+        );
+
+        if(!allowedSemesters.contains(dto.getSemesterName())){
+            throw new ResponseNotFoundException("Invalid semester name. Allowed values: First Semester, Second Semester, Supplementary");
         }
+
+
+
         if (dto.getEndDate().isBefore(dto.getStartDate())) {
             throw new IllegalArgumentException("End date cannot be before start date");
         }
@@ -84,12 +95,10 @@ public class SessionAndSemesterService {
         }
 
 
-        semesterRepo.deactivateAllBySessionId(session.getId());
         semester.setSession(session);
         semester.setStartDate(dto.getStartDate());
         semester.setEndDate(dto.getEndDate());
         semester.setSemesterName(dto.getSemesterName());
-        semester.setActive(true);
 
         Semester savedSemester = semesterRepo.save(semester);
 
@@ -135,25 +144,22 @@ public class SessionAndSemesterService {
                 )).toList();
     }
 
-    public SemesterResponseDto getCurrentSemesterAndSession(){
-        LocalDate today = LocalDate.now();
-        Semester currentSemester = semesterRepo.findAll()
-                .stream()
-                .filter(s ->
-                        !today.isBefore(s.getStartDate()) &&   // today >= session.start
-                                !today.isAfter(s.getEndDate())         // today <= session.end
-                )
-                .findFirst()
-                .orElseThrow(() -> new ResponseNotFoundException(
-                        "No academic session found for the current date"
-                ));
+    public SemesterResponseDto getCurrentSemesterAndSession() {
 
-        return new SemesterResponseDto(currentSemester.getId(),
-                currentSemester.getSession().getSessionName(),
-                currentSemester.getStartDate(),
-                currentSemester.getEndDate(),
-                currentSemester.getSemesterName()
+        LocalDate today = LocalDate.now();
+
+        Semester semester = semesterRepo.findCurrentSemester(today)
+                .orElseThrow(() ->
+                        new ResponseNotFoundException("No active semester today")
                 );
+
+        return new SemesterResponseDto(
+                semester.getId(),
+                semester.getSession().getSessionName(),
+                semester.getStartDate(),
+                semester.getEndDate(),
+                semester.getSemesterName()
+        );
     }
 
     public SemesterResponseDto getSemesterById(@PathVariable Long id){
@@ -260,17 +266,22 @@ public class SessionAndSemesterService {
 
 
         // Check duplicate semester name inside session (excluding itself)
-        boolean exists = semesterRepo.existsBySessionIdAndSemesterNameAndIdNot(
-                dto.getSessionId(),
+        boolean exists = semesterRepo.existsBySemesterNameAndIdNot(
                 dto.getSemesterName(),
                 id
         );
 
         if (exists) {
-            throw new IllegalArgumentException("Semester already exists for this session");
+            throw new IllegalArgumentException("Semester already exists ");
         }
 
-        // If set to active → deactivate others in same session
+        List<String> allowedSemesters = List.of(
+                "First Semester", "Second Semester", "Supplementary"
+        );
+
+        if(!allowedSemesters.contains(dto.getSemesterName())){
+            throw new ResponseNotFoundException("Invalid semester name. Allowed values: First Semester, Second Semester, Supplementary");
+        }
 
 
         existingSemester.setSession(session);

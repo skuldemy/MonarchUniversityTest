@@ -48,4 +48,7 @@ public class HodController {
     ){
         return ResponseEntity.ok(semesterCourseService.getSemesterCourses(levelId,departmentId,semesterId));
     }
+
+    // new
+
 }
