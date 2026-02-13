@@ -99,6 +99,23 @@ public class SuperAdminService {
             throw new ResponseNotFoundException("One or more courses not found");
         }
 
+        boolean isDean = user.getRoles().stream()
+                .anyMatch(r -> r.getName().equals("DEAN"));
+
+        if (isDean) {
+            boolean deanExistsInAnyDept = courses.stream()
+                    .map(c -> c.getDepartment().getId())
+                    .distinct()
+                    .anyMatch(deptId ->
+                            lecturerRepo.existsDeanByDepartment(deptId)
+                    );
+
+            if (deanExistsInAnyDept) {
+                throw new ResponseNotFoundException("One of the departments already has a HOD");
+            }
+        }
+
+
         boolean isHod = roles.stream()
                 .anyMatch(r -> r.getName().equals("HOD"));
 
@@ -175,7 +192,23 @@ public class SuperAdminService {
             lecturer.setCourses(courses);
         }
 
-        // 🔥 SAME LOGIC AS CREATE
+        boolean isDean = user.getRoles().stream()
+                .anyMatch(r -> r.getName().equals("DEAN"));
+
+        if (isDean) {
+            boolean deanExistsInAnyDept = lecturer.getCourses().stream()
+                    .map(c -> c.getDepartment().getId())
+                    .distinct()
+                    .anyMatch(deptId ->
+                            lecturerRepo.existsDeanByDepartment(deptId)
+                    );
+
+            if (deanExistsInAnyDept) {
+                throw new ResponseNotFoundException("One of the departments already has a DEAN");
+            }
+        }
+
+
         boolean isHod = user.getRoles().stream()
                 .anyMatch(r -> r.getName().equals("HOD"));
 

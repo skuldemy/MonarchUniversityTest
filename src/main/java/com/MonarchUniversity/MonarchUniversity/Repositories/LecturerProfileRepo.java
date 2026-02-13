@@ -35,4 +35,15 @@ public interface LecturerProfileRepo extends JpaRepository<LecturerProfile, Long
 """)
     boolean existsHodByDepartment(Long deptId);
 
+    @Query("""
+    SELECT COUNT(lp) > 0
+    FROM LecturerProfile lp
+    JOIN lp.user u
+    JOIN u.roles r
+    JOIN lp.courses c
+    WHERE r.name = 'DEAN'
+    AND c.department.id = :deptId
+""")
+    boolean existsDeanByDepartment(Long deptId);
+
 }
