@@ -10,4 +10,9 @@ public interface SemesterCourseService {
                                                       Long departmentId,
 
                                                       Long semesterId);
+    public int totalSemesterCourse(
+            Long levelId,
+            Long departmentId,
+            Long semesterId
+    );
 }

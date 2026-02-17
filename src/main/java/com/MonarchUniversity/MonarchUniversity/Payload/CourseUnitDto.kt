@@ -27,12 +27,12 @@ data class CourseUnitRequestDto (
 
 
 data class CourseUnitResponseDto (
-    val id : Long,
-    val programName : String,
-    val levelNumber : String,
-    val semesterName: String,
-    val minUnits : Int,
-    val maxUnits : Int
+    val id : Long?,
+    val programName : String?,
+    val levelNumber : String?,
+    val semesterName: String?,
+    val minUnits : Int?,
+    val maxUnits : Int?
 )
 
 data class CourseUnitUpdate(

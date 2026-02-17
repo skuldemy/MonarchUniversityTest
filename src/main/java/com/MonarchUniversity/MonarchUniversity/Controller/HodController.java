@@ -1,6 +1,8 @@
 package com.MonarchUniversity.MonarchUniversity.Controller;
 
+import com.MonarchUniversity.MonarchUniversity.Impl.CourseUnitServiceImpl;
 import com.MonarchUniversity.MonarchUniversity.Impl.HodService;
+import com.MonarchUniversity.MonarchUniversity.Service.CourseUnitService;
 import com.MonarchUniversity.MonarchUniversity.Service.SemesterCourseService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import java.util.List;
 public class HodController {
     public final SemesterCourseService semesterCourseService;
     private final HodService hodService;
+    private final CourseUnitService courseUnitService;
 
     @GetMapping("/get-departments-of-hod")
     public ResponseEntity<?> getDepartmentsByHod(){
@@ -54,5 +57,27 @@ public class HodController {
     public ResponseEntity<?> getCoursesAssignedToLecteurer(){
         return ResponseEntity.ok(hodService.getCoursesViaLectuer());
     }
-//    @GetMapping("")
+
+    @GetMapping("/current-courseunit-assigned/{levelId}/{departmentId}/{semesterId}")
+    public ResponseEntity<?> getCurrentCourseUnitAssigened(
+            @PathVariable  Long levelId,
+            @PathVariable Long departmentId,
+            @PathVariable Long semesterId
+    ){
+        return ResponseEntity.ok(semesterCourseService.totalSemesterCourse(levelId, departmentId
+        , semesterId
+        ));
+    }
+
+    @GetMapping("/course-unit/{levelId}/{departmentId}/{semesterName}")
+    public ResponseEntity<?> getCourseUnit(
+            @PathVariable Long levelId,
+            @PathVariable Long departmentId,
+            @PathVariable String semesterName
+    ){
+        return ResponseEntity.ok(courseUnitService.getCourseUnitResponse(departmentId,
+                levelId, semesterName));
+    }
+
+
 }

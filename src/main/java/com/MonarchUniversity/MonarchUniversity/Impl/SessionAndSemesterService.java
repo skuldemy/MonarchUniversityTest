@@ -69,11 +69,11 @@ public class SessionAndSemesterService {
         }
 
         List<String> allowedSemesters = List.of(
-                "First Semester", "Second Semester", "Supplementary"
+                "FIRST_SEMESTER", "SECOND_SEMESTER", "Supplementary"
         );
 
         if(!allowedSemesters.contains(dto.getSemesterName())){
-            throw new ResponseNotFoundException("Invalid semester name. Allowed values: First Semester, Second Semester, Supplementary");
+            throw new ResponseNotFoundException("Invalid semester name. Allowed values: FIRST_SEMESTER, SECOND_SEMESTER, Supplementary");
         }
 
 
@@ -276,11 +276,11 @@ public class SessionAndSemesterService {
         }
 
         List<String> allowedSemesters = List.of(
-                "First Semester", "Second Semester", "Supplementary"
+                "FIRST_SEMESTER", "SECOND_SEMESTER", "Supplementary"
         );
 
         if(!allowedSemesters.contains(dto.getSemesterName())){
-            throw new ResponseNotFoundException("Invalid semester name. Allowed values: First Semester, Second Semester, Supplementary");
+            throw new ResponseNotFoundException("Invalid semester name. Allowed values: FIRST_SEMESTER, SECOND_SEMESTER, Supplementary");
         }
 
 
