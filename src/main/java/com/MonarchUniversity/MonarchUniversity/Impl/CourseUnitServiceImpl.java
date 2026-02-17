@@ -1,9 +1,6 @@
 package com.MonarchUniversity.MonarchUniversity.Impl;
 
-import com.MonarchUniversity.MonarchUniversity.Model.CourseUnit;
-import com.MonarchUniversity.MonarchUniversity.Model.Department;
-import com.MonarchUniversity.MonarchUniversity.Model.Level;
-import com.MonarchUniversity.MonarchUniversity.Model.Program;
+import com.MonarchUniversity.MonarchUniversity.Model.*;
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitResponseDto;
@@ -54,7 +51,7 @@ public class CourseUnitServiceImpl implements CourseUnitService{
     }
 
     @Override
-    public CourseUnitResponseDto getCouseUnitResponse(Long departmentId,
+    public CourseUnitResponseDto getCourseUnitResponse(Long departmentId,
                                                             Long levelId,
                                                             String semesterName
 
@@ -65,13 +62,6 @@ public class CourseUnitServiceImpl implements CourseUnitService{
 
         Level level = levelRepository.findByIdAndDepartment(levelId,
                 department).orElseThrow(()-> new ResponseNotFoundException("No such level for this department"));
-
-//        if(!level.getSemester().equals(semesterName)){
-//            throw new ResponseNotFoundException("No such semester for this level," +
-//                    " consider updating the semester");
-//        }
-
-
         CourseUnit course = courseUnitRepo
                 .getCourseUnitByDepartmentAndLevelAndSemesterName(department,level,semesterName);
 //        return courseUnitList
@@ -96,8 +86,11 @@ public class CourseUnitServiceImpl implements CourseUnitService{
     }
 
     private CourseUnitResponseDto mapToDto(CourseUnit c) {
+        if(c==null) {
+            throw new ResponseNotFoundException("No min and max course unit for this semester and level department, pls contact the IT team to update");
+        }
         return new CourseUnitResponseDto(
-                c.getId(),
+                c.getId() ,
                 c.getDepartment().getDepartmentName(),
                 c.getLevel().getLevelNumber(),
                 c.getSemesterName(),

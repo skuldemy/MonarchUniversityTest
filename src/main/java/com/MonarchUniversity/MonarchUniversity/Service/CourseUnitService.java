@@ -11,9 +11,10 @@ import java.util.List;
 
 public interface CourseUnitService {
     public String createCourseUnit(CourseUnitRequestDto dto);
-    public CourseUnitResponseDto getCouseUnitResponse(Long programId, Long levelId,
+    public CourseUnitResponseDto getCourseUnitResponse(Long programId, Long levelId,
                                                             String semesterName
                                                             );
+
     public String updateCourseUnits(Long courseUnitId,
                                    CourseUnitUpdate update
     );
