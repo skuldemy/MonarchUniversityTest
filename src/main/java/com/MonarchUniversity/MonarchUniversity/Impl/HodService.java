@@ -91,6 +91,16 @@ public class HodService {
                 )).toList();
     }
 
+    // get courses via lecturer
+    public List<CourseResponseDto> getCoursesViaLectuer(){
+        LecturerProfile lecturerProfile = getLoggedInLecturerProfile();
+        List<Course> courseList = lecturerProfile.getCourses();
+
+        return courseList.stream()
+                .map(c -> coursemapToDto(c))
+                .collect(Collectors.toList());
+    }
+
 
     private LevelDto levelmapToDto(Level level) {
         return new LevelDto(
@@ -126,7 +136,6 @@ public class HodService {
         );
 
     }
-// get courses via lecturer
 
 }
 

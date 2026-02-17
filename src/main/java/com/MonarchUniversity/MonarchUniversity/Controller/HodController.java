@@ -50,5 +50,9 @@ public class HodController {
     }
 
     // new
-
+    @GetMapping("/courses-assigned-to-lecturer")
+    public ResponseEntity<?> getCoursesAssignedToLecteurer(){
+        return ResponseEntity.ok(hodService.getCoursesViaLectuer());
+    }
+//    @GetMapping("")
 }
