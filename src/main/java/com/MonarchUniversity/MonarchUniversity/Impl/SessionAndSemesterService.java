@@ -27,7 +27,7 @@ public class SessionAndSemesterService {
     public SessionResponseDto createSession(SessionRequestDto dto){
         String sessionName = dto.getSessionName().trim();
         Session session = new Session();
-        if(sessionRepo.count()>1){
+        if(sessionRepo.count()>=1){
             throw new ResponseNotFoundException("It can't create more than one session, consider editing");
         }
         if(sessionRepo.existsBySessionName(sessionName)){
@@ -60,7 +60,7 @@ public class SessionAndSemesterService {
         Semester semester = new Semester();
         Session session = sessionRepo.findById(dto.getSessionId()).orElseThrow(()->
                 new ResponseNotFoundException("No such session"));
-        if(semesterRepo.count()>3){
+        if(semesterRepo.count()>=3){
             throw new ResponseNotFoundException("It can't more than 3 semsesters, consider editing");
         }
         boolean semesterExists = semesterRepo.existsBySemesterName(dto.getSemesterName());
