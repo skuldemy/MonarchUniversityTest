@@ -6,8 +6,10 @@ import com.MonarchUniversity.MonarchUniversity.Payload.CourseResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Repositories.*;
 import com.MonarchUniversity.MonarchUniversity.Service.SemesterCourseService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,23 @@ public class SemesterCourseServiceimpl implements SemesterCourseService {
     private final SemesterRepo semesterRepo;
     private final SemesterCourseRepo semesterCourseRepo;
     private final CourseUnitRepo courseUnitRepo;
+    private final UserRepository userRepository;
+    private final StudentProfileRepo studentProfileRepo;
+
+    private StudentProfile getLoggedInStudentProfile() {
+        org.springframework.security.core.userdetails.User springUser =
+                (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+
+        User userEntity = userRepository.findByUsername(springUser.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return studentProfileRepo.findByUser(userEntity)
+                .orElseThrow(() -> new RuntimeException("StudentProfile not found"));
+    }
+
 
     @Override
     public String addCoursesToSemester(
@@ -123,6 +142,46 @@ public class SemesterCourseServiceimpl implements SemesterCourseService {
                 })
                 .toList();
     }
+
+    @Override
+    public List<CourseResponseDto> getStudentSemesterCourses() {
+        StudentProfile studentProfile = getLoggedInStudentProfile();
+        Level level = studentProfile.getLevel();
+        LocalDate today = LocalDate.now();
+        Semester currentSemester = semesterRepo.findAll()
+                .stream()
+                .filter(s ->
+                        !today.isBefore(s.getStartDate()) &&
+                                !today.isAfter(s.getEndDate())
+                )
+                .findFirst()
+                .orElseThrow(() -> new ResponseNotFoundException(
+                        "No academic session found for the current date"
+                ));
+
+        Department department = studentProfile.getDepartment();
+
+        List<SemesterCourse> semesterCourses =
+                semesterCourseRepo.findBySemesterAndCourse_DepartmentAndCourse_Level(
+                        currentSemester, department, level
+                );
+
+        return semesterCourses.stream()
+                .map(sc -> {
+                    Course c = sc.getCourse();
+                    return new CourseResponseDto(
+                            c.getId(),
+                            c.getDepartment().getDepartmentName(),
+                            c.getLevel().getLevelNumber(),
+                            c.getCourseTitle(),
+                            c.getCourseType(),
+                            c.getCourseCode(),
+                            c.getCourseUnit()
+                    );
+                })
+                .toList();
+    }
+
 
     @Override
     public int totalSemesterCourse(Long levelId, Long departmentId, Long semesterId) {

@@ -2,10 +2,8 @@ package com.MonarchUniversity.MonarchUniversity.Impl;
 
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
 import com.MonarchUniversity.MonarchUniversity.Model.*;
-import com.MonarchUniversity.MonarchUniversity.Payload.CourseResponseDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.DepartmentDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.LevelDto;
-import com.MonarchUniversity.MonarchUniversity.Payload.SemesterResponseDto;
+import com.MonarchUniversity.MonarchUniversity.Model.CourseRegistration;
+import com.MonarchUniversity.MonarchUniversity.Payload.*;
 import com.MonarchUniversity.MonarchUniversity.Repositories.*;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +22,7 @@ public class HodService {
     private final CourseRepository courseRepository;
     private final DepartmentRepository departmentRepository;
     private final SemesterRepo semesterRepo;
+    private final CourseRegistrationRepo courseRegistrationRepo;
 
     private LecturerProfile getLoggedInLecturerProfile() {
         org.springframework.security.core.userdetails.User springUser =
@@ -101,6 +100,21 @@ public class HodService {
                 .collect(Collectors.toList());
     }
 
+    public List<StudentOfferingCourse> getStudentsOfferingCourse(Long semesterCourseId){
+
+        List<CourseRegistration> registrations =
+                courseRegistrationRepo.findBySemesterCourse_Id(semesterCourseId);
+
+        return registrations.stream()
+                .map(reg -> reg.getStudentProfile())
+                .map(s -> new StudentOfferingCourse(
+                        s.getLastName() + " " + s.getFirstName(),
+                        s.getMatricNumber(),
+                        s.getLevel().getLevelNumber(),
+                        s.getDepartment().getDepartmentName()
+                ))
+                .collect(Collectors.toList());
+    }
 
     private LevelDto levelmapToDto(Level level) {
         return new LevelDto(

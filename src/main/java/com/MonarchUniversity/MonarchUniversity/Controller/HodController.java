@@ -79,5 +79,10 @@ public class HodController {
                 levelId, semesterName));
     }
 
+    // new
+    @GetMapping("/students-offering-course/{semesterCourseId}")
+    public ResponseEntity<?> getStudentsAssignedToCourse(@PathVariable Long semesterCourseId){
+        return ResponseEntity.ok(hodService.getStudentsOfferingCourse(semesterCourseId));
+    }
 
 }

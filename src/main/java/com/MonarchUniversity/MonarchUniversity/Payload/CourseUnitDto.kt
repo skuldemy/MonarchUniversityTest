@@ -59,3 +59,8 @@ data class CourseUnitUpdate(
 //}
 
 
+data class StudentCourseUnit(
+    val minUnits: Int?,
+    val currentUnit : Int?,
+    val maxUnits: Int?
+)

@@ -8,8 +8,8 @@ public interface SemesterCourseService {
     public String addCoursesToSemester(Long levelId, Long departmentId, List<Long> couseId, Long semesterId);
     public List<CourseResponseDto> getSemesterCourses(Long levelId,
                                                       Long departmentId,
-
                                                       Long semesterId);
+    public List<CourseResponseDto> getStudentSemesterCourses();
     public int totalSemesterCourse(
             Long levelId,
             Long departmentId,

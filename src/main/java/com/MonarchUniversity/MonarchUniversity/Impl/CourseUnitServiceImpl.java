@@ -5,11 +5,14 @@ import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundExcepti
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitRequestDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseUnitUpdate;
+import com.MonarchUniversity.MonarchUniversity.Payload.StudentCourseUnit;
 import com.MonarchUniversity.MonarchUniversity.Repositories.*;
 import com.MonarchUniversity.MonarchUniversity.Service.CourseUnitService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +23,24 @@ public class CourseUnitServiceImpl implements CourseUnitService{
     private final DepartmentRepository departmentRepository;
     private final SemesterRepo semesterRepo;
     private final CourseUnitRepo courseUnitRepo;
+    private final UserRepository userRepository;
+    private final StudentProfileRepo studentProfileRepo;
+    private final CourseRegistrationRepo courseRegistrationRepo;
+
+    private StudentProfile getLoggedInStudentProfile() {
+        org.springframework.security.core.userdetails.User springUser =
+                (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+
+        User userEntity = userRepository.findByUsername(springUser.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return studentProfileRepo.findByUser(userEntity)
+                .orElseThrow(() -> new RuntimeException("StudentProfile not found"));
+    }
+
 
     @Override
     public String createCourseUnit(CourseUnitRequestDto dto) {
@@ -69,6 +90,47 @@ public class CourseUnitServiceImpl implements CourseUnitService{
 //                .map(this::mapToDto)
 //                .collect(Collectors.toList());
    return mapToDto(course);
+    }
+
+    @Override
+    public StudentCourseUnit getStudentCourseUnitResponse() {
+
+        StudentProfile studentProfile = getLoggedInStudentProfile();
+        Level level = studentProfile.getLevel();
+        Department department = studentProfile.getDepartment();
+        LocalDate today = LocalDate.now();
+        Semester currentSemester = semesterRepo.findAll()
+                .stream()
+                .filter(s ->
+                        !today.isBefore(s.getStartDate()) &&
+                                !today.isAfter(s.getEndDate())
+                )
+                .findFirst()
+                .orElseThrow(() -> new ResponseNotFoundException(
+                        "No academic session found for the current date"
+                ));
+
+        CourseUnit courseUnit = courseUnitRepo.getCourseUnitByDepartmentAndLevelAndSemesterName(department, level,
+                currentSemester.getSemesterName()
+                );
+
+        List<CourseRegistration> registrations =
+                courseRegistrationRepo
+                        .findByStudentProfileAndSemesterCourse_Semester(
+                                studentProfile,
+                                currentSemester
+                        );
+        int totalUnits = registrations.stream()
+                .mapToInt(reg ->
+                        reg.getSemesterCourse()
+                                .getCourse()
+                                .getCourseUnit()
+                )
+                .sum();
+
+
+
+        return new StudentCourseUnit(courseUnit.getMinUnits(),totalUnits,courseUnit.getMaxUnits());
     }
 
     @Override

@@ -24,7 +24,7 @@ public class Course {
     @JoinColumn(name = "level_id")
     private Level level;
     private String courseTitle;
-    private String courseType; // elective, core, specialization
+    private String courseType; // CORE, ELECTIVE, REQUIRED
     private String courseCode;
     private Integer courseUnit; // 1,2,3,4
 }
