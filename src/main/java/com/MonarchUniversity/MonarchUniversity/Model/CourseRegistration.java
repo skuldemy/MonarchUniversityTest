@@ -1,8 +1,14 @@
 package com.MonarchUniversity.MonarchUniversity.Model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CourseRegistration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
