@@ -170,13 +170,13 @@ public class SemesterCourseServiceimpl implements SemesterCourseService {
                 .map(sc -> {
                     Course c = sc.getCourse();
                     return new CourseResponseDto(
-                            c.getId(),
-                            c.getDepartment().getDepartmentName(),
-                            c.getLevel().getLevelNumber(),
-                            c.getCourseTitle(),
-                            c.getCourseType(),
-                            c.getCourseCode(),
-                            c.getCourseUnit()
+                            sc.getId(),
+                            sc.getCourse().getDepartment().getDepartmentName(),
+                            sc.getCourse().getLevel().getLevelNumber(),
+                            sc.getCourse().getCourseTitle(),
+                            sc.getCourse().getCourseType(),
+                            sc.getCourse().getCourseCode(),
+                            sc.getCourse().getCourseUnit()
                     );
                 })
                 .toList();
