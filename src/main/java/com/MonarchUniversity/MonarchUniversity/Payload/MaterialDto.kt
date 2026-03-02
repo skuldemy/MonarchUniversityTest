@@ -3,15 +3,13 @@ package com.MonarchUniversity.MonarchUniversity.Payload
 import lombok.AllArgsConstructor
 import lombok.NoArgsConstructor
 
-class MaterialReqDto(
-    val semCourseId : Long,
-    val materialType : String,
-    val week : String,
-    val fileUrl : String
+
+data class MaterialReqDto(
+    val semCourseId: Long = 0,
+    val materialType: String = "",
+    val week: String = ""
 )
 
-@AllArgsConstructor
-@NoArgsConstructor
 class MaterialResDto(
     val id : Long,
     val levelName : String,
@@ -19,6 +17,8 @@ class MaterialResDto(
     val courseName : String,
     val courseCode : String,
     val materialType : String,
+    val status : String,
     val week : String,
-    val fileUrl : String
+    val fileUrl : String,
+    val lecturerName : String
 )

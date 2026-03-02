@@ -4,6 +4,8 @@ import com.MonarchUniversity.MonarchUniversity.Model.CourseUnit
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Positive
+import lombok.AllArgsConstructor
+import lombok.NoArgsConstructor
 
 data class CourseUnitRequestDto (
     @field:NotNull(message = "Department ID is required")
@@ -26,6 +28,8 @@ data class CourseUnitRequestDto (
 
 
 
+@NoArgsConstructor
+@AllArgsConstructor
 data class CourseUnitResponseDto (
     val id : Long?,
     val programName : String?,

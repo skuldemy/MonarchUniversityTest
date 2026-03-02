@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ public class HodService {
     private final DepartmentRepository departmentRepository;
     private final SemesterRepo semesterRepo;
     private final CourseRegistrationRepo courseRegistrationRepo;
+    private final SemesterCourseRepo semesterCourseRepo;
 
     private LecturerProfile getLoggedInLecturerProfile() {
         org.springframework.security.core.userdetails.User springUser =
@@ -90,7 +92,7 @@ public class HodService {
                 )).toList();
     }
 
-    // get courses via lecturer
+    // get courses via lecturer, change update
     public List<CourseResponseDto> getCoursesViaLectuer(){
         LecturerProfile lecturerProfile = getLoggedInLecturerProfile();
         List<Course> courseList = lecturerProfile.getCourses();
@@ -99,6 +101,42 @@ public class HodService {
                 .map(c -> coursemapToDto(c))
                 .collect(Collectors.toList());
     }
+
+    public List<CourseResponseDto> getCoursesViaLecturer() {
+
+        LecturerProfile lecturerProfile = getLoggedInLecturerProfile();
+        List<Course> lecturerCourses = lecturerProfile.getCourses(); // your current list
+
+        LocalDate today = LocalDate.now();
+        Semester currentSemester = semesterRepo.findAll().stream()
+                .filter(s -> !today.isBefore(s.getStartDate()) && !today.isAfter(s.getEndDate()))
+                .findFirst()
+                .orElseThrow(() -> new ResponseNotFoundException("No active semester found"));
+
+        List<CourseResponseDto> result = new ArrayList<>();
+
+        for (Course course : lecturerCourses) {
+            SemesterCourse sc = semesterCourseRepo
+                    .findByCourseAndSemester(course, currentSemester)
+                    .orElse(null); // skip if not assigned this semester
+            if (sc != null) {
+                result.add(new CourseResponseDto(
+
+                                sc.getId(),
+                                sc.getCourse().getDepartment().getDepartmentName(),
+                                sc.getCourse().getLevel().getLevelNumber(),
+                                sc.getCourse().getCourseTitle(),
+                                sc.getCourse().getCourseType(),
+                                sc.getCourse().getCourseCode(),
+                                sc.getCourse().getCourseUnit()
+
+                        ));
+            }
+        }
+
+        return result;
+    }
+
 
     public List<StudentOfferingCourse> getStudentsOfferingCourse(Long semesterCourseId){
 
