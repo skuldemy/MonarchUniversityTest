@@ -1,14 +1,13 @@
 package com.MonarchUniversity.MonarchUniversity.Model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class SemesterCourse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,5 +26,6 @@ public class SemesterCourse {
             name = "semester_id"
     )
     private Semester semester;
+
 
 }

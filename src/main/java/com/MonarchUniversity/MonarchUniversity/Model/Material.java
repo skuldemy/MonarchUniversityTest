@@ -1,14 +1,13 @@
 package com.MonarchUniversity.MonarchUniversity.Model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Material {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +30,14 @@ public class Material {
             name = "lecturer_id"
     )
     private LecturerProfile lecturerProfile;
+
+    @Enumerated(EnumType.STRING)
+    public MATERIAL_STATUS status;
+
+    public enum MATERIAL_STATUS{
+        VISIBLE,
+        HIDDEN
+    }
 
 }
 
