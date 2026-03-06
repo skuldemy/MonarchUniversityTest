@@ -3,11 +3,9 @@ package com.MonarchUniversity.MonarchUniversity.Repositories;
 import java.util.List;
 import java.util.Optional;
 
-import com.MonarchUniversity.MonarchUniversity.Model.Course;
+import com.MonarchUniversity.MonarchUniversity.Model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.MonarchUniversity.MonarchUniversity.Model.LecturerProfile;
-import com.MonarchUniversity.MonarchUniversity.Model.User;
 import org.springframework.data.jpa.repository.Query;
 
 public interface LecturerProfileRepo extends JpaRepository<LecturerProfile, Long> {
@@ -34,5 +32,9 @@ public interface LecturerProfileRepo extends JpaRepository<LecturerProfile, Long
     AND c.department.id = :deptId
 """)
     boolean existsHodByDepartment(Long deptId);
+    boolean existsByDepartmentAndLecturerType(Department department, LecturerProfile.LecturerType lecturerType);
 
+    boolean existsByDepartmentAndLevelAndLecturerType(Department department,
+                                                      Level level,
+                                                      LecturerProfile.LecturerType lecturerType);
 }

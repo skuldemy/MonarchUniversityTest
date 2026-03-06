@@ -5,10 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
-import com.MonarchUniversity.MonarchUniversity.Model.Course;
-import com.MonarchUniversity.MonarchUniversity.Model.LecturerProfile;
-import com.MonarchUniversity.MonarchUniversity.Model.Role;
-import com.MonarchUniversity.MonarchUniversity.Model.User;
+import com.MonarchUniversity.MonarchUniversity.Model.*;
 import com.MonarchUniversity.MonarchUniversity.Payload.*;
 import com.MonarchUniversity.MonarchUniversity.Repositories.*;
 import jakarta.transaction.Transactional;
@@ -25,6 +22,7 @@ public class SuperAdminService {
     private final DepartmentRepository departmentRepo;
     private final LecturerProfileRepo lecturerRepo;
     private final RoleRepository roleRepo;
+    private final LevelRepository levelRepo;
     private final CourseRepository courseRepo;
     private final PasswordEncoder enconder;
 
@@ -87,34 +85,11 @@ public class SuperAdminService {
         validateRoles(roles);
         user.setRoles(roles);
         userRepo.save(user);
-
-
-
-
-
         List<Course> courses = courseRepo.findAllById(dto.getCoursesOffering());
-
 
         if (courses.size() != dto.getCoursesOffering().size()) {
             throw new ResponseNotFoundException("One or more courses not found");
         }
-
-        boolean isHod = roles.stream()
-                .anyMatch(r -> r.getName().equals("HOD"));
-
-        if (isHod) {
-            boolean hodExistsInAnyDept = courses.stream()
-                    .map(c -> c.getDepartment().getId())
-                    .distinct()
-                    .anyMatch(deptId ->
-                            lecturerRepo.findHodByDepartment(deptId).isPresent()
-                    );
-
-            if (hodExistsInAnyDept) {
-                throw new ResponseNotFoundException("One of the departments already has a HOD");
-            }
-        }
-
         LecturerProfile lecturer = new LecturerProfile();
         lecturer.setUser(user);
         lecturer.setFullName(dto.getFullName());
@@ -123,6 +98,79 @@ public class SuperAdminService {
         lecturerRepo.save(lecturer);
 
         return buildLecturerResponse(lecturer);
+    }
+
+    public String assignRoleToLecturer(AssignLecturerPositionDto dto){
+        String response = "";
+
+
+
+        LecturerProfile lecturerProfile = lecturerRepo.findById(dto.getLecturerId())
+                .orElseThrow(()-> new ResponseNotFoundException("No such lecturer"));
+
+        if (dto.getLecturerType() == null) {
+            lecturerProfile.setLecturerType(null);
+            lecturerProfile.setDepartment(null);
+            lecturerProfile.setLevel(null);
+
+            lecturerRepo.save(lecturerProfile);
+
+            return lecturerProfile.getFullName() + " removed from leadership role";
+        }
+
+        Department department = departmentRepo.findById(dto.getDeptId())
+                .orElseThrow(()-> new ResponseNotFoundException("No such dept"));
+
+        LecturerProfile.LecturerType lecturerType = dto.getLecturerType();
+
+        if(lecturerType == LecturerProfile.LecturerType.HOD){
+            boolean exists = lecturerRepo.existsByDepartmentAndLecturerType(
+                    department, LecturerProfile.LecturerType.HOD);
+        if(exists){
+            throw new ResponseNotFoundException("An Hod already exists for this dept");
+        }
+        lecturerProfile.setDepartment(department);
+        lecturerProfile.setLecturerType(lecturerType);
+        response = lecturerProfile.getFullName() + " is now the " + lecturerProfile.getLecturerType().name() + " of " + lecturerProfile.getDepartment().getDepartmentName();
+        }
+
+        if(lecturerType == LecturerProfile.LecturerType.DEAN){
+            boolean exists = lecturerRepo.existsByDepartmentAndLecturerType(
+                    department, LecturerProfile.LecturerType.DEAN);
+            if(exists){
+                throw new ResponseNotFoundException("A Dean already exists for this dept");
+            }
+            lecturerProfile.setDepartment(department);
+            lecturerProfile.setLecturerType(lecturerType);
+            response = lecturerProfile.getFullName() + " is now the " + lecturerProfile.getLecturerType().name() + " of " + lecturerProfile.getDepartment().getDepartmentName();
+        }
+
+        if(lecturerType == LecturerProfile.LecturerType.LEVEL_ADVISER){
+
+            Level level = levelRepo.findById(dto.getLevelId())
+                    .orElseThrow(()-> new ResponseNotFoundException("No such Id"));
+            if(!department.getId().equals(level.getDepartment().getId())){
+                throw new ResponseNotFoundException("Dept does not have this level");
+            }
+
+            boolean exists = lecturerRepo.existsByDepartmentAndLevelAndLecturerType(
+                    department, level, LecturerProfile.LecturerType.LEVEL_ADVISER);
+
+            if (exists) {
+                throw new ResponseNotFoundException(
+                        "Level adviser already exists for this department and level");
+            }
+
+            lecturerProfile.setLecturerType(LecturerProfile.LecturerType.LEVEL_ADVISER);
+            lecturerProfile.setDepartment(department);
+            lecturerProfile.setLevel(level);
+            response = lecturerProfile.getFullName() + " is now the " + lecturerProfile.getLecturerType().name() + " of " + lecturerProfile.getDepartment().getDepartmentName() + " and "
+            + lecturerProfile.getLevel().getLevelNumber();
+
+        }
+    lecturerRepo.save(lecturerProfile);
+
+        return response;
     }
 
     public List<LecturerResponseDto> getAllLecturers() {
