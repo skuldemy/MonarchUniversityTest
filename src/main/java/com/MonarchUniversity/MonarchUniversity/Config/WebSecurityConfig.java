@@ -57,12 +57,14 @@
 	            	                "/swagger-ui/**",
 	            	                "/swagger-ui.html"
 	            	            ).permitAll()
-	                .requestMatchers("/auth/**").permitAll()
-	                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/admin/**").hasAuthority("ROLE_STUDENT")
-                        .requestMatchers("/hod/**").hasAuthority("ROLE_HOD")
-	                .anyRequest().authenticated()
-	            )
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+ // will be removed
+                                .requestMatchers("/hod/**").hasAuthority("ROLE_HOD")
+                        .requestMatchers("/lecturer/**").hasAuthority("ROLE_LECTURER")
+                        .requestMatchers("/student/**").hasAuthority("ROLE_STUDENT")
+                        .anyRequest().authenticated()
+                )
 	            .addFilterBefore(jwtAuthenticationFilter(), org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 	
 	        return http.build();

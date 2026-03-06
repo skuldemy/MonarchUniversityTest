@@ -2,15 +2,7 @@ package com.MonarchUniversity.MonarchUniversity.Model;
 
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,4 +26,26 @@ public class LecturerProfile {
             inverseJoinColumns = @JoinColumn(name = "course_id")
     )
     private List<Course> courses;
+
+    @ManyToOne(
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(
+            name = "department_id"
+    )
+    private Department department;
+    @ManyToOne(
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(
+            name = "level_id"
+    )
+    private Level level;
+
+    @Enumerated(EnumType.STRING)
+    private LecturerType lecturerType;
+
+    public enum LecturerType{
+        HOD, DEAN, LEVEL_ADVISER
+    }
 }

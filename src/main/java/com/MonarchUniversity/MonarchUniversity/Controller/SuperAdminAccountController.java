@@ -433,5 +433,9 @@ public ResponseEntity<?> getFeeTypes(){
     public ResponseEntity<?> getSemesterById(@PathVariable Long id){
         return ResponseEntity.ok(sessionAndSemesterService.getSemesterById(id));
     }
-
+// new
+    @PostMapping("/assign-lecturer-to-sub-role")
+    public ResponseEntity<?> assignLecturerToSubRole(@RequestBody AssignLecturerPositionDto dto){
+        return ResponseEntity.ok(managementService.assignRoleToLecturer(dto));
+    }
 }

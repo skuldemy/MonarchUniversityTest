@@ -1,5 +1,6 @@
 package com.MonarchUniversity.MonarchUniversity.Payload;
 
+import com.MonarchUniversity.MonarchUniversity.Model.LecturerProfile
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
@@ -48,4 +49,11 @@ data class UpdateLecturerRequestDto(
             >? = null,
 
     val coursesOffering: List<Long>? = null
+)
+
+data class AssignLecturerPositionDto (
+    val lecturerId : Long,
+    val lecturerType : LecturerProfile.LecturerType,
+    val levelId : Long ? = null,
+    val deptId : Long
 )
