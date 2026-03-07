@@ -14,8 +14,9 @@ data class CourseUnitRequestDto (
     @field:NotNull(message = "Level is required")
     @field:Positive(message = "Level ID must be a positive number")
     val levelId : Long,
-    @field:NotNull(message = "Semester is required")
-    val semesterName: String,
+    @field:NotNull(message = "Level is required")
+    @field:Positive(message = "Level ID must be a positive number")
+    val semesterId: Long,
     @field:NotNull(message = "Minimum units is required")
     @field:Min(value = 1, message = "Minimum units must be at least 1")
 
@@ -50,19 +51,6 @@ data class CourseUnitUpdate(
 
     val maxUnits: Int
 )
-
-//fun CourseUnit.toResponse(): CourseUnitResponseDto {
-//    return CourseUnitResponseDto(
-//        programName = this.program.programName,
-//        levelNumber = this.level.levelNumber,
-//        semesterName = this.semesterName,
-//        courseUnit = this.courseUnit,
-//        minUnits = this.minUnits,
-//        maxUnits = this.maxUnits
-//    )
-//}
-
-
 data class StudentCourseUnit(
     val minUnits: Int?,
     val currentUnit : Int?,

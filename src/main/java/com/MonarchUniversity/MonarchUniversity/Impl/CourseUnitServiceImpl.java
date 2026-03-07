@@ -50,12 +50,14 @@ public class CourseUnitServiceImpl implements CourseUnitService{
         Level level = levelRepository.findByIdAndDepartment(dto.getLevelId(), department
                 ).orElseThrow(()-> new ResponseNotFoundException("No such level for this program"));
 
+        Semester semester = semesterRepo.findById(dto.getSemesterId())
+                .orElseThrow(()-> new ResponseNotFoundException("No such semester"));
 //        if(!level.getSemester().equals(dto.getSemesterName())){
 //            throw new ResponseNotFoundException("No such semester for this level," +
 //                    " consider updating the semester");
 //        }
 
-        if (courseUnitRepo.existsByDepartmentAndLevelAndSemesterName(department,level, dto.getSemesterName())){
+        if (courseUnitRepo.existsByDepartmentAndLevelAndSemester(department,level, semester)){
             throw new ResponseNotFoundException("This response already exists, you might consider updating");
         }
 
@@ -63,7 +65,7 @@ public class CourseUnitServiceImpl implements CourseUnitService{
         CourseUnit courseUnit = new CourseUnit();
         courseUnit.setLevel(level);
         courseUnit.setDepartment(department);
-        courseUnit.setSemesterName(dto.getSemesterName());
+        courseUnit.setSemester(semester);
         courseUnit.setMinUnits(dto.getMinUnits());
         courseUnit.setMaxUnits(dto.getMaxUnits());
 
@@ -74,7 +76,7 @@ public class CourseUnitServiceImpl implements CourseUnitService{
     @Override
     public CourseUnitResponseDto getCourseUnitResponse(Long departmentId,
                                                             Long levelId,
-                                                            String semesterName
+                                                            Long semesterId
 
                                                             ) {
 
@@ -84,7 +86,7 @@ public class CourseUnitServiceImpl implements CourseUnitService{
         Level level = levelRepository.findByIdAndDepartment(levelId,
                 department).orElseThrow(()-> new ResponseNotFoundException("No such level for this department"));
         CourseUnit course = courseUnitRepo
-                .getCourseUnitByDepartmentAndLevelAndSemesterName(department,level,semesterName);
+                .getCourseUnitByDepartmentAndLevelAndSemesterId(department,level,semesterId);
 //        return courseUnitList
 //                .stream()
 //                .map(this::mapToDto)
@@ -110,8 +112,8 @@ public class CourseUnitServiceImpl implements CourseUnitService{
                         "No academic session found for the current date"
                 ));
 
-        CourseUnit courseUnit = courseUnitRepo.getCourseUnitByDepartmentAndLevelAndSemesterName(department, level,
-                currentSemester.getSemesterName()
+        CourseUnit courseUnit = courseUnitRepo.getCourseUnitByDepartmentAndLevelAndSemesterId(department, level,
+                currentSemester.getId()
                 );
 
         List<CourseRegistration> registrations =
@@ -155,7 +157,7 @@ public class CourseUnitServiceImpl implements CourseUnitService{
                 c.getId() ,
                 c.getDepartment().getDepartmentName(),
                 c.getLevel().getLevelNumber(),
-                c.getSemesterName(),
+                c.getSemester().getSemesterName(),
                 c.getMinUnits(),
                 c.getMaxUnits()
         );

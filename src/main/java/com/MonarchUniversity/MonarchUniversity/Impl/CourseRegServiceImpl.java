@@ -131,8 +131,8 @@ public class CourseRegServiceImpl implements CourseRegService {
             totalUnits += semesterCourse.getCourse().getCourseUnit();
         }
 
-        CourseUnit deptCourseUnit = courseUnitRepo.getCourseUnitByDepartmentAndLevelAndSemesterName(
-                department, level, currentSemester.getSemesterName()
+        CourseUnit deptCourseUnit = courseUnitRepo.getCourseUnitByDepartmentAndLevelAndSemesterId(
+                department, level, currentSemester.getId()
         );
 
         if (totalUnits < deptCourseUnit.getMinUnits() || totalUnits > deptCourseUnit.getMaxUnits()) {

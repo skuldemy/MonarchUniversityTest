@@ -56,10 +56,9 @@ public class SemesterCourseServiceimpl implements SemesterCourseService {
         Semester semester = semesterRepo.findById(semesterId)
                 .orElseThrow(() -> new ResponseNotFoundException("No such semester"));
 
-        String semesterName = semester.getSemesterName();
 
         CourseUnit deptCourseUnit = courseUnitRepo
-                .getCourseUnitByDepartmentAndLevelAndSemesterName(department, level, semesterName);
+                .getCourseUnitByDepartmentAndLevelAndSemesterId(department, level, semesterId);
 
         List<Course> coursesToAdd = new ArrayList<>();
         int totalUnits = 0;

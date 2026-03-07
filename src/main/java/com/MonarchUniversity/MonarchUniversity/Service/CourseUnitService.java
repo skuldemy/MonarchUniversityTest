@@ -13,7 +13,7 @@ import java.util.List;
 public interface CourseUnitService {
     public String createCourseUnit(CourseUnitRequestDto dto);
     public CourseUnitResponseDto getCourseUnitResponse(Long programId, Long levelId,
-                                                            String semesterName
+                                                            Long semesterId
                                                             );
 
     public StudentCourseUnit getStudentCourseUnitResponse();

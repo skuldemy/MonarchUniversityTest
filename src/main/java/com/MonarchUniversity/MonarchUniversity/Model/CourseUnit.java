@@ -23,7 +23,11 @@ public class CourseUnit {
             name = "level_id"
     )
     private Level level;
-    private String semesterName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "Semester_id"
+    )
+    private Semester semester;
     private Integer minUnits;
     private Integer maxUnits;
 }
