@@ -377,8 +377,8 @@ public ResponseEntity<?> getFeeTypes(){
     }
     @GetMapping("/course-unit")
     public ResponseEntity<?> getCourseUnit(@RequestParam Long departmentId,@RequestParam Long levelId,
-                                           @RequestParam String semesterName){
-        return ResponseEntity.ok(courseUnitService.getCourseUnitResponse(departmentId,levelId,semesterName));
+                                           @RequestParam Long semesterId){
+        return ResponseEntity.ok(courseUnitService.getCourseUnitResponse(departmentId,levelId,semesterId));
     }
 
     @PutMapping("/course-unit/{id}")

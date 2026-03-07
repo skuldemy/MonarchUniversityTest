@@ -1,5 +1,7 @@
 package com.MonarchUniversity.MonarchUniversity.Controller;
 
+import com.MonarchUniversity.MonarchUniversity.Model.LecturerProfile;
+import com.MonarchUniversity.MonarchUniversity.Repositories.LecturerProfileRepo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,6 +29,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepo;
     private final JwtService jwtService;
+    private final LecturerProfileRepo lecturerProfileRepo;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -52,7 +55,19 @@ public class AuthController {
             // Generate JWT
             String token = jwtService.generateToken(user);
 
-            return ResponseEntity.ok(new LoginResponse(token, role));
+            String lecturerType = null;
+
+            if(role.equals("LECTURER")){
+                LecturerProfile lecturerProfile = lecturerProfileRepo
+                        .findByUser(user).orElse(null);
+                if (lecturerProfile.getLecturerType() != null) {
+
+                    lecturerType = lecturerProfile.getLecturerType().name();
+                }
+            }
+
+
+            return ResponseEntity.ok(new LoginResponse(token, role, lecturerType));
 
         } catch (BadCredentialsException e) {
             // Wrong password or username

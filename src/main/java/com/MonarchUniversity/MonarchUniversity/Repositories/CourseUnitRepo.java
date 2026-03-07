@@ -6,12 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CourseUnitRepo extends JpaRepository<CourseUnit, Long> {
-    CourseUnit getCourseUnitByDepartmentAndLevelAndSemesterName(Department department,
+    CourseUnit getCourseUnitByDepartmentAndLevelAndSemesterId(Department department,
                                                                Level level,
-                                                               String semester
+                                                               Long semesterId
     );
-    boolean existsByDepartmentAndLevelAndSemesterName(Department department,
+    boolean existsByDepartmentAndLevelAndSemester(Department department,
                                                       Level level,
-                                                      String semester
+                                                      Semester semester
     );
 }

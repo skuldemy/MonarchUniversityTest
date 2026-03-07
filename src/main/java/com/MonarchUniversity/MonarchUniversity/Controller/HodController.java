@@ -82,14 +82,14 @@ public class HodController {
         ));
     }
 
-    @GetMapping("/course-unit/{levelId}/{departmentId}/{semesterName}")
+    @GetMapping("/course-unit/{levelId}/{departmentId}/{semesterId}")
     public ResponseEntity<?> getCourseUnit(
             @PathVariable Long levelId,
             @PathVariable Long departmentId,
-            @PathVariable String semesterName
+            @PathVariable Long semesterId
     ){
         return ResponseEntity.ok(courseUnitService.getCourseUnitResponse(departmentId,
-                levelId, semesterName));
+                levelId, semesterId));
     }
 
 

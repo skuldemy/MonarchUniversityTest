@@ -1,10 +1,12 @@
 package com.MonarchUniversity.MonarchUniversity.Impl;
 
+import com.MonarchUniversity.MonarchUniversity.Model.LecturerProfile;
 import com.MonarchUniversity.MonarchUniversity.Model.User;
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
 import com.MonarchUniversity.MonarchUniversity.Jwt.JwtService;
 import com.MonarchUniversity.MonarchUniversity.Payload.LoginResponse;
 import com.MonarchUniversity.MonarchUniversity.Payload.UserDto;
+import com.MonarchUniversity.MonarchUniversity.Repositories.LecturerProfileRepo;
 import com.MonarchUniversity.MonarchUniversity.Repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +20,7 @@ public class ImpersonateService {
 
     private final UserRepository userRepo;
     private final JwtService jwtService;
+    private final LecturerProfileRepo lecturerProfileRepo;
 
 
     private User getLoggedInUser() {
@@ -74,7 +77,19 @@ public class ImpersonateService {
                 superAdmin
         );
 
+        String lecturerType = null;
+
+        if(role.equals("LECTURER")){
+            LecturerProfile lecturerProfile = lecturerProfileRepo
+                    .findByUser(targetUser).orElse(null);
+            if (lecturerProfile.getLecturerType() != null) {
+
+                lecturerType = lecturerProfile.getLecturerType().name();
+            }
+        }
+
+
         // ✅ SAME RESPONSE AS LOGIN
-        return new LoginResponse(token, role);
+        return new LoginResponse(token, role, lecturerType);
     }
 }
