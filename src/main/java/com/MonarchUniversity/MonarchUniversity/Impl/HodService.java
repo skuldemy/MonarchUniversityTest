@@ -6,6 +6,8 @@ import com.MonarchUniversity.MonarchUniversity.Model.CourseRegistration;
 import com.MonarchUniversity.MonarchUniversity.Payload.*;
 import com.MonarchUniversity.MonarchUniversity.Repositories.*;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ public class HodService {
     private final SemesterRepo semesterRepo;
     private final CourseRegistrationRepo courseRegistrationRepo;
     private final SemesterCourseRepo semesterCourseRepo;
+    private final StudentProfileRepo studentProfileRepo;
 
     private LecturerProfile getLoggedInLecturerProfile() {
         org.springframework.security.core.userdetails.User springUser =
@@ -152,6 +155,48 @@ public class HodService {
                         s.getDepartment().getDepartmentName()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public PagedResponse<StudentOfferingCourse> getStudentsInDeptAndLevel(Long deptId,Long levelId, Integer offset, Integer limit) {
+
+        PageRequest pageReq = new PageRequest(offset, limit, Sort.by(Sort.Direction.DESC, "lastName"));
+        LecturerProfile lecturerProfile = getLoggedInLecturerProfile();
+
+        Department department = departmentRepository.findById(deptId)
+                .orElseThrow(() -> new ResponseNotFoundException("No such dept"));
+        Level level = levelRepository.findById(levelId)
+                .orElseThrow(() -> new ResponseNotFoundException("No such level"));
+
+        if (!lecturerProfile.getDepartment().equals(department)) {
+            throw new ResponseNotFoundException("Not an Hod or Dean of this dept");
+        }
+
+
+        if (lecturerProfile.getLecturerType() == LecturerProfile.LecturerType.HOD ||
+                lecturerProfile.getLecturerType() == LecturerProfile.LecturerType.DEAN) {
+
+
+        } else if (lecturerProfile.getLecturerType() == LecturerProfile.LecturerType.LEVEL_ADVISER) {
+
+            if (!lecturerProfile.getLevel().getId().equals(levelId)) {
+                throw new ResponseNotFoundException("Level adviser cannot access other levels");
+            }
+
+        } else {
+            throw new ResponseNotFoundException("No such access");
+        }
+        Page<StudentProfile> studentPage =
+                studentProfileRepo.findByDepartmentAndLevel(department, level, pageReq);
+
+        Page<StudentOfferingCourse> mapped =
+                studentPage.map(s -> new StudentOfferingCourse(
+                        s.getLastName() + " " + s.getFirstName(),
+                        s.getMatricNumber(),
+                        s.getLevel().getLevelNumber(),
+                        s.getDepartment().getDepartmentName()
+                ));
+
+        return new PagedResponse<>(mapped);
     }
 
     private LevelDto levelmapToDto(Level level) {

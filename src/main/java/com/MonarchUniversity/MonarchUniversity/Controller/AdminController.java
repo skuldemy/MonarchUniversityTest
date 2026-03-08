@@ -58,8 +58,12 @@ public class AdminController {
 	}
 
 	@GetMapping("/create-student-profile")
-	public ResponseEntity<?> getStudents(){
-		return ResponseEntity.ok(studentProfileService.getAllStudents());
+	public ResponseEntity<?> getStudents(
+            @RequestParam(defaultValue = "0") Integer offset,
+            @RequestParam(defaultValue = "10") Integer limit
+
+    ){
+		return ResponseEntity.ok(studentProfileService.getAllStudents(offset, limit));
 	}
 
     @GetMapping("/create-student-profile/{departmentId}/{levelId}")

@@ -98,6 +98,7 @@ public class HodController {
         return ResponseEntity.ok(hodService.getStudentsOfferingCourse(semesterCourseId));
     }
 
+
     // new
     @PostMapping(value = "/upload-material",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -124,5 +125,18 @@ public class HodController {
                 materialService.getAllMaterialsAssignedToLecturer(pageable);
 
         return ResponseEntity.ok(response);
+    }
+
+    // new
+    @GetMapping("/students-in-level-dept/{departmentId}/{levelId}")
+    public ResponseEntity<?> getStudentsInLevelAndDepartment(
+            @PathVariable Long departmentId,
+            @PathVariable Long levelId,
+            @RequestParam(defaultValue = "0") int page,       // page number, default 0
+            @RequestParam(defaultValue = "10") int size       // page size, default 10
+    ) {
+        return ResponseEntity.ok(
+                hodService.getStudentsInDeptAndLevel(departmentId, levelId, page, size)
+        );
     }
 }
