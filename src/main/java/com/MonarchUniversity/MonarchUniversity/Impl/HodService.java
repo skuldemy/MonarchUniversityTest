@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -198,6 +200,81 @@ public class HodService {
 
         return new PagedResponse<>(mapped);
     }
+
+    public PagedResponse<LecturerDto> getDepartmentalStaffs(Integer offset, Integer limit){
+
+        LecturerProfile lecturerProfile = getLoggedInLecturerProfile();
+        Department department = lecturerProfile.getDepartment();
+
+        Set<LecturerProfile> lecturers = new HashSet<>();
+
+        // Level Advisers
+        List<LecturerProfile> levelAdvisers =
+                lecturerProfileRepo.findByDepartmentAndLecturerType(
+                        department,
+                        LecturerProfile.LecturerType.LEVEL_ADVISER
+                );
+
+        lecturers.addAll(levelAdvisers);
+
+        // Department courses
+        List<Course> courses = courseRepository.findByDepartment(department);
+
+        if(!courses.isEmpty()){
+            List<LecturerProfile> courseLecturers =
+                    lecturerProfileRepo.findByCoursesIn(courses);
+
+            lecturers.addAll(courseLecturers);
+        }
+
+        LecturerProfile.LecturerType type = lecturerProfile.getLecturerType();
+
+        if(type == LecturerProfile.LecturerType.HOD){
+
+            // HOD cannot see himself or the dean
+            lecturers.removeIf(l ->
+                    l.getId().equals(lecturerProfile.getId()) ||
+                            l.getLecturerType() == LecturerProfile.LecturerType.DEAN
+            );
+
+        } else if(type == LecturerProfile.LecturerType.DEAN){
+
+            // Dean can see everyone except himself
+            lecturers.removeIf(l ->
+                    l.getId().equals(lecturerProfile.getId())
+            );
+
+        } else {
+
+            throw new ResponseNotFoundException("No such access");
+        }
+
+        List<LecturerProfile> lecturerList = new ArrayList<>(lecturers);
+
+
+
+        int start = offset * limit;
+        int end = Math.min(start + limit, lecturerList.size());
+
+        List<LecturerDto> content = lecturerList.subList(start, end)
+                .stream()
+                .map(l -> new LecturerDto(
+                        l.getId(),
+                        l.getFullName(),
+                        l.getLecturerType() != null ? l.getLecturerType() : null,
+                        l.getLevel() != null ? l.getLevel().getId() : null
+                ))
+                .toList();
+
+        return new PagedResponse<>(
+                content,
+                content.size(),
+                lecturerList.size(),
+                end >= lecturerList.size()
+        );
+    }
+
+    public
 
     private LevelDto levelmapToDto(Level level) {
         return new LevelDto(

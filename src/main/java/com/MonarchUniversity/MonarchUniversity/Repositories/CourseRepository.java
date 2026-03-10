@@ -29,4 +29,5 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
             Long id
     );
 
+    List<Course> findByDepartment(Department department);
 }
