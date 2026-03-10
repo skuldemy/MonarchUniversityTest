@@ -3,8 +3,12 @@ package com.MonarchUniversity.MonarchUniversity.Impl;
 import java.util.List;
 import java.util.Map;
 
+import com.MonarchUniversity.MonarchUniversity.Payload.PagedResponse;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -285,8 +289,12 @@ public class StudentProfileService {
         return response;
     }
     
-    public List<StudentProfileResponseDto> getAllStudents() {
-        return studentProfileRepo.findAll().stream()
+    public PagedResponse getAllStudents(Integer offset, Integer limit) {
+         Page<StudentProfile> studentsPage = studentProfileRepo.findAll(
+                PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "lastName"))
+        );
+
+        List<StudentProfileResponseDto> content = studentProfileRepo.findAll().stream()
                 .map(student -> {
                     StudentProfileResponseDto dto = new StudentProfileResponseDto();
                     dto.setId(student.getId());
@@ -314,6 +322,13 @@ public class StudentProfileService {
                     return dto;
                 })
                 .toList();
+
+        return new PagedResponse<>(
+                content,
+                content.size(),
+                (int) studentsPage.getTotalElements(),
+                studentsPage.isLast()
+        );
     }
 
     public List<StudentProfileResponseDto> getStudentByDepartmentAndLevel(Long departmentId, Long levelId ){

@@ -37,4 +37,8 @@ public interface LecturerProfileRepo extends JpaRepository<LecturerProfile, Long
     boolean existsByDepartmentAndLevelAndLecturerType(Department department,
                                                       Level level,
                                                       LecturerProfile.LecturerType lecturerType);
+
+    List<LecturerProfile> findByDepartmentAndLecturerType(Department department, LecturerProfile.LecturerType lecturerType);
+
+    List<LecturerProfile> findByCoursesIn(List<Course> courses);
 }
