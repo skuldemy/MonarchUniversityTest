@@ -3,6 +3,7 @@ package com.MonarchUniversity.MonarchUniversity.Payload;
 import java.util.List;
 import java.util.Set;
 
+import com.MonarchUniversity.MonarchUniversity.Model.LecturerProfile;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,4 +18,5 @@ public class LecturerResponseDto {
     private String status;
     private Set<String> roleName;
     private List<LecturerCourseDto> courses;
+    private String lecturerType;
 }
