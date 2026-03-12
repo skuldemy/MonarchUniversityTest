@@ -267,12 +267,15 @@ public class SuperAdminService {
         res.setFullName(lecturer.getFullName());
         res.setEmailAddress(user.getUsername());
         res.setStatus(user.isEnabled() ? "enabled" : "disabled");
-
+        res.setLecturerType(
+                lecturer.getLecturerType() != null ? lecturer.getLecturerType().name() : null
+        );
         res.setRoleName(
                 user.getRoles().stream()
                         .map(Role::getName)
                         .collect(Collectors.toSet())
         );
+
 
         List<LecturerCourseDto> courseDtos = lecturer.getCourses()
                 .stream()
