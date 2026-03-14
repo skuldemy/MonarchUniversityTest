@@ -1,5 +1,6 @@
 package com.MonarchUniversity.MonarchUniversity.Service;
 
+import com.MonarchUniversity.MonarchUniversity.Payload.CourseAssessmentDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseResponseDto;
 
 import java.util.List;
@@ -15,4 +16,5 @@ public interface SemesterCourseService {
             Long departmentId,
             Long semesterId
     );
+    public CourseAssessmentDto createCourseAssessment(CourseAssessmentDto dto);
 }

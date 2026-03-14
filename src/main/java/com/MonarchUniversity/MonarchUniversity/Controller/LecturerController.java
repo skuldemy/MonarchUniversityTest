@@ -1,7 +1,7 @@
 package com.MonarchUniversity.MonarchUniversity.Controller;
 
-import com.MonarchUniversity.MonarchUniversity.Impl.CourseUnitServiceImpl;
 import com.MonarchUniversity.MonarchUniversity.Impl.HodService;
+import com.MonarchUniversity.MonarchUniversity.Payload.CourseAssessmentDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.MaterialReqDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.MaterialResDto;
 import com.MonarchUniversity.MonarchUniversity.Service.CourseUnitService;
@@ -9,16 +9,19 @@ import com.MonarchUniversity.MonarchUniversity.Service.MaterialService;
 import com.MonarchUniversity.MonarchUniversity.Service.SemesterCourseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,7 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 //@RequestMapping("/hod")
 @RequestMapping("/lecturer")
-public class HodController {
+public class LecturerController {
     public final SemesterCourseService semesterCourseService;
     private final HodService hodService;
     private final CourseUnitService courseUnitService;
@@ -147,5 +150,23 @@ public class HodController {
     public ResponseEntity<?> getDepartmentalStaffs(@RequestParam(defaultValue = "0") int page,       // page number, default 0
                                                    @RequestParam(defaultValue = "10") int size) {       // page size, default 10)
         return ResponseEntity.ok(hodService.getDepartmentalStaffs(page,size));
+    }
+
+    // new
+    @GetMapping("/result-template/{semesterCourseId}")
+    public ResponseEntity<InputStreamResource> downloadTemplate(
+            @PathVariable Long semesterCourseId) throws IOException {
+
+        ByteArrayInputStream file = hodService.generateResultTemplate(semesterCourseId);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=result_template.xlsx")
+                .contentType(MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(new InputStreamResource(file));
+    }
+    @PostMapping("/create-course-assessment-structure")
+    public ResponseEntity<?> createCourseAssessmentStructure(@RequestBody CourseAssessmentDto dto){
+        return ResponseEntity.ok(semesterCourseService.createCourseAssessment(dto));
     }
 }

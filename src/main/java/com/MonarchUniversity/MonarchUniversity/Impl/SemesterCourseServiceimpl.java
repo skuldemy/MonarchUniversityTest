@@ -2,6 +2,7 @@ package com.MonarchUniversity.MonarchUniversity.Impl;
 
 import com.MonarchUniversity.MonarchUniversity.Exception.ResponseNotFoundException;
 import com.MonarchUniversity.MonarchUniversity.Model.*;
+import com.MonarchUniversity.MonarchUniversity.Payload.CourseAssessmentDto;
 import com.MonarchUniversity.MonarchUniversity.Payload.CourseResponseDto;
 import com.MonarchUniversity.MonarchUniversity.Repositories.*;
 import com.MonarchUniversity.MonarchUniversity.Service.SemesterCourseService;
@@ -24,6 +25,8 @@ public class SemesterCourseServiceimpl implements SemesterCourseService {
     private final CourseUnitRepo courseUnitRepo;
     private final UserRepository userRepository;
     private final StudentProfileRepo studentProfileRepo;
+    private final LecturerProfileRepo lecturerProfileRepo;
+    private final CourseAssessmentRepo assessmentRepo;
 
     private StudentProfile getLoggedInStudentProfile() {
         org.springframework.security.core.userdetails.User springUser =
@@ -38,6 +41,21 @@ public class SemesterCourseServiceimpl implements SemesterCourseService {
         return studentProfileRepo.findByUser(userEntity)
                 .orElseThrow(() -> new RuntimeException("StudentProfile not found"));
     }
+
+    private LecturerProfile getLoggedInLecturerProfile() {
+        org.springframework.security.core.userdetails.User springUser =
+                (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal();
+
+        User userEntity = userRepository.findByUsername(springUser.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return lecturerProfileRepo.findByUser(userEntity)
+                .orElseThrow(() -> new RuntimeException("LecturerProfile not found"));
+    }
+
 
 
     @Override
@@ -207,5 +225,28 @@ public class SemesterCourseServiceimpl implements SemesterCourseService {
        return semesterCourseUnits.stream().mapToInt(Integer::intValue).sum();
 
     }
+
+    public CourseAssessmentDto createCourseAssessment(CourseAssessmentDto dto){
+        LecturerProfile lecturerProfile = getLoggedInLecturerProfile();
+        SemesterCourse semesterCourse = semesterCourseRepo
+                .findById(dto.getSemesterCourse()).orElseThrow(()->
+                        new ResponseNotFoundException("Not found"));
+        if(!lecturerProfile.getCourses().contains(semesterCourse.getCourse())){
+            throw new ResponseNotFoundException("You do not take this course, contact the super admin for info");
+        }
+        if (dto.getMaxCa() < 0 || dto.getMaxExam() <= 0 || dto.getMaxCa() > dto.getMaxExam()) {
+            throw new IllegalArgumentException("Invalid CA or Exam scores");
+        }
+        CourseAssessmentStructure assessment = new CourseAssessmentStructure();
+        assessment.setSemesterCourse(semesterCourse);
+        assessment.setMaxCa(dto.getMaxCa());
+        assessment.setMaxExam(dto.getMaxExam());
+        assessment.setTotal(dto.getMaxCa() + dto.getMaxExam());
+        assessmentRepo.save(assessment);
+
+
+        return dto;
+    }
+
 
 }

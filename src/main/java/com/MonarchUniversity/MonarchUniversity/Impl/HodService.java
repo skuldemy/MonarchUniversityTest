@@ -6,11 +6,19 @@ import com.MonarchUniversity.MonarchUniversity.Model.CourseRegistration;
 import com.MonarchUniversity.MonarchUniversity.Payload.*;
 import com.MonarchUniversity.MonarchUniversity.Repositories.*;
 import lombok.AllArgsConstructor;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,6 +38,7 @@ public class HodService {
     private final CourseRegistrationRepo courseRegistrationRepo;
     private final SemesterCourseRepo semesterCourseRepo;
     private final StudentProfileRepo studentProfileRepo;
+    private final CourseAssessmentRepo assessmentRepo;
 
     private LecturerProfile getLoggedInLecturerProfile() {
         org.springframework.security.core.userdetails.User springUser =
@@ -157,6 +166,58 @@ public class HodService {
                         s.getDepartment().getDepartmentName()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public ByteArrayInputStream generateResultTemplate(Long semesterCourseId) throws IOException {
+
+        List<StudentOfferingCourse> students = getStudentsOfferingCourse(semesterCourseId);
+
+        CourseAssessmentStructure assessment = assessmentRepo
+                .findBySemesterCourse_Id(semesterCourseId)
+                .orElseThrow(() -> new ResponseNotFoundException("Assessment structure not set"));
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Result Sheet");
+
+        Row header = sheet.createRow(0);
+        header.createCell(0).setCellValue("Matric Number");
+        header.createCell(1).setCellValue("Student Name");
+        header.createCell(2).setCellValue("Level");
+        header.createCell(3).setCellValue("Department");
+        header.createCell(4).setCellValue("CA (" + assessment.getMaxCa() + ")");
+        header.createCell(5).setCellValue("Exam (" + assessment.getMaxExam() + ")");
+        header.createCell(6).setCellValue("Total (" + assessment.getTotal() + ")");
+
+        int rowNum = 1;
+
+        for (StudentOfferingCourse student : students) {
+
+            Row row = sheet.createRow(rowNum);
+
+            row.createCell(0).setCellValue(student.getMatricNumber());
+            row.createCell(1).setCellValue(student.getName());
+            row.createCell(2).setCellValue(student.getLevelNumber());
+            row.createCell(3).setCellValue(student.getDepartmentName());
+            row.createCell(4);
+            row.createCell(5);
+
+            Cell totalCell = row.createCell(6);
+
+            int excelRow = rowNum + 1;
+            totalCell.setCellFormula("E" + excelRow + "+F" + excelRow);
+
+            rowNum++;
+        }
+
+        for (int i = 0; i <= 6; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+
+        return new ByteArrayInputStream(out.toByteArray());
     }
 
     public PagedResponse<StudentOfferingCourse> getStudentsInDeptAndLevel(Long deptId,Long levelId, Integer offset, Integer limit) {

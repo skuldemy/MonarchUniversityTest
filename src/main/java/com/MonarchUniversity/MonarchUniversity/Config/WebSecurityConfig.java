@@ -57,10 +57,9 @@
 	            	                "/swagger-ui/**",
 	            	                "/swagger-ui.html"
 	            	            ).permitAll()
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**", "/lecturer/result-template/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
  // will be removed
-                                .requestMatchers("/hod/**").hasAuthority("ROLE_HOD")
                         .requestMatchers("/lecturer/**").hasAuthority("ROLE_LECTURER")
                         .requestMatchers("/student/**").hasAuthority("ROLE_STUDENT")
                         .anyRequest().authenticated()
