@@ -23,7 +23,7 @@ public class CloudinaryConfig {
                 ObjectUtils.asMap(
                         "cloud_name", cloudName,
                         "api_key", apiKey,
-                        "api_secret", apiKey,
+                        "api_secret", apiSecret,
                         "secure", true
                 )
         );
