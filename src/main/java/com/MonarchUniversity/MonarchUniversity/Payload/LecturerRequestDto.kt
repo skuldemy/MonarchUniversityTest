@@ -61,7 +61,7 @@ data class AssignLecturerPositionDto (
 
 data class LecturerDto(
     val lecturerId : Long,
-    val lecturerPosition : String,
+    val fullName : String,
     val lecturerType : LecturerProfile.LecturerType?,
     val levelId : Long ?= null
 //    val levelId : Long ? = null,
